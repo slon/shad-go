@@ -6,7 +6,7 @@ import (
 )
 
 type testCase struct {
-	a, b, sum int
+	a, b, sum int64
 }
 
 func TestSum(t *testing.T) {
