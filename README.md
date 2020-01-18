@@ -6,7 +6,7 @@
    оценки. if, switch, for. Hello, world. Command line arguments. Word
    count. Animated gif. Fetching URL. Fetching URL concurrently. Web
    server. Tour of go. Local IDE setup. Submitting solutions to
-   automated grading. gofmt. goimport. linting. Submitting PR's with
+   automated grading. gofmt. goimports. linting. Submitting PR's with
    bug fixes.
 
 2. Базовые конструкции языка. names, declarations, variables,
@@ -28,7 +28,7 @@
 4. Горутины и каналы. clock server. echo server. Размер
    канала. Блокирующее и неблокирующее чтение. select
    statement. Channel axioms. `time.After`. `time.NewTicker`. Pipeline
-   pattern. Cancelation. Parallel loop. sync.WaitGroup. Обработка
+   pattern. Cancellation. Parallel loop. sync.WaitGroup. Обработка
    ошибок в параллельном коде. errgroup.Group. Concurrent web
    crawler. Concurrent directory traversal.
 
@@ -39,9 +39,9 @@
 6. Concurrency with shared memory. sync.Mutex. sync.RWMutex. sync.Cond. atomic. sync.Once.
    Race detector. Async cache.
 
-7. Package context. Passing request-scoped data. http middleware. chi.Router. Request cancelation.
+7. Package context. Passing request-scoped data. http middleware. chi.Router. Request cancellation.
    Advanced concurrency patterns. Async cache. Graceful server shutdown. context.WithTimeout.
-   Batching and cancelation.
+   Batching and cancellation.
 
 8. Reflection. reflect.Type and reflect.Value. struct tags. net/rpc. encoding/gob.
    sync.Map. reflect.DeepEqual.
