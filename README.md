@@ -3,11 +3,11 @@
 ## Программа курса
 
 1. Введение. Программа курса. Отчётность по курсу, критерии
-   оценки. if, switch, for. Hello, world. Command line arguments. Word
-   count. Animated gif. Fetching URL. Fetching URL concurrently. Web
-   server. Tour of go. Local IDE setup. Submitting solutions to
-   automated grading. gofmt. goimports. linting. Submitting PR's with
-   bug fixes.
+   оценки. Философия дизайна. if, switch, for. Hello, world. Command
+   line arguments. Word count. Animated gif. Fetching URL. Fetching
+   URL concurrently. Web server. Tour of go. Local IDE
+   setup. Submitting solutions to automated
+   grading. gofmt. goimports. linting. Submitting PR's with bug fixes.
 
 2. Базовые конструкции языка. names, declarations, variables,
    assignments. type declarations. packages and files. scope. Zero
@@ -37,7 +37,7 @@
    Интеграционные тесты. Goroutine leak detector. TestingMain. Coverage. Сравнение бенчмарков.
 
 6. Concurrency with shared memory. sync.Mutex. sync.RWMutex. sync.Cond. atomic. sync.Once.
-   Race detector. Async cache. Работа с базой данных. database/sql. sqlx. gorm.
+   Race detector. Async cache. Работа с базой данных. database/sql. sqlx.
 
 7. Package context. Passing request-scoped data. http middleware. chi.Router. Request cancellation.
    Advanced concurrency patterns. Async cache. Graceful server shutdown. context.WithTimeout.
