@@ -10,12 +10,13 @@ type testCase struct {
 }
 
 func TestSum(t *testing.T) {
+	s := &summer{}
 	for _, input := range []testCase{
 		{a: 2, b: 2, sum: 4},
 		{a: 2, b: -2, sum: 0},
 		{a: math.MaxInt64, b: 1, sum: math.MinInt64},
 	} {
-		if out := Sum(input.a, input.b); out != input.sum {
+		if out := s.Sum(input.a, input.b); out != input.sum {
 			t.Errorf("%d + %d == %d != %d", input.a, input.b, out, input.sum)
 		}
 	}
