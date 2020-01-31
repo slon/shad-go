@@ -1,0 +1,6 @@
+- group:    Hello World
+  start:    13-02-2020 18:00
+  deadline: 23-02-2020 23:59
+  tasks:
+    - task: sum
+      score: 100

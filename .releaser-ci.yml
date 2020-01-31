@@ -14,13 +14,20 @@ rebuild-base-image:
     - docker build -f build.docker -t eu.gcr.io/shad-ts/grader/go-build .
     - docker push eu.gcr.io/shad-ts/grader/go-build:latest
 
-deploy:
+update-task-list:
   only:
     - master
   tags:
     - docker
   script:
     - curl -F token=$TESTER_TOKEN https://go.manytask.org/api/sync_task_columns
+
+deploy:
+  only:
+    - master
+  tags:
+    - docker
+  script:
     - docker pull eu.gcr.io/shad-ts/grader/go-build:latest
     - docker build -f testenv.docker -t eu.gcr.io/shad-ts/grader/go .
     - docker push eu.gcr.io/shad-ts/grader/go:latest
