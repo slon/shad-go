@@ -94,7 +94,7 @@ func testSubmission(studentRepo, privateRepo, problem string) {
 	// Path to private problem folder.
 	privateProblem := path.Join(privateRepo, problem)
 
-	// Copy submission files to temp temp dir.
+	// Copy submission files to temp dir.
 	log.Printf("copying student solution")
 	copyContents(studentProblem, tmpDir)
 
