@@ -7,7 +7,6 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
-	"strings"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/tools/go/packages"
@@ -144,37 +143,6 @@ func copyDir(src, dst string) {
 // copyDir recursively copies src contents to dst.
 func copyContents(src, dst string) {
 	copyDir(src+"/", dst)
-}
-
-// List all _test.go files in given directory including the ones with "private" build tag.
-//
-// Returns absolute paths.
-func listTestFiles(problemDir string) []string {
-	files := getPackageFiles(problemDir, []string{"-tags", "private"})
-	var tests []string
-	for f := range files {
-		if strings.HasSuffix(f, "_test.go") {
-			tests = append(tests, f)
-		}
-	}
-	return tests
-}
-
-// List all .go source files in given directory protected by "!change" build tag.
-//
-// Returns absolute paths.
-func listProtectedFiles(problemDir string) []string {
-	allFiles := getPackageFiles(problemDir, nil)
-	allFilesWithoutProtected := getPackageFiles(problemDir, []string{"-tags", "change"})
-
-	var protectedFiles []string
-	for f := range allFiles {
-		if _, ok := allFilesWithoutProtected[f]; !ok {
-			protectedFiles = append(protectedFiles, f)
-		}
-	}
-
-	return protectedFiles
 }
 
 // Copy files preserving directory structure relative to baseDir.

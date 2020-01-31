@@ -1,0 +1,3 @@
+// +build !solution
+
+package sum
