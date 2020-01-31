@@ -1,0 +1,26 @@
+check:
+  image: eu.gcr.io/shad-ts/grader/go-build
+  script:
+    - go test -tags private,solution ./...
+    - go test -race -tags private,solution ./...
+
+rebuild-base-image:
+  only:
+    - master
+  tags:
+    - docker
+  when: manual
+  script:
+    - docker build -f build.docker -t eu.gcr.io/shad-ts/grader/go-build .
+    - docker push eu.gcr.io/shad-ts/grader/go-build:latest
+
+deploy:
+  only:
+    - master
+  tags:
+    - docker
+  script:
+    - curl -F token=$TESTER_TOKEN https://go.manytask.org/api/sync_task_columns
+    - docker pull eu.gcr.io/shad-ts/grader/go-build:latest
+    - docker build -f testenv.docker -t eu.gcr.io/shad-ts/grader/go .
+    - docker push eu.gcr.io/shad-ts/grader/go:latest

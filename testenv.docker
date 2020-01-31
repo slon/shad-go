@@ -1,0 +1,7 @@
+FROM eu.gcr.io/shad-ts/grader/go-build:latest
+
+RUN go install gitlab.com/slon/shad-go/tools/testtool
+
+COPY . /opt/shad
+
+RUN find /opt/shad/private -name '*.cpp' -or -name '*.h' | xargs chmod o-rwx

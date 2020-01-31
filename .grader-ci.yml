@@ -1,0 +1,6 @@
+grade:
+  image: eu.gcr.io/shad-ts/grader/go
+  only:
+    - /^submits/.*$/
+  script:
+    - echo "Not implemented"
