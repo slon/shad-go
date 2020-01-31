@@ -1,0 +1,1 @@
+Student solution is correct but it introduces new dependency not found in root go.mod.
