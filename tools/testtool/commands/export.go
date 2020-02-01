@@ -45,7 +45,7 @@ func exportCode(cmd *cobra.Command, args []string) {
 	if _, err := io.ReadFull(rand.Reader, random); err != nil {
 		log.Fatal(err)
 	}
-	tmpBranch := "temp/" + hex.EncodeToString(random)
+	tmpBranch := "temp_" + hex.EncodeToString(random)
 
 	git("checkout", "-b", tmpBranch)
 	git("reset", "public")
