@@ -24,6 +24,15 @@ deploy:
     - docker build -f testenv.docker -t eu.gcr.io/shad-ts/grader/go .
     - docker push eu.gcr.io/shad-ts/grader/go:latest
 
+deploy-slides:
+  only:
+    - master
+  tags:
+    - docker
+  script:
+    - docker build lectures -t eu.gcr.io/shad-ts/go-lectures
+    - docker push eu.gcr.io/shad-ts/go-lectures
+
 update-task-list:
   only:
     - master
