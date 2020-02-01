@@ -19,13 +19,15 @@ var exportCmd = &cobra.Command{
 }
 
 var (
-	flagPush bool
+	flagPush         bool
+	flagMoveToMaster bool
 )
 
 func init() {
 	rootCmd.AddCommand(exportCmd)
 
 	exportCmd.Flags().BoolVar(&flagPush, "push", false, "push to public repo")
+	exportCmd.Flags().BoolVar(&flagMoveToMaster, "move-to-master", true, "move to master after completing export")
 }
 
 func git(args ...string) {
@@ -68,5 +70,7 @@ func exportCode(cmd *cobra.Command, args []string) {
 		git("push", "public", "public:master")
 	}
 
-	git("checkout", "master")
+	if flagMoveToMaster {
+		git("checkout", "master")
+	}
 }

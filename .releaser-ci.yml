@@ -45,4 +45,4 @@ push-to-public:
     - git fetch public
     - git branch -D public || true
     - git branch public public/master
-    - testtool export --push
+    - testtool export --push --move-to-master=false
