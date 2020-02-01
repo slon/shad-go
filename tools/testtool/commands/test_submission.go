@@ -140,12 +140,12 @@ func copyDir(src, dst string) {
 	}
 }
 
-// copyDir recursively copies src contents to dst.
+// copyContents recursively copies src contents to dst.
 func copyContents(src, dst string) {
 	copyDir(src+"/", dst)
 }
 
-// Copy files preserving directory structure relative to baseDir.
+// copyFiles copies files preserving directory structure relative to baseDir.
 //
 // Existing files get replaced.
 func copyFiles(baseDir string, relPaths []string, dst string) {
@@ -165,7 +165,7 @@ func copyFiles(baseDir string, relPaths []string, dst string) {
 	}
 }
 
-// Run all test in directory with race detector.
+// runTests runs all tests in directory with race detector.
 func runTests(testDir string) {
 	cmd := exec.Command("go", "test", "-v", "-mod", "readonly", "-tags", "private", "-race", "./...")
 	cmd.Env = append(os.Environ(), "GOFLAGS=")
@@ -182,7 +182,7 @@ func runTests(testDir string) {
 	}
 }
 
-// Get absolute paths for all files in rootPackage and it's subpackages
+// getPackageFiles returns absolute paths for all files in rootPackage and it's subpackages
 // including tests and non-go files.
 func getPackageFiles(rootPackage string, buildFlags []string) map[string]struct{} {
 	cfg := &packages.Config{
@@ -213,7 +213,7 @@ func getPackageFiles(rootPackage string, buildFlags []string) map[string]struct{
 	return files
 }
 
-// Convert paths to relative (to the baseDir) ones.
+// relPaths converts paths to relative (to the baseDir) ones.
 func relPaths(baseDir string, paths []string) []string {
 	ret := make([]string, len(paths))
 	for i, p := range paths {

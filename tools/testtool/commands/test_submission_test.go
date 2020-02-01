@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// List directories in given directory.
+// listDirs lists directories in given directory.
 func listDirs(dir string) ([]string, error) {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {

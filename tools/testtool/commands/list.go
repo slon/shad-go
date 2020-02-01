@@ -5,9 +5,8 @@ import (
 	"strings"
 )
 
-// List all _test.go files in given directory including the ones with "private" build tag.
-//
-// Returns absolute paths.
+// listTestFiles returns absolute paths for all _test.go files of the package
+// including the ones with "private" build tag.
 func listTestFiles(rootPackage string) []string {
 	files := getPackageFiles(rootPackage, []string{"-tags", "private"})
 	var tests []string
@@ -21,9 +20,8 @@ func listTestFiles(rootPackage string) []string {
 	return tests
 }
 
-// List all .go source files in given directory protected by "!change" build tag.
-//
-// Returns absolute paths.
+// listProtectedFiles returns absolute paths for all files of the package
+// protected by "!change" build tag.
 func listProtectedFiles(rootPackage string) []string {
 	allFiles := getPackageFiles(rootPackage, nil)
 	allFilesWithoutProtected := getPackageFiles(rootPackage, []string{"-tags", "change"})
@@ -39,6 +37,8 @@ func listProtectedFiles(rootPackage string) []string {
 	return protectedFiles
 }
 
+// listPrivateFiles returns absolute paths for all files of the package
+// protected by "private,solution" build tag.
 func listPrivateFiles(rootPackage string) []string {
 	allFiles := getPackageFiles(rootPackage, []string{})
 	allWithPrivate := getPackageFiles(rootPackage, []string{"-tags", "private,solution"})
