@@ -24,7 +24,7 @@ deploy:
     - docker build -f testenv.docker -t eu.gcr.io/shad-ts/grader/go .
     - docker push eu.gcr.io/shad-ts/grader/go:latest
 
-deploy-slides:
+build-slides:
   only:
     - master
   tags:
@@ -55,3 +55,15 @@ push-to-public:
     - git branch -D public || true
     - git branch public public/master
     - testtool export --push --move-to-master=false
+
+deploy-slides:
+  stage: .post
+  only:
+    - master
+  tags:
+    - web
+  script:
+    - docker stop -t0 go-lectures || true
+    - docker rm go-lectures || true
+    - docker pull eu.gcr.io/shad-ts/go-lectures
+    - docker run -p 3999:3999 -d --name go-lectures --restart=always eu.gcr.io/shad-ts/go-lectures
