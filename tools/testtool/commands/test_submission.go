@@ -131,12 +131,8 @@ func copyDir(src, dst string) {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
-	if err := cmd.Start(); err != nil {
-		log.Fatalf("error starting rsync command: %s", err)
-	}
-
-	if err := cmd.Wait(); err != nil {
-		log.Fatalf("rsync command failed: %s", err)
+	if err := cmd.Run(); err != nil {
+		log.Fatalf("directory copying failed: %s", err)
 	}
 }
 
@@ -155,11 +151,7 @@ func copyFiles(baseDir string, relPaths []string, dst string) {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 
-		if err := cmd.Start(); err != nil {
-			log.Fatalf("error starting file copying: %s", err)
-		}
-
-		if err := cmd.Wait(); err != nil {
+		if err := cmd.Run(); err != nil {
 			log.Fatalf("file copying failed: %s", err)
 		}
 	}
@@ -173,11 +165,7 @@ func runTests(testDir string) {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
-	if err := cmd.Start(); err != nil {
-		log.Fatalf("error starting go test command: %s", err)
-	}
-
-	if err := cmd.Wait(); err != nil {
+	if err := cmd.Run(); err != nil {
 		log.Fatalf("go test command failed: %s", err)
 	}
 }
