@@ -61,9 +61,9 @@ func Test_testSubmission_incorrect(t *testing.T) {
 				return
 			}
 
-			cmd := exec.Command(os.Args[0], "-v=0", "-test.run=Test_testSubmission_incorrect/"+problem)
+			cmd := exec.Command(os.Args[0], "-test.run=Test_testSubmission_incorrect/"+problem)
 			cmd.Env = append(os.Environ(), "BE_CRASHER=1")
-			cmd.Stdout = os.Stdout
+			cmd.Stdout = nil
 			cmd.Stderr = os.Stderr
 
 			err := cmd.Run()
