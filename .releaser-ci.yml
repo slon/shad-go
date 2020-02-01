@@ -1,17 +1,10 @@
-stages:
-  - test
-  - deplog
-  - push
-
 check:
-  stage: test
   image: eu.gcr.io/shad-ts/grader/go-build
   script:
     - go test -tags private,solution ./...
     - go test -race -tags private,solution ./...
 
 rebuild-base-image:
-  stage: test
   only:
     - master
   tags:
@@ -22,7 +15,6 @@ rebuild-base-image:
     - docker push eu.gcr.io/shad-ts/grader/go-build:latest
 
 deploy:
-  stage: deploy
   only:
     - master
   tags:
@@ -33,7 +25,6 @@ deploy:
     - docker push eu.gcr.io/shad-ts/grader/go:latest
 
 update-task-list:
-  stage: push
   only:
     - master
   tags:
@@ -42,7 +33,7 @@ update-task-list:
     - curl -F token=$TESTER_TOKEN https://go.manytask.org/api/sync_task_columns
 
 push-to-public:
-  stage: push
+  stage: .post
   image: eu.gcr.io/shad-ts/grader/go
   only:
     - master
