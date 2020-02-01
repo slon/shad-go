@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func absPaths(files []string ) []string {
+func absPaths(files []string) []string {
 	var abs []string
 	for _, f := range files {
 		absPath, _ := filepath.Abs("../testdata/list/" + f)
@@ -18,7 +18,7 @@ func absPaths(files []string ) []string {
 
 func TestListTestFiles(t *testing.T) {
 	require.Equal(t,
-		absPaths([]string{"sum/private_test.go", "sum/public_test.go",}),
+		absPaths([]string{"sum/private_test.go", "sum/public_test.go"}),
 		listTestFiles("../testdata/list"))
 }
 
@@ -30,6 +30,6 @@ func TestProtectedFiles(t *testing.T) {
 
 func TestPrivateFiles(t *testing.T) {
 	require.Equal(t,
-		absPaths([]string{"sum/solution.go.go", "sum/private_test.go"}),
-		listProtectedFiles("../testdata/list"))
+		absPaths([]string{"sum/private_test.go", "sum/solution.go"}),
+		listPrivateFiles("../testdata/list"))
 }
