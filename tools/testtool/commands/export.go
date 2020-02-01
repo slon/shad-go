@@ -1,6 +1,9 @@
 package commands
 
 import (
+	"crypto/rand"
+	"encoding/hex"
+	"io"
 	"log"
 	"os"
 	"os/exec"
@@ -38,7 +41,13 @@ func git(args ...string) {
 }
 
 func exportCode(cmd *cobra.Command, args []string) {
-	git("checkout", "-b", "temp")
+	random := make([]byte, 4)
+	if _, err := io.ReadFull(rand.Reader, random); err != nil {
+		log.Fatal(err)
+	}
+	tmpBranch := "temp/" + hex.EncodeToString(random)
+
+	git("checkout", "-b", tmpBranch)
 	git("reset", "public")
 
 	privateFiles := listPrivateFiles(".")
@@ -50,7 +59,7 @@ func exportCode(cmd *cobra.Command, args []string) {
 	}
 
 	git("checkout", "public")
-	git("branch", "-D", "temp")
+	git("branch", "-D", tmpBranch)
 
 	git("add", "-A")
 	git("commit", "-m", "export public files", "--allow-empty")
