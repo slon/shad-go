@@ -1,10 +1,17 @@
+stages:
+  - test
+  - deplog
+  - push
+
 check:
+  stage: test
   image: eu.gcr.io/shad-ts/grader/go-build
   script:
     - go test -tags private,solution ./...
     - go test -race -tags private,solution ./...
 
 rebuild-base-image:
+  stage: test
   only:
     - master
   tags:
@@ -14,15 +21,8 @@ rebuild-base-image:
     - docker build -f build.docker -t eu.gcr.io/shad-ts/grader/go-build .
     - docker push eu.gcr.io/shad-ts/grader/go-build:latest
 
-update-task-list:
-  only:
-    - master
-  tags:
-    - docker
-  script:
-    - curl -F token=$TESTER_TOKEN https://go.manytask.org/api/sync_task_columns
-
 deploy:
+  stage: deploy
   only:
     - master
   tags:
@@ -31,3 +31,23 @@ deploy:
     - docker pull eu.gcr.io/shad-ts/grader/go-build:latest
     - docker build -f testenv.docker -t eu.gcr.io/shad-ts/grader/go .
     - docker push eu.gcr.io/shad-ts/grader/go:latest
+
+update-task-list:
+  stage: push
+  only:
+    - master
+  tags:
+    - docker
+  script:
+    - curl -F token=$TESTER_TOKEN https://go.manytask.org/api/sync_task_columns
+
+push-to-public:
+  stage: push
+  image: eu.gcr.io/shad-ts/grader/go
+  only:
+    - master
+  script:
+    - git remote add public https://prime:${CI_PUSH_TOKEN}@gitlab.com/slon/shad-go.git
+    - git config --global user.email 'prime@yandex-team.ru'
+    - git config --global user.name 'Fedor Korotkiy'
+    - testtool export --push
