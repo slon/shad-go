@@ -38,10 +38,11 @@ push-to-public:
   only:
     - master
   script:
+    - git remote rm public || true
     - git remote add -f public https://prime:${CI_PUSH_TOKEN}@gitlab.com/slon/shad-go.git
     - git config --global user.email 'prime@yandex-team.ru'
     - git config --global user.name 'Fedor Korotkiy'
     - git fetch public
-    - git branch -D public
+    - git branch -D public || true
     - git branch public public/master
     - testtool export --push
