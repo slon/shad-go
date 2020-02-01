@@ -168,6 +168,7 @@ func copyFiles(baseDir string, relPaths []string, dst string) {
 // Run all test in directory with race detector.
 func runTests(testDir string) {
 	cmd := exec.Command("go", "test", "-v", "-mod", "readonly", "-tags", "private", "-race", "./...")
+	cmd.Env = append(os.Environ(), "GOFLAGS=")
 	cmd.Dir = testDir
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
