@@ -41,4 +41,6 @@ push-to-public:
     - git remote add public https://prime:${CI_PUSH_TOKEN}@gitlab.com/slon/shad-go.git
     - git config --global user.email 'prime@yandex-team.ru'
     - git config --global user.name 'Fedor Korotkiy'
+    - git fetch public
+    - git branch public public/master
     - testtool export --push
