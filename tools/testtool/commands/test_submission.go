@@ -1,15 +1,18 @@
 package commands
 
 import (
+	"crypto/rand"
+	"encoding/hex"
+	"encoding/json"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
 	"path"
 	"path/filepath"
+	"strings"
 
 	"github.com/spf13/cobra"
-	"golang.org/x/tools/go/packages"
 )
 
 const (
@@ -17,7 +20,8 @@ const (
 	studentRepoFlag = "student-repo"
 	privateRepoFlag = "private-repo"
 
-	testdataDir = "testdata"
+	testdataDir      = "testdata"
+	moduleImportPath = "gitlab.com/slon/shad-go"
 )
 
 var testSubmissionCmd = &cobra.Command{
@@ -81,55 +85,58 @@ func problemDirExists(repo, problem string) bool {
 
 func testSubmission(studentRepo, privateRepo, problem string) {
 	// Create temp directory to store all files required to test the solution.
-	tmpDir, err := ioutil.TempDir("/tmp", problem+"-")
+	tmpRepo, err := ioutil.TempDir("/tmp", problem+"-")
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer func() { _ = os.RemoveAll(tmpDir) }()
-	log.Printf("testing submission in %s", tmpDir)
+	if err := os.Chmod(tmpRepo, 0755); err != nil {
+		log.Fatal(err)
+	}
 
-	// Path to student's problem folder.
-	studentProblem := path.Join(studentRepo, problem)
+	defer func() { _ = os.RemoveAll(tmpRepo) }()
+	log.Printf("testing submission in %s", tmpRepo)
+
 	// Path to private problem folder.
 	privateProblem := path.Join(privateRepo, problem)
 
-	// Copy submission files to temp dir.
-	log.Printf("copying student solution")
-	copyContents(studentProblem, tmpDir)
+	// Copy student repo files to temp dir.
+	log.Printf("copying student repo")
+	copyContents(studentRepo, ".", tmpRepo)
 
 	// Copy tests from private repo to temp dir.
 	log.Printf("copying tests")
 	tests := listTestFiles(privateProblem)
-	copyFiles(privateProblem, relPaths(privateProblem, tests), tmpDir)
+	copyFiles(privateRepo, relPaths(privateRepo, tests), tmpRepo)
 
 	// Copy !change files from private repo to temp dir.
 	log.Printf("copying !change files")
 	protected := listProtectedFiles(privateProblem)
-	copyFiles(privateProblem, relPaths(privateProblem, protected), tmpDir)
+	copyFiles(privateRepo, relPaths(privateRepo, protected), tmpRepo)
 
 	// Copy testdata directory from private repo to temp dir.
 	log.Printf("copying testdata directory")
-	copyDir(path.Join(privateProblem, testdataDir), tmpDir)
+	copyDir(privateRepo, path.Join(problem, testdataDir), tmpRepo)
 
 	// Copy go.mod and go.sum from private repo to temp dir.
 	log.Printf("copying go.mod and go.sum")
-	copyFiles(privateRepo, []string{"go.mod", "go.sum"}, tmpDir)
+	copyFiles(privateRepo, []string{"go.mod", "go.sum"}, tmpRepo)
 
 	// Run tests.
 	log.Printf("running tests")
-	runTests(tmpDir)
+	runTests(tmpRepo, problem)
 }
 
 // copyDir recursively copies src directory to dst.
-func copyDir(src, dst string) {
+func copyDir(baseDir, src, dst string) {
 	_, err := os.Stat(src)
 	if os.IsNotExist(err) {
 		return
 	}
 
-	cmd := exec.Command("rsync", "-r", src, dst)
+	cmd := exec.Command("rsync", "-prR", src, dst)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+	cmd.Dir = baseDir
 
 	if err := cmd.Run(); err != nil {
 		log.Fatalf("directory copying failed: %s", err)
@@ -137,8 +144,8 @@ func copyDir(src, dst string) {
 }
 
 // copyContents recursively copies src contents to dst.
-func copyContents(src, dst string) {
-	copyDir(src+"/", dst)
+func copyContents(baseDir, src, dst string) {
+	copyDir(baseDir, src+"/", dst)
 }
 
 // copyFiles copies files preserving directory structure relative to baseDir.
@@ -146,7 +153,7 @@ func copyContents(src, dst string) {
 // Existing files get replaced.
 func copyFiles(baseDir string, relPaths []string, dst string) {
 	for _, p := range relPaths {
-		cmd := exec.Command("rsync", "-rR", p, dst)
+		cmd := exec.Command("rsync", "-prR", p, dst)
 		cmd.Dir = baseDir
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
@@ -157,48 +164,72 @@ func copyFiles(baseDir string, relPaths []string, dst string) {
 	}
 }
 
-// runTests runs all tests in directory with race detector.
-func runTests(testDir string) {
-	cmd := exec.Command("go", "test", "-v", "-mod", "readonly", "-tags", "private", "-race", "./...")
-	cmd.Env = append(os.Environ(), "GOFLAGS=")
-	cmd.Dir = testDir
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	if err := cmd.Run(); err != nil {
-		log.Fatalf("go test command failed: %s", err)
-	}
+func randomName() string {
+	var raw [8]byte
+	_, _ = rand.Read(raw[:])
+	return hex.EncodeToString(raw[:])
 }
 
-// getPackageFiles returns absolute paths for all files in rootPackage and it's subpackages
-// including tests and non-go files.
-func getPackageFiles(rootPackage string, buildFlags []string) map[string]struct{} {
-	cfg := &packages.Config{
-		Dir:        rootPackage,
-		Mode:       packages.NeedFiles,
-		BuildFlags: buildFlags,
-		Tests:      true,
-	}
-	pkgs, err := packages.Load(cfg, "./...")
+// runTests runs all tests in directory with race detector.
+func runTests(testDir, problem string) {
+	binCache, err := ioutil.TempDir("/tmp", "bincache")
 	if err != nil {
-		log.Fatalf("unable to load packages %s: %s", rootPackage, err)
+		log.Fatal(err)
+	}
+	if err := os.Chmod(binCache, 0755); err != nil {
+		log.Fatal(err)
 	}
 
-	if packages.PrintErrors(pkgs) > 0 {
-		os.Exit(1)
-	}
+	runGo := func(arg ...string) {
+		log.Printf("> go %s", strings.Join(arg, " "))
 
-	files := make(map[string]struct{})
-	for _, p := range pkgs {
-		for _, f := range p.GoFiles {
-			files[f] = struct{}{}
+		cmd := exec.Command("go", arg...)
+		cmd.Env = append(os.Environ(), "GOFLAGS=")
+		cmd.Dir = testDir
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			log.Fatal(err)
 		}
-		for _, f := range p.OtherFiles {
-			files[f] = struct{}{}
-		}
 	}
 
-	return files
+	binaries := map[string]string{}
+	testBinaries := map[string]string{}
+
+	binPkgs, testPkgs := listTestsAndBinaries(testDir, []string{"-tags", "private", "-mod", "readonly"})
+	for binaryPkg := range binPkgs {
+		binPath := filepath.Join(binCache, randomName())
+		binaries[binaryPkg] = binPath
+		runGo("build", "-mod", "readonly", "-tags", "private", "-o", binPath, binaryPkg)
+	}
+
+	binariesJSON, _ := json.Marshal(binPkgs)
+
+	for testPkg := range testPkgs {
+		binPath := filepath.Join(binCache, randomName())
+		testBinaries[testPkg] = binPath
+		runGo("test", "-mod", "readonly", "-tags", "private", "-c", "-o", binPath, testPkg)
+	}
+
+	for testPkg, testBinary := range testBinaries {
+		relPath := strings.TrimPrefix(testPkg, moduleImportPath)
+
+		cmd := exec.Command(testBinary)
+		if currentUserIsRoot() {
+			if err := sandbox(cmd); err != nil {
+				log.Fatal(err)
+			}
+		}
+
+		cmd.Dir = filepath.Join(testDir, relPath)
+		cmd.Env = []string{"TESTTOOL_BINARIES=" + string(binariesJSON)}
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+
+		if err := cmd.Run(); err != nil {
+			log.Fatal(err)
+		}
+	}
 }
 
 // relPaths converts paths to relative (to the baseDir) ones.

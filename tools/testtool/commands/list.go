@@ -1,9 +1,44 @@
 package commands
 
 import (
+	"log"
+	"os"
 	"sort"
 	"strings"
+
+	"golang.org/x/tools/go/packages"
 )
+
+// getPackageFiles returns absolute paths for all files in rootPackage and it's subpackages
+// including tests and non-go files.
+func getPackageFiles(rootPackage string, buildFlags []string) map[string]struct{} {
+	cfg := &packages.Config{
+		Dir:        rootPackage,
+		Mode:       packages.NeedFiles,
+		BuildFlags: buildFlags,
+		Tests:      true,
+	}
+	pkgs, err := packages.Load(cfg, "./...")
+	if err != nil {
+		log.Fatalf("unable to load packages %s: %s", rootPackage, err)
+	}
+
+	if packages.PrintErrors(pkgs) > 0 {
+		os.Exit(1)
+	}
+
+	files := make(map[string]struct{})
+	for _, p := range pkgs {
+		for _, f := range p.GoFiles {
+			files[f] = struct{}{}
+		}
+		for _, f := range p.OtherFiles {
+			files[f] = struct{}{}
+		}
+	}
+
+	return files
+}
 
 // listTestFiles returns absolute paths for all _test.go files of the package
 // including the ones with "private" build tag.
@@ -52,4 +87,39 @@ func listPrivateFiles(rootPackage string) []string {
 
 	sort.Strings(files)
 	return files
+}
+
+func listTestsAndBinaries(rootDir string, buildFlags []string) (binaries, tests map[string]struct{}) {
+	cfg := &packages.Config{
+		Dir:        rootDir,
+		Mode:       packages.NeedName | packages.NeedFiles,
+		BuildFlags: buildFlags,
+		Tests:      true,
+	}
+
+	pkgs, err := packages.Load(cfg, "./...")
+	if err != nil {
+		log.Fatalf("unable to load packages %s: %s", rootDir, err)
+	}
+
+	if packages.PrintErrors(pkgs) > 0 {
+		os.Exit(1)
+	}
+
+	tests = map[string]struct{}{}
+	binaries = map[string]struct{}{}
+
+	for _, p := range pkgs {
+		if p.Name != "main" {
+			continue
+		}
+
+		if strings.HasSuffix(p.PkgPath, ".test") {
+			tests[strings.TrimSuffix(p.PkgPath, ".test")] = struct{}{}
+		} else {
+			binaries[p.PkgPath] = struct{}{}
+		}
+	}
+
+	return
 }
