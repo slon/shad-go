@@ -13,6 +13,8 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
+
+	"gitlab.com/slon/shad-go/tools/testtool"
 )
 
 const (
@@ -203,7 +205,7 @@ func runTests(testDir, problem string) {
 		runGo("build", "-mod", "readonly", "-tags", "private", "-o", binPath, binaryPkg)
 	}
 
-	binariesJSON, _ := json.Marshal(binPkgs)
+	binariesJSON, _ := json.Marshal(binaries)
 
 	for testPkg := range testPkgs {
 		binPath := filepath.Join(binCache, randomName())
@@ -222,7 +224,7 @@ func runTests(testDir, problem string) {
 		}
 
 		cmd.Dir = filepath.Join(testDir, relPath)
-		cmd.Env = []string{"TESTTOOL_BINARIES=" + string(binariesJSON)}
+		cmd.Env = []string{testtool.BinariesEnv + "=" + string(binariesJSON)}
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 
