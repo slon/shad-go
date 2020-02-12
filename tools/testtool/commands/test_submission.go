@@ -178,7 +178,7 @@ type TestFailedError struct {
 }
 
 func (e *TestFailedError) Error() string {
-	return fmt.Sprintf("test failed: %v", e)
+	return fmt.Sprintf("test failed: %v", e.E)
 }
 
 func (e *TestFailedError) Unwrap() error {
@@ -209,7 +209,7 @@ func runTests(testDir, problem string) error {
 	binaries := map[string]string{}
 	testBinaries := map[string]string{}
 
-	binPkgs, testPkgs := listTestsAndBinaries(testDir, []string{"-tags", "private", "-mod", "readonly"})
+	binPkgs, testPkgs := listTestsAndBinaries(filepath.Join(testDir, problem), []string{"-tags", "private", "-mod", "readonly"})
 	for binaryPkg := range binPkgs {
 		binPath := filepath.Join(binCache, randomName())
 		binaries[binaryPkg] = binPath
