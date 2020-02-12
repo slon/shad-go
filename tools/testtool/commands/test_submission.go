@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -27,10 +28,8 @@ const (
 )
 
 var testSubmissionCmd = &cobra.Command{
-	Use:     "test",
-	Aliases: []string{"check", "test-submission", "check-submission"},
-	Short:   "test submission",
-	Long:    `run solution on private and private tests`,
+	Use:   "check-task",
+	Short: "test single task",
 	Run: func(cmd *cobra.Command, args []string) {
 		problem, err := cmd.Flags().GetString(problemFlag)
 		if err != nil {
@@ -47,7 +46,9 @@ var testSubmissionCmd = &cobra.Command{
 			log.Fatalf("%s does not have %s directory", privateRepo, problem)
 		}
 
-		testSubmission(studentRepo, privateRepo, problem)
+		if err := testSubmission(studentRepo, privateRepo, problem); err != nil {
+			log.Fatal(err)
+		}
 	},
 }
 
@@ -85,7 +86,7 @@ func problemDirExists(repo, problem string) bool {
 	return info.IsDir()
 }
 
-func testSubmission(studentRepo, privateRepo, problem string) {
+func testSubmission(studentRepo, privateRepo, problem string) error {
 	// Create temp directory to store all files required to test the solution.
 	tmpRepo, err := ioutil.TempDir("/tmp", problem+"-")
 	if err != nil {
@@ -125,7 +126,7 @@ func testSubmission(studentRepo, privateRepo, problem string) {
 
 	// Run tests.
 	log.Printf("running tests")
-	runTests(tmpRepo, problem)
+	return runTests(tmpRepo, problem)
 }
 
 // copyDir recursively copies src directory to dst.
@@ -172,8 +173,20 @@ func randomName() string {
 	return hex.EncodeToString(raw[:])
 }
 
+type TestFailedError struct {
+	E error
+}
+
+func (e *TestFailedError) Error() string {
+	return fmt.Sprintf("test failed: %v", e)
+}
+
+func (e *TestFailedError) Unwrap() error {
+	return e.E
+}
+
 // runTests runs all tests in directory with race detector.
-func runTests(testDir, problem string) {
+func runTests(testDir, problem string) error {
 	binCache, err := ioutil.TempDir("/tmp", "bincache")
 	if err != nil {
 		log.Fatal(err)
@@ -182,7 +195,7 @@ func runTests(testDir, problem string) {
 		log.Fatal(err)
 	}
 
-	runGo := func(arg ...string) {
+	runGo := func(arg ...string) error {
 		log.Printf("> go %s", strings.Join(arg, " "))
 
 		cmd := exec.Command("go", arg...)
@@ -190,9 +203,7 @@ func runTests(testDir, problem string) {
 		cmd.Dir = testDir
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
-		if err := cmd.Run(); err != nil {
-			log.Fatal(err)
-		}
+		return cmd.Run()
 	}
 
 	binaries := map[string]string{}
@@ -202,7 +213,10 @@ func runTests(testDir, problem string) {
 	for binaryPkg := range binPkgs {
 		binPath := filepath.Join(binCache, randomName())
 		binaries[binaryPkg] = binPath
-		runGo("build", "-mod", "readonly", "-tags", "private", "-o", binPath, binaryPkg)
+
+		if err := runGo("build", "-mod", "readonly", "-tags", "private", "-o", binPath, binaryPkg); err != nil {
+			return fmt.Errorf("error building binary in %s: %w", binaryPkg, err)
+		}
 	}
 
 	binariesJSON, _ := json.Marshal(binaries)
@@ -210,7 +224,9 @@ func runTests(testDir, problem string) {
 	for testPkg := range testPkgs {
 		binPath := filepath.Join(binCache, randomName())
 		testBinaries[testPkg] = binPath
-		runGo("test", "-mod", "readonly", "-tags", "private", "-c", "-o", binPath, testPkg)
+		if err := runGo("test", "-mod", "readonly", "-tags", "private", "-c", "-o", binPath, testPkg); err != nil {
+			return fmt.Errorf("error building test in %s: %w", testPkg, err)
+		}
 	}
 
 	for testPkg, testBinary := range testBinaries {
@@ -229,9 +245,11 @@ func runTests(testDir, problem string) {
 		cmd.Stderr = os.Stderr
 
 		if err := cmd.Run(); err != nil {
-			log.Fatal(err)
+			return &TestFailedError{E: err}
 		}
 	}
+
+	return nil
 }
 
 // relPaths converts paths to relative (to the baseDir) ones.

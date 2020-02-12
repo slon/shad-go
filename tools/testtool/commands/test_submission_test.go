@@ -1,9 +1,8 @@
 package commands
 
 import (
+	"errors"
 	"io/ioutil"
-	"os"
-	"os/exec"
 	"path"
 	"path/filepath"
 	"testing"
@@ -39,7 +38,8 @@ func Test_testSubmission_correct(t *testing.T) {
 		t.Run(problem, func(t *testing.T) {
 			studentRepo := path.Join(dir, "student")
 			privateRepo := path.Join(dir, "private")
-			testSubmission(studentRepo, privateRepo, problem)
+
+			require.NoError(t, testSubmission(studentRepo, privateRepo, problem))
 		})
 	}
 }
@@ -54,24 +54,16 @@ func Test_testSubmission_incorrect(t *testing.T) {
 
 		problem := path.Base(dir)
 		t.Run(problem, func(t *testing.T) {
-			if os.Getenv("BE_CRASHER") == "1" {
-				studentRepo := path.Join(dir, "student")
-				privateRepo := path.Join(dir, "private")
-				testSubmission(studentRepo, privateRepo, problem)
-				return
+			studentRepo := path.Join(dir, "student")
+			privateRepo := path.Join(dir, "private")
+
+			err := testSubmission(studentRepo, privateRepo, problem)
+			require.Error(t, err)
+
+			if problem == "brokentest" {
+				var testFailedErr *TestFailedError
+				require.True(t, errors.As(err, &testFailedErr))
 			}
-
-			cmd := exec.Command(os.Args[0], "-test.run=Test_testSubmission_incorrect/"+problem)
-			cmd.Env = append(os.Environ(), "BE_CRASHER=1")
-			cmd.Stdout = nil
-			cmd.Stderr = os.Stderr
-
-			err := cmd.Run()
-			if e, ok := err.(*exec.ExitError); ok && !e.Success() {
-				return
-			}
-
-			t.Fatalf("process ran with err %v, want exit status != 0", err)
 		})
 	}
 }
