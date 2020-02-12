@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"path/filepath"
 	"sort"
+	"strings"
 	"time"
 
 	"gopkg.in/yaml.v2"
@@ -73,29 +74,17 @@ func findChangedTasks(d Deadlines, files []string) []string {
 	tasks := map[string]struct{}{}
 
 	for _, f := range files {
-		for {
-			dir, _ := filepath.Split(f)
-			if dir == "" {
-				break
-			}
-
-			f = dir
-		}
-
-		if f == "" {
+		components := strings.Split(f, string(filepath.Separator))
+		if len(components) == 0 {
 			continue
 		}
 
-		group, task := d.FindTask(f)
+		_, task := d.FindTask(components[0])
 		if task == nil {
 			continue
 		}
 
-		if !group.IsOpen() {
-			continue
-		}
-
-		tasks[f] = struct{}{}
+		tasks[task.Name] = struct{}{}
 	}
 
 	var l []string

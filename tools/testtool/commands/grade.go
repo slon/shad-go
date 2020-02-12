@@ -35,6 +35,11 @@ func grade() error {
 
 	var failed bool
 	for _, task := range changedTasks {
+		group, _ := deadlines.FindTask(task)
+		if !group.IsOpen() {
+			log.Printf("skipping task %s: not released yet", task)
+		}
+
 		log.Printf("testing task %s", task)
 
 		var testFailed bool
