@@ -54,6 +54,7 @@ func TestWordCount(t *testing.T) {
 				`a
 a
 b
+с
 
 
 a
