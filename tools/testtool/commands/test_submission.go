@@ -238,9 +238,9 @@ func runTests(testDir, problem string) error {
 
 		cmd := exec.Command(testBinary)
 		if currentUserIsRoot() {
-			if err := sandbox(cmd); err != nil {
-				log.Fatal(err)
-			}
+			//if err := sandbox(cmd); err != nil {
+			//	log.Fatal(err)
+			//}
 		}
 
 		cmd.Dir = filepath.Join(testDir, relPath)
