@@ -3,7 +3,7 @@
 testtool - cobra-based cli. У всех комманд есть help.
 Использование можно начать с такого:
 ```
-go run ./tools/testtool/main.go --help
+go run ./tools/testtool/cmd/testtool/main.go --help
 ```
 
 При тестирование посылки выполняются следующие шаги:
