@@ -1,7 +1,7 @@
 package commands
 
 import (
-	"log"
+	"os"
 	"os/exec"
 	"os/user"
 	"strconv"
@@ -9,12 +9,7 @@ import (
 )
 
 func currentUserIsRoot() bool {
-	me, err := user.Current()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return me.Uid == "0"
+	return os.Getuid() == 0
 }
 
 func sandbox(cmd *exec.Cmd) error {
