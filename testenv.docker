@@ -2,6 +2,6 @@ FROM eu.gcr.io/shad-ts/grader/go-build:latest
 
 COPY . /opt/shad
 
-RUN cd /opt/shad && go install gitlab.com/slon/shad-go/tools/testtool/cmd/....
+RUN cd /opt/shad && go install gitlab.com/slon/shad-go/tools/testtool/cmd/testtool
 
 RUN find /opt/shad | xargs chmod o-rwx
