@@ -30,11 +30,10 @@ func getPackageFiles(rootPackage string, buildFlags []string) map[string]struct{
 	files := make(map[string]struct{})
 	for _, p := range pkgs {
 		for _, f := range p.GoFiles {
-			files[f] = struct{}{}
+			if strings.HasSuffix(f, ".go") {
+				files[f] = struct{}{}
+			}
 		}
-		//for _, f := range p.OtherFiles {
-		//	files[f] = struct{}{}
-		//}
 	}
 
 	return files
