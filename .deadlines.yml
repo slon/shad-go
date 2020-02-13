@@ -8,3 +8,5 @@
       score: 100
     - task: wordcount
       score: 100
+    - task: urlfetch
+      score: 100
