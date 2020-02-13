@@ -9,7 +9,7 @@
 
 Пример:
 ```
-fetchall/solution.go https://gopl.io golang.org http://golang.org
+$ fetchall https://gopl.io golang.org http://golang.org
 Get golang.org: unsupported protocol scheme ""
 1.05s    11071  http://golang.org
 2.18s     4154  https://gopl.io
