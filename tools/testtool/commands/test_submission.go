@@ -238,15 +238,19 @@ func runTests(testDir, problem string) error {
 
 		cmd := exec.Command(testBinary)
 		if currentUserIsRoot() {
-			//if err := sandbox(cmd); err != nil {
-			//	log.Fatal(err)
-			//}
+			if err := sandbox(cmd); err != nil {
+				log.Fatal(err)
+			}
 		}
 
 		cmd.Dir = filepath.Join(testDir, relPath)
 		cmd.Env = []string{testtool.BinariesEnv + "=" + string(binariesJSON)}
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
+
+		ls = exec.Command("ls", "-lah", cmd.Dir)
+		ls.Stdout = os.Stdout
+		_ = ls.Run()
 
 		if err := cmd.Run(); err != nil {
 			return &TestFailedError{E: err}
