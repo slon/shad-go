@@ -6,3 +6,5 @@
       score: 100
     - task: tour0
       score: 100
+    -task: wordcount
+      score: 100
