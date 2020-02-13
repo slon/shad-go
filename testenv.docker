@@ -6,4 +6,4 @@ COPY .gitlab-ci.yml /opt/shad/.grader-ci.yml
 
 RUN cd /opt/shad && go install gitlab.com/slon/shad-go/tools/testtool/cmd/testtool
 
-RUN find /opt/shad | xargs chmod o-rwx
+RUN find /opt/shad -type f -iname '*.go' -not -path '*/testdata/*' | xargs chmod o-rwx

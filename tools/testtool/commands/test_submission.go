@@ -232,10 +232,6 @@ func runTests(testDir, problem string) error {
 	for testPkg, testBinary := range testBinaries {
 		relPath := strings.TrimPrefix(testPkg, moduleImportPath)
 
-		ls := exec.Command("ls", "-lah", binCache)
-		ls.Stdout = os.Stdout
-		_ = ls.Run()
-
 		cmd := exec.Command(testBinary)
 		if currentUserIsRoot() {
 			if err := sandbox(cmd); err != nil {
@@ -247,10 +243,6 @@ func runTests(testDir, problem string) error {
 		cmd.Env = []string{testtool.BinariesEnv + "=" + string(binariesJSON)}
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
-
-		ls = exec.Command("ls", "-lah", cmd.Dir)
-		ls.Stdout = os.Stdout
-		_ = ls.Run()
 
 		if err := cmd.Run(); err != nil {
 			return &TestFailedError{E: err}
