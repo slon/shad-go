@@ -250,3 +250,14 @@ Pointers
 .link https://golang.org/pkg/ Документация стандартной библиотеки
 .link https://golang.org/doc/faq Go FAQ
 .link https://github.com/golang/go/wiki/CodeReviewComments Code Review Comments
+
+* Семинар
+
+- Установка go
+- Репозиторий курса
+- Сборка, запуск тестов
+- goimports, gofmt
+- Настройка IDE. (emacs, goland, vscode)
+- Запуск тестов из IDE
+- Запуск линтера
+- Сдача заданий
