@@ -10,3 +10,5 @@
       score: 100
     - task: urlfetch
       score: 100
+    - task: fetchall
+      score: 100
