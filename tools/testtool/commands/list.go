@@ -32,9 +32,9 @@ func getPackageFiles(rootPackage string, buildFlags []string) map[string]struct{
 		for _, f := range p.GoFiles {
 			files[f] = struct{}{}
 		}
-		for _, f := range p.OtherFiles {
-			files[f] = struct{}{}
-		}
+		//for _, f := range p.OtherFiles {
+		//	files[f] = struct{}{}
+		//}
 	}
 
 	return files
