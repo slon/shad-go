@@ -25,7 +25,7 @@
 
 * Hello world
 
-.play -edit helloworld.go
+.play -edit helloworld/helloworld.go
 
 * Go
 
@@ -82,7 +82,7 @@ Language
 
 * Hello World
 
-.play -edit helloworld.go
+.play -edit helloworld/helloworld.go
 
 : Как запустить. В презентации и в CLI.
 : Что такое пакет.
@@ -93,7 +93,7 @@ Language
 
 * echo
 
-.play -edit echo.go
+.play -edit echo/echo.go
 
 : Слайсы. s[n:m], s[i], len(s).
 : var создаёт переменную. Инициализация zero value.
@@ -120,7 +120,7 @@ Language
 
 * echo2
 
-.play -edit echo2.go
+.play -edit echo2/echo2.go
 
 * Range
 
@@ -151,7 +151,7 @@ Language
 
 * dup
 
-.play -edit dup.go
+.play -edit dup/dup.go
 
 : map. Создаётся через make(). Значения инициализируются нулём. Ключ должен иметь ==.
 : Итерация по map.
@@ -175,23 +175,23 @@ Language
 
 * urlfetch
 
-.code urlfetch.go /func main/,/^}/
+.code urlfetch/urlfetch.go /func main/,/^}/
 
 * fetchall
 
-.code fetchall.go /func main/,/^}/
+.code fetchall/fetchall.go /func main/,/^}/
 
 * fetchall
 
-.code fetchall.go /func fetch/,/^}/
+.code fetchall/fetchall.go /func fetch/,/^}/
 
 * webserver
 
-.code web.go
+.code web/web.go
 
-* webserver
+* counter
 
-.code counter.go
+.code counter/counter.go  /var/,
 
 * switch
 
