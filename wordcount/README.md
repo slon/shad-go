@@ -6,8 +6,8 @@
 
 Формат вывода:
 ```
-<LINE>\t<COUNT>
-<LINE>\t<COUNT>
+<COUNT>\t<LINE>
+<COUNT>\t<LINE>
 ...
 ```
 
