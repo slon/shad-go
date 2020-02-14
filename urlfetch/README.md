@@ -48,4 +48,4 @@ go install ./urlfetch/...
 ### Walkthrough
 
 1. Чтение аргументов командной строки: https://gobyexample.com/command-line-arguments
-2. HTTP запрос: https://gobyexample.com/http-clients
+2. HTTP запрос: https://golang.org/pkg/net/http/
