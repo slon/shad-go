@@ -121,8 +121,13 @@ func testSubmission(studentRepo, privateRepo, problem string) error {
 	copyDir(privateRepo, path.Join(problem, testdataDir), tmpRepo)
 
 	// Copy go.mod and go.sum from private repo to temp dir.
-	log.Printf("copying go.mod and go.sum")
-	copyFiles(privateRepo, []string{"go.mod", "go.sum"}, tmpRepo)
+	log.Printf("copying go.mod, go.sum and .golangci.yml")
+	copyFiles(privateRepo, []string{"go.mod", "go.sum", ".golangci.yml"}, tmpRepo)
+
+	log.Printf("running linter")
+	if err := runLinter(tmpRepo, problem); err != nil {
+		return err
+	}
 
 	// Run tests.
 	log.Printf("running tests")
@@ -183,6 +188,19 @@ func (e *TestFailedError) Error() string {
 
 func (e *TestFailedError) Unwrap() error {
 	return e.E
+}
+
+func runLinter(testDir, problem string) error {
+	cmd := exec.Command("golangci-lint", "run", "--modules-download-mode", "readonly", "--build-tags", "private", fmt.Sprintf("./%s/...", problem))
+	cmd.Dir = testDir
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("linter failed: %w", err)
+	}
+
+	return nil
 }
 
 // runTests runs all tests in directory with race detector.
