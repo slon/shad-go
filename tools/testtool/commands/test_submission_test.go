@@ -32,12 +32,12 @@ func Test_testSubmission_correct(t *testing.T) {
 	require.Nil(t, err)
 
 	for _, dir := range testDirs {
-		dir, err := filepath.Abs(dir)
+		absDir, err := filepath.Abs(dir)
 		require.Nil(t, err)
-		problem := path.Base(dir)
+		problem := path.Base(absDir)
 		t.Run(problem, func(t *testing.T) {
-			studentRepo := path.Join(dir, "student")
-			privateRepo := path.Join(dir, "private")
+			studentRepo := path.Join(absDir, "student")
+			privateRepo := path.Join(absDir, "private")
 
 			require.NoError(t, testSubmission(studentRepo, privateRepo, problem))
 		})
@@ -49,13 +49,13 @@ func Test_testSubmission_incorrect(t *testing.T) {
 	require.Nil(t, err)
 
 	for _, dir := range testDirs {
-		dir, err := filepath.Abs(dir)
+		absDir, err := filepath.Abs(dir)
 		require.Nil(t, err)
 
-		problem := path.Base(dir)
+		problem := path.Base(absDir)
 		t.Run(problem, func(t *testing.T) {
-			studentRepo := path.Join(dir, "student")
-			privateRepo := path.Join(dir, "private")
+			studentRepo := path.Join(absDir, "student")
+			privateRepo := path.Join(absDir, "private")
 
 			err := testSubmission(studentRepo, privateRepo, problem)
 			require.Error(t, err)
