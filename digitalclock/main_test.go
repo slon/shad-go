@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"image"
@@ -58,12 +57,7 @@ func startServer(t *testing.T) (port string, stop func()) {
 		<-done
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
-	defer cancel()
-
-	testtool.WaitForPort(ctx, port)
-	if ctx.Err() != nil {
-		err = ctx.Err()
+	if err = testtool.WaitForPort(time.Second*30, port); err != nil {
 		stop()
 	}
 
