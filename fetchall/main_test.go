@@ -84,20 +84,17 @@ func TestFetchall_multipleURLs(t *testing.T) {
 
 	var fooHit, barHit int32
 
-	h := func(w http.ResponseWriter, r *http.Request) {
-		mux := http.NewServeMux()
-		mux.HandleFunc("/foo", func(w http.ResponseWriter, h *http.Request) {
-			atomic.StoreInt32(&fooHit, 1)
-			_, _ = w.Write([]byte("foo"))
-		})
-		mux.HandleFunc("/bar", func(w http.ResponseWriter, h *http.Request) {
-			atomic.StoreInt32(&barHit, 1)
-			_, _ = w.Write([]byte("bar"))
-		})
-		mux.ServeHTTP(w, r)
-	}
+	mux := http.NewServeMux()
+	mux.HandleFunc("/foo", func(w http.ResponseWriter, h *http.Request) {
+		atomic.StoreInt32(&fooHit, 1)
+		_, _ = w.Write([]byte("foo"))
+	})
+	mux.HandleFunc("/bar", func(w http.ResponseWriter, h *http.Request) {
+		atomic.StoreInt32(&barHit, 1)
+		_, _ = w.Write([]byte("bar"))
+	})
 
-	s := httptest.NewServer(http.HandlerFunc(h))
+	s := httptest.NewServer(mux)
 	defer s.Close()
 
 	cmd := exec.Command(binary, s.URL+"/foo", s.URL+"/bar")
