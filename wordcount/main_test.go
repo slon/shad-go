@@ -33,7 +33,7 @@ func TestMain(m *testing.M) {
 
 func TestWordCount(t *testing.T) {
 	binary, err := binCache.GetBinary(wordcountImportPath)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	type counts map[string]int64
 	type files []string
@@ -77,7 +77,7 @@ b`,
 		t.Run(tc.name, func(t *testing.T) {
 			// Create temp directory.
 			testDir, err := ioutil.TempDir("", "wordcount-testdata-")
-			require.Nil(t, err)
+			require.NoError(t, err)
 			defer func() { _ = os.RemoveAll(testDir) }()
 
 			// Create test files in temp directory.
@@ -85,7 +85,7 @@ b`,
 			for _, f := range tc.files {
 				file := path.Join(testDir, testtool.RandomName())
 				err = ioutil.WriteFile(file, []byte(f), 0644)
-				require.Nil(t, err)
+				require.NoError(t, err)
 				files = append(files, file)
 			}
 
@@ -94,11 +94,11 @@ b`,
 			cmd.Stderr = os.Stderr
 
 			output, err := cmd.Output()
-			require.Nil(t, err)
+			require.NoError(t, err)
 
 			// Parse output and compare with an expected one.
 			counts, err := parseStdout(output)
-			require.Nil(t, err)
+			require.NoError(t, err)
 
 			require.True(t, reflect.DeepEqual(tc.expected, counts),
 				fmt.Sprintf("expected: %v; got: %v", tc.expected, counts))

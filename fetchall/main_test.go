@@ -35,7 +35,7 @@ func TestMain(m *testing.M) {
 
 func TestFetchall_valid(t *testing.T) {
 	binary, err := binCache.GetBinary(fetchallImportPath)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	type endpoint string
 
@@ -73,14 +73,14 @@ func TestFetchall_valid(t *testing.T) {
 			cmd.Stdout = nil
 			cmd.Stderr = os.Stderr
 
-			require.Nil(t, cmd.Run())
+			require.NoError(t, cmd.Run())
 		})
 	}
 }
 
 func TestFetchall_multipleURLs(t *testing.T) {
 	binary, err := binCache.GetBinary(fetchallImportPath)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	var fooHit, barHit int32
 
@@ -101,7 +101,7 @@ func TestFetchall_multipleURLs(t *testing.T) {
 	cmd.Stdout = nil
 	cmd.Stderr = os.Stderr
 
-	require.Nil(t, cmd.Run())
+	require.NoError(t, cmd.Run())
 
 	require.Equal(t, int32(1), atomic.LoadInt32(&fooHit))
 	require.Equal(t, int32(1), atomic.LoadInt32(&barHit))
@@ -109,7 +109,7 @@ func TestFetchall_multipleURLs(t *testing.T) {
 
 func TestFetchall_malformed(t *testing.T) {
 	binary, err := binCache.GetBinary(fetchallImportPath)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	hit := int32(0)
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -123,14 +123,14 @@ func TestFetchall_malformed(t *testing.T) {
 	cmd.Stderr = os.Stderr
 
 	err = cmd.Run()
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	require.True(t, atomic.LoadInt32(&hit) >= 2)
 }
 
 func TestFetchall_concurrency(t *testing.T) {
 	binary, err := binCache.GetBinary(fetchallImportPath)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	var mu sync.Mutex
 	var callOrder []time.Duration
@@ -140,7 +140,7 @@ func TestFetchall_concurrency(t *testing.T) {
 		require.NotEmpty(t, s)
 
 		d, err := time.ParseDuration(s)
-		require.Nil(t, err)
+		require.NoError(t, err)
 
 		time.Sleep(d)
 
@@ -165,7 +165,7 @@ func TestFetchall_concurrency(t *testing.T) {
 	cmd.Stdout = nil
 	cmd.Stderr = os.Stderr
 
-	require.Nil(t, cmd.Run())
+	require.NoError(t, cmd.Run())
 
 	mu.Lock()
 	defer mu.Unlock()

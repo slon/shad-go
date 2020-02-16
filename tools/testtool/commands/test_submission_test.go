@@ -29,11 +29,11 @@ func listDirs(dir string) ([]string, error) {
 
 func Test_testSubmission_correct(t *testing.T) {
 	testDirs, err := listDirs("../testdata/submissions/correct")
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	for _, dir := range testDirs {
 		absDir, err := filepath.Abs(dir)
-		require.Nil(t, err)
+		require.NoError(t, err)
 		problem := path.Base(absDir)
 		t.Run(problem, func(t *testing.T) {
 			studentRepo := path.Join(absDir, "student")
@@ -46,11 +46,11 @@ func Test_testSubmission_correct(t *testing.T) {
 
 func Test_testSubmission_incorrect(t *testing.T) {
 	testDirs, err := listDirs("../testdata/submissions/incorrect")
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	for _, dir := range testDirs {
 		absDir, err := filepath.Abs(dir)
-		require.Nil(t, err)
+		require.NoError(t, err)
 
 		problem := path.Base(absDir)
 		t.Run(problem, func(t *testing.T) {
