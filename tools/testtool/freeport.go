@@ -39,7 +39,7 @@ func WaitForPort(timeout time.Duration, port string) error {
 	for {
 		select {
 		case <-stopTimer.C:
-			return fmt.Errorf("timeout")
+			return fmt.Errorf("no server started listening on port %s after timeout %d", port, timeout)
 		case <-t.C:
 			if err := portIsReady(port); err != nil {
 				_, _ = fmt.Fprintf(os.Stderr, "waiting for port: %s\n", err)
