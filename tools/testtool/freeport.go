@@ -3,7 +3,6 @@ package testtool
 import (
 	"fmt"
 	"net"
-	"os"
 	"strconv"
 	"time"
 )
@@ -26,10 +25,14 @@ func GetFreePort() (string, error) {
 	return strconv.Itoa(p), nil
 }
 
+type logger interface {
+	Logf(format string, args ...interface{})
+}
+
 // WaitForPort tries to connect to given local port with constant backoff.
 //
 // Returns error if port is not ready after timeout.
-func WaitForPort(timeout time.Duration, port string) error {
+func WaitForPort(l logger, timeout time.Duration, port string) error {
 	stopTimer := time.NewTimer(timeout)
 	defer stopTimer.Stop()
 
@@ -39,10 +42,10 @@ func WaitForPort(timeout time.Duration, port string) error {
 	for {
 		select {
 		case <-stopTimer.C:
-			return fmt.Errorf("timeout")
+			return fmt.Errorf("no server started listening on port %s after timeout %s", port, timeout)
 		case <-t.C:
 			if err := portIsReady(port); err != nil {
-				_, _ = fmt.Fprintf(os.Stderr, "waiting for port: %s\n", err)
+				l.Logf("waiting for port: %s\n", err)
 				break
 			}
 			return nil

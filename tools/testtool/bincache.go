@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"sync"
 )
 
@@ -107,5 +108,9 @@ func (c *ciBuildCache) GetBinary(importPath string) (string, error) {
 func RandomName() string {
 	var raw [8]byte
 	_, _ = rand.Read(raw[:])
-	return hex.EncodeToString(raw[:])
+	name := hex.EncodeToString(raw[:])
+	if runtime.GOOS == "windows" {
+		name += ".exe"
+	}
+	return name
 }

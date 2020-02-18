@@ -57,7 +57,7 @@ func startServer(t *testing.T) (port string, stop func()) {
 		<-done
 	}
 
-	if err = testtool.WaitForPort(time.Second*30, port); err != nil {
+	if err = testtool.WaitForPort(t, time.Second*30, port); err != nil {
 		stop()
 	}
 

@@ -33,7 +33,7 @@ func TestMain(m *testing.M) {
 
 func TestUrlFetch_valid(t *testing.T) {
 	binary, err := binCache.GetBinary(urlfetchImportPath)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	type endpoint string
 	type response string
@@ -91,7 +91,7 @@ func TestUrlFetch_valid(t *testing.T) {
 			cmd.Stderr = os.Stderr
 
 			data, err := cmd.Output()
-			require.Nil(t, err)
+			require.NoError(t, err)
 
 			for _, r := range tc.expected {
 				require.True(t, bytes.Contains(data, []byte(r)),
@@ -104,7 +104,7 @@ func TestUrlFetch_valid(t *testing.T) {
 
 func TestUrlFetch_malformed(t *testing.T) {
 	binary, err := binCache.GetBinary(urlfetchImportPath)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte("success"))
@@ -141,7 +141,7 @@ func TestUrlFetch_malformed(t *testing.T) {
 
 func TestUrlFetch_order(t *testing.T) {
 	binary, err := binCache.GetBinary(urlfetchImportPath)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	mux := http.NewServeMux()
 
@@ -175,7 +175,7 @@ func TestUrlFetch_order(t *testing.T) {
 	cmd.Stdout = nil
 	cmd.Stderr = os.Stderr
 
-	require.Nil(t, cmd.Run())
+	require.NoError(t, cmd.Run())
 
 	mu.Lock()
 	defer mu.Unlock()

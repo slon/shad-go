@@ -7,11 +7,14 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
+	"go.uber.org/goleak"
 
 	"gitlab.com/slon/shad-go/batcher/slow"
 )
 
 func TestSimple(t *testing.T) {
+	defer goleak.VerifyNone(t)
+
 	var value slow.Value
 	b := NewBatcher(&value)
 
@@ -25,6 +28,8 @@ func TestSimple(t *testing.T) {
 }
 
 func TestStaleRead(t *testing.T) {
+	defer goleak.VerifyNone(t)
+
 	const (
 		N = 100
 		K = 100
@@ -69,6 +74,8 @@ func TestStaleRead(t *testing.T) {
 }
 
 func TestSpeed(t *testing.T) {
+	defer goleak.VerifyNone(t)
+
 	const (
 		N = 100
 		K = 200
