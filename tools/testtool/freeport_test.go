@@ -26,12 +26,12 @@ func TestWaitForPort(t *testing.T) {
 	_, port, err := net.SplitHostPort(u.Host)
 	require.Nil(t, err)
 
-	require.NoError(t, WaitForPort(time.Second, port))
+	require.NoError(t, WaitForPort(t, time.Second, port))
 }
 
 func TestWaitForPort_timeout(t *testing.T) {
 	p, err := GetFreePort()
 	require.NoError(t, err)
 
-	require.Error(t, WaitForPort(time.Second, p))
+	require.Error(t, WaitForPort(t, time.Second, p))
 }
