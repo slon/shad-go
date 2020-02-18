@@ -33,5 +33,7 @@ func TestWaitForPort_timeout(t *testing.T) {
 	p, err := GetFreePort()
 	require.NoError(t, err)
 
-	require.Error(t, WaitForPort(t, time.Second, p))
+	err = WaitForPort(t, time.Second, p)
+	require.Error(t, err)
+	t.Log(err.Error())
 }
