@@ -1,7 +1,6 @@
 package testtool
 
 import (
-	"context"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -27,22 +26,12 @@ func TestWaitForPort(t *testing.T) {
 	_, port, err := net.SplitHostPort(u.Host)
 	require.Nil(t, err)
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-
-	WaitForPort(ctx, port)
-
-	require.NoError(t, ctx.Err())
+	require.NoError(t, WaitForPort(time.Second, port))
 }
 
 func TestWaitForPort_timeout(t *testing.T) {
 	p, err := GetFreePort()
 	require.NoError(t, err)
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-
-	WaitForPort(ctx, p)
-
-	require.Error(t, ctx.Err())
+	require.Error(t, WaitForPort(time.Second, p))
 }

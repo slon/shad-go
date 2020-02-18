@@ -1,7 +1,6 @@
 package testtool
 
 import (
-	"context"
 	"fmt"
 	"net"
 	"os"
@@ -29,21 +28,24 @@ func GetFreePort() (string, error) {
 
 // WaitForPort tries to connect to given local port with constant backoff.
 //
-// Can be canceled via ctx.
-func WaitForPort(ctx context.Context, port string) {
+// Returns error if port is not ready after timeout.
+func WaitForPort(timeout time.Duration, port string) error {
+	stopTimer := time.NewTimer(timeout)
+	defer stopTimer.Stop()
+
 	t := time.NewTicker(time.Millisecond * 100)
 	defer t.Stop()
 
 	for {
 		select {
-		case <-ctx.Done():
-			return
+		case <-stopTimer.C:
+			return fmt.Errorf("timeout")
 		case <-t.C:
 			if err := portIsReady(port); err != nil {
 				_, _ = fmt.Fprintf(os.Stderr, "waiting for port: %s\n", err)
 				break
 			}
-			return
+			return nil
 		}
 	}
 }
