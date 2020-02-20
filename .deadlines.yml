@@ -1,3 +1,12 @@
+- group:    Basics
+  start:    20-02-2020 18:00
+  deadline: 02-03-2020 23:59
+  tasks:
+    - task: digitalclock
+      score: 300
+    - task: urlshortener
+      score: 200
+
 - group:    Hello World
   start:    12-02-2020 18:00
   deadline: 23-02-2020 23:59
@@ -12,13 +21,3 @@
       score: 100
     - task: fetchall
       score: 100
-
-- group:    Basics
-  start:    20-02-2020 18:00
-  deadline: 02-03-2020 23:59
-  tasks:
-    - task: digitalclock
-      score: 300
-
-    - task: urlshortener
-      score: 200
