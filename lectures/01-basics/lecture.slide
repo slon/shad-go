@@ -481,6 +481,7 @@
       ID      int
       Name    string
       Address string
+      Salary  int
   }
 
   var dilbert Employee
@@ -696,5 +697,5 @@
           }
       }
 
-      visit(w, root)
+      visit(root)
   }
