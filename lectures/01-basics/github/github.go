@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+var IssuesURL string
+
 type IssuesSearchResult struct{}
 
 // SearchIssues queries the GitHub issue tracker.

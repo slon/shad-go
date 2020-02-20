@@ -1,3 +1,5 @@
 package main
 
-func append(s []int, elem ...int) []int
+func appendInts(s []int, elem ...int) []int {
+	return append(s, elem...)
+}
