@@ -1,0 +1,700 @@
+Базовые конструкции языка
+Лекция 2
+
+Фёдор Короткий
+
+* Имена
+
+25 ключевых слов.
+
+  break        default      func         interface    select
+  case         defer        go           map          struct
+  chan         else         goto         package      switch
+  const        fallthrough  if           range        type
+  continue     for          import       return       var
+
+* Predeclated identifiers
+
+Константы
+
+  true false iota nil
+
+Типы
+
+  int int8 int16 int32 int64
+  uint uint8 uint16 uint32 uint64 uintptr
+  float32 float64 complex128 complex64
+  bool byte rune string error
+
+Функции
+
+  make len cap new append copy close delete
+  complex real imag
+  panic recover
+
+Идентификаторы можно переопределять по обычным правилам
+
+  // just example, don't do this
+  var true = false
+
+* Exported identifiers
+
+Регистр первой буквы определяет видимость имени за пределами пакета
+
+.play exported/example.go
+
+Пакеты всегда называют в нижнем регистре и без подчеркиваний
+
+  fmt
+  grpcmiddleware
+
+* Declaration
+
+- 4 типы объявлений `var`, `const`, `type`, `func`
+- Пакет состоит из множества `.go` файлов
+- Порядок объявлений в коде не важен
+
+* var
+
+Общая форма
+
+  var name type = expression
+
+Примеры
+
+  var i, j, k int // int, int, int
+  var b, f, s = true, 2.3, "four" // bool, float64, string
+  var f, err = os.Open(name) // os.Open returns a file and an error
+
+* short variable declaration
+
+  i, j := 0, 1
+
+Существующим переменным присваиваются новые значения
+
+  in, err := os.Open(infile)
+  // ...
+  out, err := os.Create(outfile)
+
+Но должна объявляться хотябы одна новая переменная
+
+  f, err := os.Open(infile)
+  // ...
+  f, err := os.Create(outfile) // compile error: no new variables
+
+* pointers
+
+  x := 1
+  p := &x         // p, of type *int, points to x
+  fmt.Println(*p) // "1"
+  *p = 2
+  fmt.Println(x)
+
+* escape analysis
+
+  var p = f()
+
+  func f() *int {
+      v := 1
+      return &v
+  }
+
+* flag
+
+.play flag/main.go
+
+* new
+
+`new(T)` создаёт новую переменную с типом `T`.
+
+  func newInt() *int {
+      return new(int)
+  }
+
+  func newInt() *int {
+      var dummy int
+      return &dummy
+  }
+
+* zero size type
+
+  p := new(int)
+  q := new(int)
+  fmt.Println(p == q) // "false"
+
+  p := new(struct{})
+  q := new(struct{})
+  fmt.Println(p == q) // "true" or "false", depending on implementation
+
+* variable lifetime
+
+Память освобождается, после того как переменая становится недостижимой.
+
+Компилятор может переместить переменную со стека на кучу.
+
+  var global *int
+  func f() {
+      var x int
+      x = 1
+      global = &x
+  }
+
+И с кучи на стек.
+
+  func g() {
+      y := new(int)
+      *y = 1
+  }
+
+* type declaration
+
+  type name underlying-type
+
+.play tempconv0/conv.go
+
+* packages
+
+- Файл `tempconv/types.go`
+
+.play tempconv/tempconv.go
+
+- Файл `tempconv/conv.go`
+
+.play tempconv/conv.go
+
+* packages
+
+  fmt.Printf("Brrrr! %v\n", tempconv.AbsoluteZeroC)
+
+  fmt.Println(tempconv.CToF(tempconv.BoilingC))
+
+* package initialization
+
+  var a = b + c // a initialized third, to 3
+  var b = f()   // b initialized second, to 2, by calling f
+  var c = 1     // c initialized first, to 1
+
+  func f() int { return c + 1 }
+
+* package initialization
+
+.play popcount/popcount.go
+
+* scope
+
+.play scope/scope.go
+
+* scope
+
+.play scope/if.go
+
+* scope if
+
+- Неправильно
+
+  if f, err := os.Open(fname); err != nil { // compile error: unused: f
+      return err
+  }
+  f.ReadByte() // compile error: undefined f
+  f.Close()    // compile error: undefined f
+
+- Правильно
+
+  f, err := os.Open(fname)
+  if err != nil {
+      return err
+  }
+  f.ReadByte()
+  f.Close()
+
+* scope
+
+  var cwd string
+
+  func init() {
+      cwd, err := os.Getwd() // NOTE: wrong!
+      if err != nil {
+          log.Fatalf("os.Getwd failed: %v", err)
+      }
+      log.Printf("Working directory = %s", cwd)
+  }
+
+* strings
+
+`string` - неизменяемая последовательность байт.
+
+`s[i]` - обращается к i-тому байту (не символу).
+
+  var s = "hello"
+
+  var doc = `Go is a tool for managing Go source code.
+  
+  Usage:
+  go command [arguments]
+  ...
+  `
+
+* unicode
+
+Символы кодируются числами.
+
+  type rune int32
+
+Кодировка utf8
+
+  0xxxxxx                              runes 0−127
+  11xxxxx 10xxxxxx                     128−2047
+  110xxxx 10xxxxxx 10xxxxxx            2048−65535
+  1110xxx 10xxxxxx 10xxxxxx 10xxxxxx   65536−0x10ffff
+
+Разница между рунами и байтами
+
+  import "unicode/utf8"
+
+  func countRunes() {
+      s := "Hello, 世界"
+      fmt.Println(len(s)) // "13"
+      fmt.Println(utf8.RuneCountInString(s)) // "9"
+  }
+
+* utf8
+
+  for i := 0; i < len(s); {
+      r, size := utf8.DecodeRuneInString(s[i:])
+      fmt.Printf("%d\t%c\n", i, r)
+      i += size
+  }
+
+Декодирование utf8 встроено в язык
+
+  for i, r := range "Hello, 世界" {
+      fmt.Printf("%d\t%q\t%d\n", i, r, r)
+  }
+
+  runes := []rune("Hello, 世界")
+  s := string(runes)
+
+Некорректный байт превращается _unicode_replacement_character_ `'\uFFFD'`.
+
+- Может ли строка `string([]rune(s))` быть больше `s`?
+
+* stdlib
+
+- `strings` - HasSuffix, Split, Join, etc.
+- `bytes` - аналог `strings` для `[]byte`. 
+- `unicode` - IsDigit, IsLetter.
+- `strconv` - конвертация между строкой и `int`, `float`.
+- `path` - работа с unix путями
+- `filepath` - работа с путями текущей платформы
+
+* []byte
+
+  s := "abc"
+  b := []byte(s)
+  s2 := string(b)
+
+* bytes.Buffer
+
+  func intsToString(values []int) string {
+      var buf bytes.Buffer
+      buf.WriteByte('[')
+      for i, v := range values {
+          if i > 0 {
+              buf.WriteString(", ")
+          }
+          fmt.Fprintf(&buf, "%d", v)
+      }
+      buf.WriteByte(']')
+      return buf.String()
+  }
+
+* constants
+
+  const (
+      a = 1
+      b
+      c = 2
+      d
+  )
+
+  fmt.Println(a, b, c, d) // "1 1 2 2"
+
+  type Weekday int
+  const (
+      Sunday Weekday = iota
+      Monday
+      Tuesday
+  )
+
+  type Flags uint
+  const (
+      FlagUp Flags = 1 << iota // is up
+      FlagBroadcast            // supports broadcast access capability
+      FlagLoopback             // is a loopback interface
+      FlagPointToPoint         // belongs to a point-to-point link
+      FlagMulticast            // supports multicast access capability
+  )
+
+* untyped constants
+
+  const (
+      _ = 1 << (10 * iota)
+      KiB
+      MiB
+      GiB
+      TiB // (exceeds 1 << 32)
+      PiB
+      EiB
+      ZiB // (exceeds 1 << 64)
+      YiB
+  )
+
+- Компилятор гарантирует как минимум 256 бит точности
+
+  fmt.Println(YiB/ZiB) // "1024"
+
+* arrays
+
+  var a [3]int
+  var q [3]int = [3]int{1, 2, 3}
+  var r [3]int = [3]int{1, 2}
+
+  d := [...]int{1, 2, 3}
+  h := [...]int{99: -1}
+
+- arrays are values
+
+  func zero(ptr *[32]byte) {
+      *ptr = [32]byte{}
+  }
+
+* slices
+
+- slice это тройка `data`, `len`, `cap`.
+
+  s := make([]int, 10)
+  s = s[:0]
+  s = s[:10]
+
+* slices
+
+  // reverse reverses a slice of ints in place.
+  func reverse(s []int) {
+      for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
+          s[i], s[j] = s[j], s[i]
+      }
+  }
+
+* slices
+
+  var a, b []string
+  fmt.Println(a == b)
+
+  var c []int
+  d := []int{}
+  fmt.Println(c != d)
+
+  // c == nil && d != nil
+  // len(c) == 0 && len(d) == 0
+
+* slices
+
+  make([]T, len) // len == cap
+  make([]T, len, cap)
+
+  func append(s []T, elem ...T) []T
+
+  var s []int
+  s = append(s, 1)
+  s = append(s, 2, 3)
+
+  var a, b []int
+  a = append(a, b...)
+
+* stack
+
+  stack = append(stack, v) // push v
+
+  top := stack[len(stack)-1] // top of stack
+
+  stack = stack[:len(stack)-1] // pop
+
+* copy
+
+  func remove(slice []int, i int) []int {
+      copy(slice[i:], slice[i+1:])
+      return slice[:len(slice)-1]
+  }
+
+* maps
+
+  ages := make(map[string]int)
+
+  ages := map[string]int{
+      "alice": 31,
+      "charlie": 34,
+  }
+
+  ages := make(map[string]int)
+  ages["alice"] = 31
+  ages["charlie"] = 34
+
+* maps
+
+  ages["alice"] = 32
+  fmt.Println(ages["alice"]) // "32"
+  fmt.Println(ages["bob"]) // "0"
+
+  delete(ages, "alice")
+
+  ages["bob"] += 1
+  ages["bob"]++
+  _ = &ages["bob"] // compile error: cannot take address of map element
+
+* maps
+
+  for name, age := range ages {
+      fmt.Printf("%s\t%d\n", name, age)
+  }
+
+  var ages map[string]int
+  fmt.Println(ages == nil)    // "true"
+  fmt.Println(len(ages) == 0) // "true"
+  fmt.Println(ages["alice"])  // "0"
+  ages["alice"] = 21          // panic
+
+* maps
+
+  age, ok := ages["bob"]
+  if !ok { /* "bob" is not a key in this map; age == 0. */ }
+
+  if age, ok := ages["bob"]; !ok { /* ... */ }
+
+* set
+
+  var s0 map[string]bool
+  var s1 map[string]struct{}
+
+* struct
+
+  type Employee struct {
+      ID      int
+      Name    string
+      Address string
+  }
+
+  var dilbert Employee
+
+  dilbert.Salary -= 5000 // demoted, for writing too few lines of code
+
+* struct
+
+  type tree struct {
+      value       int
+      left, right *tree
+  }
+
+* struct
+
+  type Point struct{ X, Y int }
+  p := Point{1, 2}
+  p := Point{X: 1, Y: 2}
+
+* comparing structs
+
+  type Point struct{ X, Y int }
+  p := Point{1, 2}
+  q := Point{2, 1}
+  fmt.Println(p.X == q.X && p.Y == q.Y) // "false"
+  fmt.Println(p == q)                   // "false"
+
+Можно использовать структуры как ключи
+
+  type address struct {
+      hostname string
+      port     int
+  }
+
+  hits := make(map[address]int)
+  hits[address{"golang.org", 443}]++
+
+* struct embedding
+
+  type Point struct {
+      X, Y int
+  }
+
+  type Circle struct {
+      Point
+      Radius int
+  }
+
+  c := Circle{
+      Point:  Point{X: 10, Y: 10},
+      Radius: 1,
+  }
+
+  c.X = 0
+
+* json
+
+  type Movie struct {
+      Title  string
+      Year   int  `json:"year"`
+      Color  bool `json:"color,omitempty"`
+      Actors []string
+  }
+
+- marshal
+
+  data, err := json.Marshal(movies)
+  if err != nil {
+      log.Fatalf("JSON marshaling failed: %s", err)
+  }
+  fmt.Printf("%s\n", data)
+
+  data, err := json.MarshalIndent(movies, "", "    ")
+  if err != nil {
+      log.Fatalf("JSON marshaling failed: %s", err)
+  }
+  fmt.Printf("%s\n", data)
+
+* unmarshal
+
+  var movie Movie
+  if err := json.Unmarshal(data, &movie); err != nil {
+      log.Fatalf("JSON unmarshaling failed: %s", err)
+  }
+  fmt.Println(movie)
+
+* github
+
+.play github/github.go /func Search/,/^}/
+
+* functions
+
+  func name(parameter-list) (result-list) {
+      body
+  }
+
+Примеры
+
+  func hypot(x, y float64) float64 {
+      return math.Sqrt(x*x + y*y)
+  }
+  fmt.Println(hypot(3, 4)) // "5"
+
+  func f(i, j, k int, s, t string)                { /* ... */ }
+  func f(i int, j int, k int, s string, t string) { /* ... */ }
+
+* multiple return values
+
+  func Get(url string) (*http.Responce, error) {
+      // ...
+      if err != nil {
+          return nil, err
+      }
+      // ...
+  }
+
+  func logAndGet(url string) (*http.Responce, error) {
+      log.Printf("logAndGet %s", url)
+      return Get(url)
+  }
+
+* named return values
+
+.play countwords/main.go /func Count/,/^}/
+
+* errors
+
+  resp, err := http.Get(url)
+  if err != nil {
+      return nil, err
+  }
+
+Дополнительный контекст
+
+  doc, err := html.Parse(resp.Body)
+  if err != nil {
+      return nil, fmt.Errorf("parsing %s as HTML: %w", url, err)
+  }
+
+Текст ошибки должен быть в lowercase.
+
+  genesis: crashed: no parachute: G-switch failed: bad relay orientation
+
+* EOF
+
+  package io
+
+  import "errors"
+
+  // EOF is the error returned by Read when no more input is available.
+  var EOF = errors.New("EOF")
+
+  in := bufio.NewReader(os.Stdin)
+  for {
+      r, _, err := in.ReadRune()
+      if err == io.EOF {
+          break // finished reading
+      }
+
+      if err != nil {
+          return fmt.Errorf("read failed: %v", err)
+      }
+      // ...use r...
+  }
+
+* variadic functions
+
+  func sum(vals ...int) int {
+      total := 0
+      for _, val := range vals {
+          total += val
+      }
+      return total
+  }
+
+  fmt.Println(sum()) // "0"
+  fmt.Println(sum(3)) // "3"
+  fmt.Println(sum(1, 2, 3, 4)) // "10"
+
+  values := []int{1, 2, 3, 4}
+  fmt.Println(sum(values...))
+  fmt.Println(sum(0, values...)) // compilation error
+
+* function values
+
+  func Inc(i int) int { return i + 1 }
+
+  var f func(i int) int
+  if f != nil {
+      f = Inc
+  }
+
+  f = func(i int) int {
+      return i * 2
+  }
+
+* recursion
+
+  type Node struct {
+      V    int
+      L, R *Node
+  }
+
+  func PrintAll(w io.Writer, root *Node) {
+      var visit func(n *Node)
+      visit = func(n *Node) {
+          fmt.Fprintln(w, n.V)
+          if n.L != nil {
+              visit(n.L)
+          }
+          if n.R != nil {
+              visit(n.R)
+          }
+      }
+
+      visit(w, root)
+  }
