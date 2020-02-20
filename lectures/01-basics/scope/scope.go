@@ -2,6 +2,7 @@ package main
 
 import "fmt"
 
+//nolint
 func main() {
 	x := "hello"
 	for _, x := range x {
