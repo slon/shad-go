@@ -55,7 +55,7 @@ func (c *localBinCache) GetBinary(importPath string) (string, error) {
 		return v.(string), nil
 	}
 
-	binPath := filepath.Join(c.dir, RandomName())
+	binPath := filepath.Join(c.dir, RandomBinaryName())
 	if buildTags == "" {
 		runGo("build", "-mod", "readonly", "-o", binPath, importPath)
 	} else {
@@ -105,12 +105,17 @@ func (c *ciBuildCache) GetBinary(importPath string) (string, error) {
 	return binary, nil
 }
 
+func RandomBinaryName() string {
+	name := RandomName()
+	if runtime.GOOS == "windows" {
+		name += ".exe"
+	}
+	return name
+}
+
 func RandomName() string {
 	var raw [8]byte
 	_, _ = rand.Read(raw[:])
 	name := hex.EncodeToString(raw[:])
-	if runtime.GOOS == "windows" {
-		name += ".exe"
-	}
 	return name
 }
