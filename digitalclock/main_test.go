@@ -132,9 +132,10 @@ func TestDigitalClock_valid(t *testing.T) {
 	for _, f := range files {
 		t.Run(f.Name(), func(t *testing.T) {
 			parts := strings.SplitN(strings.TrimSuffix(f.Name(), ".png"), "_", 2)
+			time := strings.Replace(parts[0], ".", ":", 2)
 
 			v := url.Values{}
-			v.Add("time", parts[0])
+			v.Add("time", time)
 			v.Add("k", parts[1])
 
 			u := fmt.Sprintf("http://localhost:%s/?%s", port, v.Encode())
