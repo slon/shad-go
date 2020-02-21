@@ -6,6 +6,8 @@
       score: 300
     - task: urlshortener
       score: 200
+    - task: olympics
+      score: 200
 
 - group:    Hello World
   start:    12-02-2020 18:00
