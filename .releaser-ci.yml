@@ -34,14 +34,6 @@ build-slides:
     - docker build lectures -t eu.gcr.io/shad-ts/go-lectures
     - docker push eu.gcr.io/shad-ts/go-lectures
 
-update-task-list:
-  only:
-    - master
-  tags:
-    - docker
-  script:
-    - curl -F token=$TESTER_TOKEN https://go.manytask.org/api/sync_task_columns
-
 push-to-public:
   stage: .post
   image: eu.gcr.io/shad-ts/grader/go
@@ -56,6 +48,7 @@ push-to-public:
     - git branch -D public || true
     - git branch public public/master
     - testtool export --push --move-to-master=false
+    - curl -F token=$TESTER_TOKEN https://go.manytask.org/api/sync_task_columns
 
 deploy-slides:
   stage: .post
