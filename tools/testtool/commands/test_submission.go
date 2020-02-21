@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"bytes"
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
@@ -14,6 +15,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/perf/benchstat"
 
 	"gitlab.com/slon/shad-go/tools/testtool"
 )
@@ -124,14 +126,17 @@ func testSubmission(studentRepo, privateRepo, problem string) error {
 	log.Printf("copying go.mod, go.sum and .golangci.yml")
 	copyFiles(privateRepo, []string{"go.mod", "go.sum", ".golangci.yml"}, tmpRepo)
 
+	log.Printf("running tests")
+	if err := runTests(tmpRepo, privateRepo, problem); err != nil {
+		return err
+	}
+
 	log.Printf("running linter")
 	if err := runLinter(tmpRepo, problem); err != nil {
 		return err
 	}
 
-	// Run tests.
-	log.Printf("running tests")
-	return runTests(tmpRepo, problem)
+	return nil
 }
 
 // copyDir recursively copies src directory to dst.
@@ -204,7 +209,7 @@ func runLinter(testDir, problem string) error {
 }
 
 // runTests runs all tests in directory with race detector.
-func runTests(testDir, problem string) error {
+func runTests(testDir, privateRepo, problem string) error {
 	binCache, err := ioutil.TempDir("/tmp", "bincache")
 	if err != nil {
 		log.Fatal(err)
@@ -250,20 +255,89 @@ func runTests(testDir, problem string) error {
 	for testPkg, testBinary := range testBinaries {
 		relPath := strings.TrimPrefix(testPkg, moduleImportPath)
 
-		cmd := exec.Command(testBinary)
-		if currentUserIsRoot() {
-			if err := sandbox(cmd); err != nil {
-				log.Fatal(err)
+		{
+			cmd := exec.Command(testBinary)
+			if currentUserIsRoot() {
+				if err := sandbox(cmd); err != nil {
+					log.Fatal(err)
+				}
+			}
+
+			cmd.Dir = filepath.Join(testDir, relPath)
+			cmd.Env = []string{testtool.BinariesEnv + "=" + string(binariesJSON)}
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+
+			if err := cmd.Run(); err != nil {
+				return &TestFailedError{E: err}
 			}
 		}
 
-		cmd.Dir = filepath.Join(testDir, relPath)
-		cmd.Env = []string{testtool.BinariesEnv + "=" + string(binariesJSON)}
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
+		{
+			benchCmd := exec.Command(testBinary, "-test.bench=.", "-test.run=^$")
+			if currentUserIsRoot() {
+				if err := sandbox(benchCmd); err != nil {
+					log.Fatal(err)
+				}
+			}
 
-		if err := cmd.Run(); err != nil {
-			return &TestFailedError{E: err}
+			var buf bytes.Buffer
+
+			benchCmd.Dir = filepath.Join(testDir, relPath)
+			benchCmd.Env = []string{testtool.BinariesEnv + "=" + string(binariesJSON)}
+			benchCmd.Stdout = &buf
+			benchCmd.Stderr = os.Stderr
+
+			if err := benchCmd.Run(); err != nil {
+				return &TestFailedError{E: err}
+			}
+
+			if strings.Contains(buf.String(), "no tests to run") {
+				continue
+			}
+
+			if err := compareToBaseline(testPkg, privateRepo, buf.Bytes()); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func noMoreThanTwoTimesWorse(old, new *benchstat.Metrics) (float64, error) {
+	if new.Mean > 2*old.Mean {
+		return 0.0, nil
+	}
+
+	return 1.0, nil
+}
+
+func compareToBaseline(testPkg, privateRepo string, run []byte) error {
+	var buf bytes.Buffer
+
+	goTest := exec.Command("go", "test", "-tags", "private,solution", "-bench=.", testPkg)
+	goTest.Dir = privateRepo
+	goTest.Stdout = &buf
+	goTest.Stderr = os.Stderr
+	if err := goTest.Run(); err != nil {
+		return fmt.Errorf("baseline benchmark failed: %w", err)
+	}
+
+	c := &benchstat.Collection{
+		DeltaTest: noMoreThanTwoTimesWorse,
+	}
+	c.AddConfig("baseline.txt", buf.Bytes())
+	c.AddConfig("new.txt", run)
+
+	tables := c.Tables()
+	benchstat.FormatText(os.Stderr, tables)
+
+	for _, c := range tables {
+		for _, r := range c.Rows {
+			if r.Change == -1 {
+				return fmt.Errorf("solution is worse than baseline on test %q", c.Metric)
+			}
 		}
 	}
 
