@@ -45,6 +45,13 @@ go install ./urlfetch/...
 
 После выполнения в `$GOPATH/bin` появится исполняемый файл с именем `urlfetch`.
 
+### Линтер
+
+Установите [golangci-lint](https://github.com/golangci/golangci-lint), если вы ещё этого не сделали, и проверьте решение перед отправкой!
+```
+golangci-lint -v run ./urlfetch/...
+```
+
 ### Walkthrough
 
 1. Чтение аргументов командной строки: https://gobyexample.com/command-line-arguments
