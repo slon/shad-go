@@ -50,6 +50,13 @@ go install ./wordcount/...
 
 После выполнения в `$GOPATH/bin` появится исполняемый файл с именем `wordcount`.
 
+### Линтер
+
+Установите [golangci-lint](https://github.com/golangci/golangci-lint) и проверьте решение перед отправкой!
+```
+golangci-lint -v run ./wordcount/...
+```
+
 ### Walkthrough
 
 #### 1. Чтение аргументов командной строки

@@ -28,3 +28,22 @@ BenchmarkSprintf/small_string-4     	 7574479	       152 ns/op	      40 B/op	   
 BenchmarkSprintf/big-4              	   22324	     53264 ns/op	   69000 B/op	      20 allocs/op
 PASS
 ```
+
+### Примеры
+
+Как запустить все тесты и бенчмарки:
+```
+go test -v -bench=. ./varfmt/...
+```
+
+Как запустить только бенчмарки:
+```
+go test -v -run=^a -bench=. ./varfmt/...
+```
+Здесь `^a` - регулярное выражение, задающее тесты для запуска,
+а `.` - задаёт бенчмарки.
+
+Как запустить только big бенчмарки:
+```
+go test -v -run=^a -bench=/big ./varfmt/...
+```
