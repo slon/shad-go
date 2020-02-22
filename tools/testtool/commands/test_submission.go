@@ -336,7 +336,7 @@ func compareToBaseline(testPkg, privateRepo string, run []byte) error {
 	for _, c := range tables {
 		for _, r := range c.Rows {
 			if r.Change == -1 {
-				return fmt.Errorf("solution is worse than baseline on test %q", c.Metric)
+				return fmt.Errorf("solution is worse than baseline on benchmark %q", r.Benchmark)
 			}
 		}
 	}
