@@ -22,7 +22,7 @@ $ digitalclock -port 6029
 В запросе также нужно поддержать параметр 1 <= `k` <= 30,
 который отвечает за увеличение картинки в `k` раз:
 
-http://localhost:6029/?time=15:04:05?k=15
+http://localhost:6029/?time=15:04:05&k=15
 
 ![Image description](assets/150405_15.png)
 
