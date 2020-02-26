@@ -1,6 +1,6 @@
 // +build !solution
 
-package utf8reverse
+package reverse
 
 func Reverse(input string) string {
 	return ""

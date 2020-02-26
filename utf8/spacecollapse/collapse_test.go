@@ -1,4 +1,4 @@
-package utf8spacecollapse
+package spacecollapse
 
 import (
 	"fmt"

@@ -1,6 +1,6 @@
 // +build !solution
 
-package utf8spacecollapse
+package spacecollapse
 
 func CollapseSpaces(input string) string {
 	return ""

@@ -1,4 +1,4 @@
-package utf8reverse
+package reverse
 
 import (
 	"fmt"
