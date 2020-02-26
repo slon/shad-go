@@ -3,7 +3,7 @@
 Для работы с кодом нужен go 1.13 или выше.
 
 ```sh
-git clone git@gitlab.com:slon/shad-go.git
+git clone https://gitlab.com/slon/shad-go.git
 go test ./sum/...
 ```
 
