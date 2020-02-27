@@ -2,6 +2,6 @@
 
 package varjoin
 
-func Join(args ...string) string {
+func Join(sep string, args ...string) string {
 	return ""
 }
