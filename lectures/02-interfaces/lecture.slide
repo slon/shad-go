@@ -1,0 +1,477 @@
+Методы и Интерфейсы
+Лекция 2
+
+Фёдор Короткий
+
+* Methods
+
+Пример вызова метода:
+
+  const day = 24 * time.Hour
+  fmt.Println(day.Seconds()) // "86400"
+
+Пример определения метода:
+
+  func (c Celsius) String() string { return fmt.Sprintf("%g°C", c) }
+
+* Methods
+
+.play geometry/point.go
+
+- Специальный аргумент называется _receiver_
+- Мы *не*используем* `this` или `self`
+- _receiver_ обычно называют по первой букве в имени типа
+
+* Method call
+
+.play geometry/point_test.go /func/,/^}/
+
+* Path
+
+  // A Path is a journey connecting the points with straight lines.
+  type Path []Point
+
+  // Distance returns the distance traveled along the path.
+  func (path Path) Distance() float64 {
+      sum := 0.0
+      for i := range path {
+          if i > 0 {
+              sum += path[i-1].Distance(path[i])
+          }
+      }
+      return sum
+  }
+
+* Path
+
+  perim := Path{
+      {1, 1},
+      {5, 1},
+      {5, 4},
+      {1, 1},
+  }
+  fmt.Println(perim.Distance()) // "12"
+
+* Pointer Receiver
+
+  func (p *Point) ScaleBy(factor float64) {
+      p.X *= factor
+      p.Y *= factor
+  }
+
+* Nil receiver
+
+  type IntList struct {
+      Value int
+      Tail *IntList
+  }
+
+  func (list *IntList) Sum() int {
+      if list == nil {
+          return 0
+      }
+      return list.Value + list.Tail.Sum()
+  }
+
+* Embedding
+
+  type Point struct{ X, Y float64 }
+  type ColoredPoint struct {
+      Point
+      Color color.RGBA
+  }
+
+Methods
+
+  red := color.RGBA{255, 0, 0, 255}
+  blue := color.RGBA{0, 0, 255, 255}
+  var p = ColoredPoint{Point{1, 1}, red}
+  var q = ColoredPoint{Point{5, 4}, blue}
+  fmt.Println(p.Distance(q.Point)) // "5"
+  p.ScaleBy(2)
+  q.ScaleBy(2)
+  fmt.Println(p.Distance(q.Point)) // "10"
+
+* Embedding != Inheritance
+
+  var p = ColoredPoint{Point{1, 1}, red}
+  var q = ColoredPoint{Point{5, 4}, blue}
+
+  p.Distance(q) // compile error: cannot use q (ColoredPoint) as Point
+
+* Lock
+
+  var cache = struct {
+      sync.Mutex
+      mapping map[string]string
+  } {
+      mapping: make(map[string]string),
+  }
+
+  func Lookup(key string) string {
+      cache.Lock()
+      v := cache.mapping[key]
+      cache.Unlock()
+      return v
+  }
+
+* Method Values
+
+  p := Point{1, 2}
+  q := Point{4, 6}
+
+  distanceFromP := p.Distance
+  fmt.Println(distanceFromP(q))
+  var origin Point
+  fmt.Println(distanceFromP(origin))
+
+  scaleP := p.ScaleBy
+  scaleP(2)
+  scaleP(3)
+  scaleP(10)
+
+* Method Values
+
+  type Rocket struct { /* ... */ }
+  func (r *Rocket) Launch() { /* ... */ }
+
+  r := new(Rocket)
+  time.AfterFunc(10 * time.Second, func() { r.Launch() })
+
+  time.AfterFunc(10 * time.Second, r.Launch)
+
+* Method Expression
+
+  p := Point{1, 2}
+  q := Point{4, 6}
+  distance := Point.Distance  // method expression
+  fmt.Println(distance(p, q)) // "5"
+  fmt.Printf("%T\n", distance) // "func(Point, Point) float64"
+  scale := (*Point).ScaleBy
+  scale(&p, 2)
+  fmt.Println(p) // "{2 4}"
+  fmt.Printf("%T\n", scale) // "func(*Point, float64)"
+
+* Encapsulation
+
+  type Counter struct { n int }
+
+  func (c *Counter) N() int { return c.n }
+  func (c *Counter) Increment() { c.n++ }
+  func (c *Counter) Reset() { c.n = 0 }
+
+Сетеры/гетеры для простых типов не приветствуются.
+
+  type Point { x, y int }
+
+  func (p *Point) X() int { return x }
+  func (p *Point) Y() int { return y }
+  func (p *Point) SetX(x int) { p.x = x }
+  func (p *Point) SetY(y int) { p.y = y }
+
+* Interfaces
+
+  func Fprintf(w io.Writer, format string, args ...interface{}) (int, error)
+
+  func Printf(format string, args ...interface{}) (int, error) {
+      return Fprintf(os.Stdout, format, args...)
+  }
+
+  func Sprintf(format string, args ...interface{}) string {
+      var buf bytes.Buffer
+      Fprintf(&buf, format, args...)
+      return buf.String()
+  }
+
+* Interfaces
+
+  // Writer is the interface that wraps the basic Write method.
+  type Writer interface {
+      // Write writes len(p) bytes from p to the underlying data stream.
+      // It returns the number of bytes written from p (0 <= n <= len(p))
+      // and any error encountered that caused the write to stop early.
+      // Write must return a non-nil error if it returns n < len(p).
+      // Write must not modify the slice data, even temporarily.
+      //
+      // Implementations must not retain p.
+      Write(p []byte) (n int, err error)
+  }
+
+* Interfaces
+
+  type ByteCounter int
+
+  func (c *ByteCounter) Write(p []byte) (int, error) {
+      *c += ByteCounter(len(p)) // convert int to ByteCounter
+      return len(p), nil
+  }
+
+  var c ByteCounter
+  c.Write([]byte("hello"))
+  fmt.Println(c) // "5", = len("hello")
+
+* Stringer
+
+  package fmt
+
+  // The String method is used to print values passed
+  // as an operand to any format that accepts a string
+  // or to an unformatted printer such as Print.
+  type Stringer interface {
+      String() string
+  }
+
+* Interface types
+
+  package io
+
+  type Reader interface {
+      Read(p []byte) (n int, err error)
+  }
+
+  type Closer interface {
+      Close() error
+  }
+
+  type ReadWriter interface {
+      Reader
+      Writer
+  }
+
+  type ReadWriteCloser interface {
+      Reader
+      Writer
+      Closer
+  }
+
+* Interface satisfaction
+
+  var w io.Writer
+  w = os.Stdout // OK: *os.File has Write method
+  w = new(bytes.Buffer) // OK: *bytes.Buffer has Write method
+  w = time.Second // compile error: time.Duration lacks Write method
+
+* MethodSet
+
+  type IntSet struct { /* ... */ }
+  func (*IntSet) String() string
+
+  var s IntSet
+  var _ = s.String() // OK: s is a variable and &s has a String method
+
+  var _ fmt.Stringer = &s // OK
+  var _ fmt.Stringer = s // compile error: IntSet lacks String method
+
+* interface{}
+
+  var any interface{}
+  any = true
+  any = 12.34
+  any = "hello"
+  any = map[string]int{"one": 1}
+  any = new(bytes.Buffer)
+
+* Interface satisfaction
+
+  // *bytes.Buffer must satisfy io.Writer
+  var _ io.Writer = (*bytes.Buffer)(nil)
+
+* Interface values
+
+  var w io.Writer
+  w = os.Stdout
+  w = new(bytes.Buffer)
+  w = nil
+
+  var x interface{} = time.Now()
+
+* Nil pointer
+
+  var buf *bytes.Buffer
+  if debug {
+      buf = new(bytes.Buffer) // enable collection of output
+  }
+  f(buf) // NOTE: subtly incorrect!
+
+  // If out is non-nil, output will be written to it.
+  func f(out io.Writer) {
+      // ...do something...
+      if out != nil {
+          out.Write([]byte("done!\n"))
+      }
+  }
+
+* Nil pointer fix
+
+  var buf io.Writer
+  if debug {
+      buf = new(bytes.Buffer) // enable collection of output
+  }
+  f(buf) // OK
+
+* Type Assertions
+
+Concrete type:
+
+  var w io.Writer
+  w = os.Stdout
+  f := w.(*os.File) // success: f == os.Stdout
+  c := w.(*bytes.Buffer) // panic: interface holds *os.File, not *bytes.Buffer
+
+Interface type:
+
+  var w io.Writer
+  w = os.Stdout
+  rw := w.(io.ReadWriter) // success: *os.File has both Read and Write
+  w = new(ByteCounter)
+  rw = w.(io.ReadWriter) // panic: *ByteCounter has no Read method
+
+* Type assertion
+
+  var w io.Writer
+  var rw io.ReadWriter
+
+  w = rw // io.ReadWriter is assignable to io.Writer
+  w = rw.(io.Writer) // fails only if rw == nil
+
+Check type
+
+  var w io.Writer = os.Stdout
+  f, ok := w.(*os.File) // success: ok, f == os.Stdout
+  b, ok := w.(*bytes.Buffer) // failure: !ok, b == nil
+
+* Type switches
+
+  func sqlQuote(x interface{}) string {
+      if x == nil {
+          return "NULL"
+      } else if _, ok := x.(int); ok {
+          return fmt.Sprintf("%d", x)
+      } else if _, ok := x.(uint); ok {
+          return fmt.Sprintf("%d", x)
+      } else if b, ok := x.(bool); ok {
+          if b {
+              return "TRUE"
+          }
+          return "FALSE"
+      } else if s, ok := x.(string); ok {
+          return sqlQuoteString(s) // (not shown)
+      } else {
+          panic(fmt.Sprintf("unexpected type %T: %v", x, x))
+      }
+  }
+
+* Type switch
+
+  switch x.(type)
+  case nil: // ...
+  case int, uint: // ...
+  case bool: // ...
+  case string: // ...
+  default: // ...
+  }
+
+  switch x := x.(type) { /* ... */ }
+
+* Type switch
+
+  func sqlQuote(x interface{}) string {
+      switch x := x.(type) {
+      case nil:
+          return "NULL"
+      case int, uint:
+          return fmt.Sprintf("%d", x) // x has type interface{} here.
+      case bool:
+          if x {
+              return "TRUE"
+          }
+          return "FALSE"
+      case string:
+          return sqlQuoteString(x) // (not shown)
+      default:
+          panic(fmt.Sprintf("unexpected type %T: %v", x, x))
+      }
+  }
+
+* panic, defer, recover
+
+  switch s := suit(drawCard()); s {
+  case "Spades": // ...
+  case "Hearts": // ...
+  case "Diamonds": // ...
+  case "Clubs": // ...
+  default:
+      panic(fmt.Sprintf("invalid suit %q", s)) // Joker?
+  }
+
+  func Reset(x *Buffer) {
+      if x == nil {
+          panic("x is nil") // unnecessary!
+      }
+      x.elements = nil
+  }
+
+* defer
+
+  func main() {
+      f(3)
+  }
+
+  func f(x int) {
+      fmt.Printf("f(%d)\n", x+0/x) // panics if x == 0
+      defer fmt.Printf("defer %d\n", x)
+      f(x - 1)
+  }
+
+Output:
+
+  f(3)
+  f(2)
+  f(1)
+  defer 1
+  defer 2
+  defer 3
+
+* recover
+
+  func Parse(input string) (s *Syntax, err error) {
+      defer func() {
+          if p := recover(); p != nil {
+              err = fmt.Errorf("internal error: %v", p)
+          }
+      }()
+      // ...parser...
+  }
+
+* errors
+
+  type error interface {
+      Error() string
+  }
+
+  type Unwrapper interface {
+      Unwrap() error
+  }
+
+Unwrap
+
+  errors.Unwrap(fmt.Errorf("... %w ...", ..., err, ...)) == err
+
+* errors.Is & errors.As
+
+Is
+
+  if errors.Is(err, os.ErrExist)
+
+  if err == os.ErrExist
+
+As
+
+  var perr *os.PathError
+  if errors.As(err, &perr) {
+      fmt.Println(perr.Path)
+  }
+
+  if perr, ok := err.(*os.PathError); ok {
+      fmt.Println(perr.Path)
+  }
