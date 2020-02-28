@@ -8,6 +8,8 @@
       score: 100
     - task: utf8
       score: 100
+    - task: otp
+      scope: 100
 
 - group:    Basics
   start:    20-02-2020 18:00
