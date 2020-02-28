@@ -44,6 +44,11 @@ func TestFormat(t *testing.T) {
 			args:   []interface{}{0, 1, "World"},
 			result: "Hello, World",
 		},
+		{
+			format: "{10}",
+			args:	[]interface{}{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+			result:	"10",
+		},
 	} {
 		t.Run(tc.result, func(t *testing.T) {
 			require.Equal(t, tc.result, Sprintf(tc.format, tc.args...))
