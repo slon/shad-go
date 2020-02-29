@@ -20,7 +20,7 @@
     - task: urlshortener
       score: 200
     - task: olympics
-      score: 200
+      score: 300
     - task: varfmt
       score: 200
 
