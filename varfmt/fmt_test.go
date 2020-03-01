@@ -9,10 +9,10 @@ import (
 )
 
 func TestFormat(t *testing.T) {
-	var interfaceSlice []interface{} = make([]interface{}, 1002)
-	interfaceSlice[10] = 1
-	interfaceSlice[100] = 1
-	interfaceSlice[1000] = 1
+	s := make([]interface{}, 1002)
+	s[10] = 1
+	s[100] = 1
+	s[1000] = 1
 
 	for _, tc := range []struct {
 		format string
@@ -50,19 +50,19 @@ func TestFormat(t *testing.T) {
 			result: "Hello, World",
 		},
 		{
-			format: "check {10}",
-			args:   interfaceSlice[:11],
-			result: "check 1",
+			format: "{10}",
+			args:   s[:11],
+			result: "1",
 		},
 		{
-			format: "check {100}",
-			args:   interfaceSlice[:101],
-			result: "check 1",
+			format: "{100}",
+			args:   s[:101],
+			result: "1",
 		},
 		{
-			format: "check {1000}",
-			args:   interfaceSlice[:1001],
-			result: "check 1",
+			format: "{1000}",
+			args:   s[:1001],
+			result: "1",
 		},
 	} {
 		t.Run(tc.result, func(t *testing.T) {
