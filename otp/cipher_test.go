@@ -121,6 +121,8 @@ func (w *errWriter) Write(p []byte) (n int, err error) {
 	}
 
 	n = len(p)
+	w.n -= n
+
 	if w.n == 0 {
 		err = iotest.ErrTimeout
 	}
@@ -137,7 +139,7 @@ func TestWriterError(t *testing.T) {
 	n, err := w.Write(plaintext)
 
 	require.Equalf(t, plaintextBackup, plaintext, "Write must not modify the slice data, even temporarily.")
-	require.NoError(t, err)
+	require.Equal(t, err, iotest.ErrTimeout)
 	require.Equal(t, 512, n)
 	require.Equal(t, out.buf.Bytes(), ciphertext[:512])
 }
