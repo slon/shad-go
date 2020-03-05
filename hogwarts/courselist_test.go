@@ -90,3 +90,14 @@ func TestGetCourseList_weirdScience(t *testing.T) {
 		impl(t, weirdScience, GetCourseList(weirdScience))
 	})
 }
+
+func TestGetCourseList_strangeScience(t *testing.T) {
+	var strangeScience = map[string][]string{
+		"1":   {"0"},
+		"2":   {"1", "3"},
+		"3":   {"2"},
+	}
+	require.Panics(t, func() {
+		impl(t, strangeScience, GetCourseList(strangeScience))
+	})
+}
