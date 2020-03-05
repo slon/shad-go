@@ -47,6 +47,17 @@ func TestComputeLoad_basic(t *testing.T) {
 			guests: []Guest{{1, 6}, {2, 5}, {3, 4}},
 			result: []Load{{1, 1}, {2, 2}, {3, 3}, {4, 2}, {5, 1}, {6, 0}},
 		},
+		{
+			title: "starting late",
+			guests: []Guest{{3, 7}, {5, 7}},
+			result: []Load{{3, 1}, {5, 2}, {7,0}},
+		},
+		{
+			title: "unordered",
+			guests: []Guest{{4, 7}, {2, 4}, {2, 3}},
+			result: []Load{{2,2}, {3, 1}, {7,0}},
+		},
+		
 	} {
 		t.Run(tc.title, func(t *testing.T) {
 			require.Equal(t, tc.result, ComputeLoad(tc.guests))
