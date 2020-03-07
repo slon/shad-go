@@ -12,6 +12,5 @@ require (
 	golang.org/x/net v0.0.0-20190628185345-da137c7871d7
 	golang.org/x/perf v0.0.0-20191209155426-36b577b0eb03
 	golang.org/x/tools v0.0.0-20200125223703-d33eef8e6825
-	golang.org/x/xerrors v0.0.0-20191011141410-1b5146add898
 	gopkg.in/yaml.v2 v2.2.8
 )
