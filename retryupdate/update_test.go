@@ -28,14 +28,14 @@ var (
 
 	errUpdate = errors.New("update error")
 
-	errGetAuth = &kvapi.ApiError{Method: "get", Err: &kvapi.AuthError{Msg: "token expired"}}
-	errSetAuth = &kvapi.ApiError{Method: "set", Err: &kvapi.AuthError{Msg: "token expired"}}
+	errGetAuth = &kvapi.APIError{Method: "get", Err: &kvapi.AuthError{Msg: "token expired"}}
+	errSetAuth = &kvapi.APIError{Method: "set", Err: &kvapi.AuthError{Msg: "token expired"}}
 
-	errGetNoKey = &kvapi.ApiError{Method: "get", Err: &kvapi.NotFoundError{Key: K0}}
-	errSetNoKey = &kvapi.ApiError{Method: "set", Err: &kvapi.NotFoundError{Key: K0}}
+	errGetNoKey = &kvapi.APIError{Method: "get", Err: &kvapi.NotFoundError{Key: K0}}
+	errSetNoKey = &kvapi.APIError{Method: "set", Err: &kvapi.NotFoundError{Key: K0}}
 
-	errGetTemporary = &kvapi.ApiError{Method: "get", Err: errors.New("unavailable")}
-	errSetTemporary = &kvapi.ApiError{Method: "set", Err: errors.New("unavailable")}
+	errGetTemporary = &kvapi.APIError{Method: "get", Err: errors.New("unavailable")}
+	errSetTemporary = &kvapi.APIError{Method: "set", Err: errors.New("unavailable")}
 )
 
 type setMatcher struct {
@@ -262,7 +262,7 @@ func TestRetrySetConflict(t *testing.T) {
 
 		c.EXPECT().
 			Set(SetRequest(K0, V1, UUID0)).
-			Return(nil, &kvapi.ApiError{Method: "set", Err: &kvapi.ConflictError{ExpectedVersion: UUID1, ProvidedVersion: UUID0}}),
+			Return(nil, &kvapi.APIError{Method: "set", Err: &kvapi.ConflictError{ExpectedVersion: UUID1, ProvidedVersion: UUID0}}),
 
 		c.EXPECT().
 			Get(&kvapi.GetRequest{Key: K0}).
@@ -296,7 +296,7 @@ func TestRetrySetFalseConflict(t *testing.T) {
 		// second Set returns conflict with ExpectedVersion == OldVersion from previous request.
 		c.EXPECT().
 			Set(SetRequest(K0, V1, UUID0)).
-			Return(nil, &kvapi.ApiError{Method: "set", Err: conflictErr}),
+			Return(nil, &kvapi.APIError{Method: "set", Err: conflictErr}),
 	)
 
 	require.NoError(t, retryupdate.UpdateValue(c, K0, updateFn))

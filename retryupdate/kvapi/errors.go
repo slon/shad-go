@@ -9,14 +9,14 @@ import (
 )
 
 var (
-	_ error = (*ApiError)(nil)
+	_ error = (*APIError)(nil)
 	_ error = (*ConflictError)(nil)
 	_ error = (*AuthError)(nil)
 	_ error = (*NotFoundError)(nil)
 )
 
 type (
-	ApiError struct {
+	APIError struct {
 		Method string
 
 		Err error
@@ -35,11 +35,11 @@ type (
 	}
 )
 
-func (a *ApiError) Error() string {
+func (a *APIError) Error() string {
 	return fmt.Sprintf("api: %q error: %v", a.Method, a.Err)
 }
 
-func (a *ApiError) Unwrap() error {
+func (a *APIError) Unwrap() error {
 	return a.Err
 }
 
