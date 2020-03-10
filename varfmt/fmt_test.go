@@ -50,6 +50,11 @@ func TestFormat(t *testing.T) {
 			result: "Hello, World",
 		},
 		{
+			format: "He{2}o",
+			args:   []interface{}{0, 1, "ll"},
+			result: "Hello",
+		},
+		{
 			format: "{10}",
 			args:   s[:11],
 			result: "1",
