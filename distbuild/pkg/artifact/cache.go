@@ -16,7 +16,7 @@ var (
 type Cache struct{}
 
 func NewCache(root string) (*Cache, error) {
-	panic("implement me")
+	return &Cache{}, nil
 }
 
 func (c *Cache) Range(artifactFn func(file build.ID) error) error {

@@ -2,8 +2,10 @@ package filecache
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
+	"os"
 
 	"gitlab.com/slon/shad-go/distbuild/pkg/build"
 )
@@ -15,10 +17,16 @@ var (
 )
 
 type Cache struct {
+	rootDir string
 }
 
 func New(rootDir string) (*Cache, error) {
-	panic("implement me")
+	if err := os.MkdirAll(rootDir, 0777); err != nil {
+		return nil, fmt.Errorf("error creating filecache: %w", err)
+	}
+
+	c := &Cache{rootDir: rootDir}
+	return c, nil
 }
 
 func (c *Cache) Range(fileFn func(file build.ID) error) error {

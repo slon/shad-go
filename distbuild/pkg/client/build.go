@@ -8,26 +8,28 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"go.uber.org/zap"
+
 	"gitlab.com/slon/shad-go/distbuild/pkg/build"
 	"gitlab.com/slon/shad-go/distbuild/pkg/proto"
 )
 
 type Client struct {
 	CoordinatorEndpoint string
-
-	SourceDir string
+	SourceDir           string
+	Log                 *zap.Logger
 }
 
 type BuildListener interface {
 	OnJobStdout(jobID build.ID, stdout []byte) error
-	OnJobStderr(jobID build.ID, stdout []byte) error
+	OnJobStderr(jobID build.ID, stderr []byte) error
 
 	OnJobFinished(jobID build.ID) error
 	OnJobFailed(jobID build.ID, code int, error string) error
 }
 
 func (c *Client) uploadSources(ctx context.Context, src proto.MissingSources) error {
-
+	return nil
 }
 
 func (c *Client) Build(ctx context.Context, graph build.Graph, lsn BuildListener) error {
@@ -42,6 +44,8 @@ func (c *Client) Build(ctx context.Context, graph build.Graph, lsn BuildListener
 	}
 	req.Header.Add("Content-Type", "application/json")
 	req = req.WithContext(ctx)
+
+	c.Log.Debug("sending build request", zap.String("url", req.URL.String()))
 
 	rsp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -58,7 +62,7 @@ func (c *Client) Build(ctx context.Context, graph build.Graph, lsn BuildListener
 
 	var missing proto.MissingSources
 	if err := d.Decode(&missing); err != nil {
-		return err
+		return fmt.Errorf("error receiving source list: %w", err)
 	}
 
 	if err := c.uploadSources(ctx, missing); err != nil {
@@ -68,7 +72,7 @@ func (c *Client) Build(ctx context.Context, graph build.Graph, lsn BuildListener
 	for {
 		var update proto.StatusUpdate
 		if err := d.Decode(&update); err != nil {
-			return err
+			return fmt.Errorf("error receiving status update: %w", err)
 		}
 
 		switch {
