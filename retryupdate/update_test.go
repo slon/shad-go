@@ -31,8 +31,8 @@ var (
 	errGetAuth = &kvapi.APIError{Method: "get", Err: &kvapi.AuthError{Msg: "token expired"}}
 	errSetAuth = &kvapi.APIError{Method: "set", Err: &kvapi.AuthError{Msg: "token expired"}}
 
-	errGetNoKey = &kvapi.APIError{Method: "get", Err: &kvapi.NotFoundError{Key: K0}}
-	errSetNoKey = &kvapi.APIError{Method: "set", Err: &kvapi.NotFoundError{Key: K0}}
+	errGetNoKey = &kvapi.APIError{Method: "get", Err: kvapi.ErrKeyNotFound}
+	errSetNoKey = &kvapi.APIError{Method: "set", Err: kvapi.ErrKeyNotFound}
 
 	errGetTemporary = &kvapi.APIError{Method: "get", Err: errors.New("unavailable")}
 	errSetTemporary = &kvapi.APIError{Method: "set", Err: errors.New("unavailable")}

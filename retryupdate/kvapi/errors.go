@@ -3,6 +3,7 @@
 package kvapi
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/gofrs/uuid"
@@ -12,8 +13,9 @@ var (
 	_ error = (*APIError)(nil)
 	_ error = (*ConflictError)(nil)
 	_ error = (*AuthError)(nil)
-	_ error = (*NotFoundError)(nil)
 )
+
+var ErrKeyNotFound = errors.New("key not found")
 
 type (
 	APIError struct {
@@ -28,10 +30,6 @@ type (
 
 	AuthError struct {
 		Msg string
-	}
-
-	NotFoundError struct {
-		Key string
 	}
 )
 
@@ -49,8 +47,4 @@ func (a *ConflictError) Error() string {
 
 func (a *AuthError) Error() string {
 	return fmt.Sprintf("api: auth: %s", a.Msg)
-}
-
-func (a *NotFoundError) Error() string {
-	return fmt.Sprintf("api: key %q is not found", a.Key)
 }
