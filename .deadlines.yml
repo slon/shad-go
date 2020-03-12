@@ -4,6 +4,8 @@
   tasks:
     - task: retryupdate
       score: 100
+    - task: lrucache
+      score: 100
 
 - group:    Interfaces
   start:    27-02-2020 18:00
