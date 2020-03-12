@@ -22,9 +22,9 @@ func TestWaitForPort(t *testing.T) {
 	defer s.Close()
 
 	u, err := url.Parse(s.URL)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	_, port, err := net.SplitHostPort(u.Host)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	require.NoError(t, WaitForPort(t, time.Second, port))
 }

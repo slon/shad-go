@@ -115,7 +115,7 @@ func queryImage(t *testing.T, c *http.Client, url string) image.Image {
 	require.Equal(t, "image/png", resp.Header.Get("Content-Type"))
 
 	img, err := png.Decode(resp.Body)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	return img
 }
@@ -125,7 +125,7 @@ func TestDigitalClock_valid(t *testing.T) {
 	defer stop()
 
 	files, err := ioutil.ReadDir("./testdata")
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	c := &http.Client{Timeout: time.Second * 10}
 
@@ -171,7 +171,7 @@ func TestDigitalClock_invalid(t *testing.T) {
 
 	testName := func(tc *TestCase) string {
 		data, err := json.Marshal(tc)
-		require.Nil(t, err)
+		require.NoError(t, err)
 		return string(data)
 	}
 

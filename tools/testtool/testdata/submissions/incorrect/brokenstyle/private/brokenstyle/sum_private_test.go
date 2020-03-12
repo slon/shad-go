@@ -36,7 +36,7 @@ func readTestCases(filename string) ([]*testCase, error) {
 
 func TestSumPrivate(t *testing.T) {
 	tests, err := readTestCases("./testdata/tests.csv")
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	for _, tc := range tests {
 		s := Sum(tc.a, tc.b)
