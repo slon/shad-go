@@ -1,6 +1,7 @@
 package externalsort
 
 import (
+	"bufio"
 	"bytes"
 	"io/ioutil"
 	"path"
@@ -38,16 +39,18 @@ func TestMerge(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			out := &bytes.Buffer{}
-			w := NewWriterFlusher(out)
+			w := bufio.NewWriter(out)
+			lw := NewWriter(w)
 
 			var readers []LineReader
 			for _, s := range tc.in {
 				readers = append(readers, newStringReader(s))
 			}
 
-			err := Merge(w, readers...)
+			err := Merge(lw, readers...)
 			require.NoError(t, err)
 
+			require.NoError(t, w.Flush())
 			require.Equal(t, tc.out, out.String())
 		})
 	}
@@ -85,12 +88,14 @@ func TestSort(t *testing.T) {
 			in, out := readTestCase(testCaseDir)
 
 			var buf bytes.Buffer
-			err := Sort(&buf, in...)
+			w := bufio.NewWriter(&buf)
+			err := Sort(w, in...)
 			require.NoError(t, err)
 
 			expected, err := ioutil.ReadFile(out)
 			require.NoError(t, err)
 
+			require.NoError(t, w.Flush())
 			require.Equal(t, string(expected), buf.String())
 		})
 	}

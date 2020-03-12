@@ -10,11 +10,11 @@ func NewReader(r io.Reader) LineReader {
 	panic("implement me")
 }
 
-func NewWriterFlusher(w io.Writer) LineWriterFlusher {
+func NewWriter(w io.Writer) LineWriter {
 	panic("implement me")
 }
 
-func Merge(w LineWriterFlusher, readers ...LineReader) error {
+func Merge(w LineWriter, readers ...LineReader) error {
 	panic("implement me")
 }
 

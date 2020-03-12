@@ -6,7 +6,6 @@ type LineReader interface {
 	ReadLine() (string, error)
 }
 
-type LineWriterFlusher interface {
+type LineWriter interface {
 	Write(l string) error
-	Flush() error
 }

@@ -1,6 +1,7 @@
 package externalsort
 
 import (
+	"bufio"
 	"bytes"
 	"errors"
 	"io"
@@ -118,7 +119,7 @@ func TestLineReader_error(t *testing.T) {
 	require.True(t, errors.Is(err, io.EOF))
 }
 
-func TestLineWriterFlusher(t *testing.T) {
+func TestLineWriter(t *testing.T) {
 	for _, tc := range []struct {
 		name  string
 		lines []string
@@ -130,17 +131,25 @@ func TestLineWriterFlusher(t *testing.T) {
 			name:  "simple",
 			lines: []string{"a\n", "b\n", "c\n"},
 		},
+		{
+			name:  "large-line",
+			lines: []string{strings.Repeat("xx", 2049), "x", "y"},
+		},
+		{
+			name:  "huge-line",
+			lines: []string{strings.Repeat("?", 65537), "?", "!"},
+		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			var buf bytes.Buffer
-			w := NewWriterFlusher(&buf)
+			w := bufio.NewWriter(&buf)
+			lw := NewWriter(w)
 
 			for _, l := range tc.lines {
-				require.NoError(t, w.Write(l))
+				require.NoError(t, lw.Write(l))
 			}
 
 			require.NoError(t, w.Flush())
-
 			require.Equal(t, strings.Join(tc.lines, ""), buf.String())
 		})
 	}

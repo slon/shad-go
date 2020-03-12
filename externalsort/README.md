@@ -14,15 +14,14 @@ type LineReader interface {
 	ReadLine() (string, error)
 }
 
-type LineWriterFlusher interface {
+type LineWriter interface {
 	Write(l string) error
-	Flush() error
 }
 ```
 и два конструктора:
 ```
 func NewReader(r io.Reader) LineReader
-func NewWriterFlusher(w io.Writer) LineWriterFlusher
+func NewWriter(w io.Writer) LineWriter
 ```
 
 `NewLineReader` оборачивает переданный `io.Reader` в `LineReader`.
@@ -38,7 +37,7 @@ func NewWriterFlusher(w io.Writer) LineWriterFlusher
 
 Функция слияния произвольного количества отсортированных групп строк:
 ```
-func Merge(w LineWriterFlusher, readers ...LineReader) error
+func Merge(w LineWriter, readers ...LineReader) error
 ```
 
 `Merge` по необходимости читает из reader'ов и пишет во writer.
