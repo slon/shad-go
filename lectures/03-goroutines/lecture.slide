@@ -363,7 +363,7 @@
       go func() {
           time.Sleep(d)
           ch <- time.Now()
-      }
+      }()
       return ch
   }
 
