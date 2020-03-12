@@ -72,9 +72,7 @@ func TestServer_valid(t *testing.T) {
 		t.Run(e, func(t *testing.T) {
 			testDir := path.Join("./testdata", "tests", e)
 			files, err := ioutil.ReadDir(testDir)
-			if err != nil {
-				require.NoError(t, err)
-			}
+			require.NoError(t, err)
 
 			for _, f := range files {
 				if !f.IsDir() {
