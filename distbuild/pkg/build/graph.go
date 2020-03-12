@@ -5,6 +5,7 @@ import (
 	"encoding"
 	"encoding/hex"
 	"fmt"
+	"path/filepath"
 )
 
 type ID [sha1.Size]byte
@@ -13,6 +14,14 @@ var (
 	_ = encoding.TextMarshaler(ID{})
 	_ = encoding.TextUnmarshaler(&ID{})
 )
+
+func (id ID) String() string {
+	return hex.EncodeToString(id[:])
+}
+
+func (id ID) Path() string {
+	return filepath.Join(hex.EncodeToString(id[:1]), hex.EncodeToString(id[:]))
+}
 
 func (id ID) MarshalText() ([]byte, error) {
 	return []byte(hex.EncodeToString(id[:])), nil
@@ -93,6 +102,10 @@ type Cmd struct {
 
 	// CatOutput задаёт выходной файл для команды типа cat.
 	CatOutput string
+}
+
+func (cmd Cmd) Render(outputDir, sourceDir string, deps map[ID]string) Cmd {
+	panic("implement me")
 }
 
 type Graph struct {

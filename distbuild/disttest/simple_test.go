@@ -3,6 +3,7 @@ package disttest
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"gitlab.com/slon/shad-go/distbuild/pkg/build"
@@ -27,5 +28,6 @@ func TestSingleCommand(t *testing.T) {
 	var recorder Recorder
 	require.NoError(t, env.Client.Build(env.Ctx, echoGraph, &recorder))
 
-	require.Equal(t, &JobResult{Stdout: "OK", Code: new(int)}, recorder.Jobs[build.ID{'a'}])
+	assert.Len(t, len(recorder.Jobs), 1)
+	assert.Equal(t, &JobResult{Stdout: "OK", Code: new(int)}, recorder.Jobs[build.ID{'a'}])
 }
