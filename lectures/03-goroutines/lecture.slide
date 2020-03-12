@@ -329,14 +329,14 @@
 * Select
 
   select {
-      case <-ch1:
-          // ...
-      case x := <-ch2:
-          // ...use x...
-      case ch3 <- y:
-          // ...
-      default:
-          // ...
+  case <-ch1:
+      // ...
+  case x := <-ch2:
+      // ...use x...
+  case ch3 <- y:
+      // ...
+  default:
+      // ...
   }
 
 - select блокируется, пока ни один из `case`-ов не может выполниться.
@@ -347,11 +347,11 @@
       // ...create abort channel...
       fmt.Println("Commencing countdown. Press return to abort.")
       select {
-          case <-time.After(10 * time.Second):
-              // Do nothing.
-          case <-abort:
-              fmt.Println("Launch aborted!")
-              return
+      case <-time.After(10 * time.Second):
+          // Do nothing.
+      case <-abort:
+          fmt.Println("Launch aborted!")
+          return
       }
       launch()
   }
