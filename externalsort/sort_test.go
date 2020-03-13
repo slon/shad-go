@@ -3,7 +3,9 @@ package externalsort
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"io/ioutil"
+	"os"
 	"path"
 	"strings"
 	"testing"
@@ -85,12 +87,16 @@ func TestSort(t *testing.T) {
 		testCaseDir := path.Join(testDir, d)
 
 		t.Run(d, func(t *testing.T) {
+			tmpDir, err := ioutil.TempDir("", fmt.Sprintf("sort%s-", d))
+			require.NoError(t, err)
+			defer func() { _ = os.RemoveAll(tmpDir) }()
+
 			in, out := readTestCase(testCaseDir)
+			in = copyFiles(t, in, tmpDir)
 
 			var buf bytes.Buffer
 			w := bufio.NewWriter(&buf)
-			err := Sort(w, in...)
-			require.NoError(t, err)
+			require.NoError(t, Sort(w, in...))
 
 			expected, err := ioutil.ReadFile(out)
 			require.NoError(t, err)
@@ -115,4 +121,28 @@ func listDirs(t *testing.T, dir string) []string {
 	}
 
 	return dirs
+}
+
+func copyFiles(t *testing.T, in []string, dir string) []string {
+	t.Helper()
+
+	var ret []string
+	for _, f := range in {
+		ret = append(ret, copyFile(t, f, dir))
+	}
+
+	return ret
+}
+
+func copyFile(t *testing.T, f, dir string) string {
+	t.Helper()
+
+	data, err := ioutil.ReadFile(f)
+	require.NoError(t, err)
+
+	dst := path.Join(dir, path.Base(f))
+	err = ioutil.WriteFile(dst, data, 0644)
+	require.NoError(t, err)
+
+	return dst
 }

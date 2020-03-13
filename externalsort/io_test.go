@@ -41,12 +41,18 @@ func TestLineReader(t *testing.T) {
 		{
 			name:     "empty",
 			in:       "",
-			expected: []string{""},
+			expected: nil,
 		},
 		{
 			name:     "one-row",
 			in:       "abc",
 			expected: []string{"abc"},
+		},
+		{
+			name: "linebreak",
+			in: `abc
+`,
+			expected: []string{"abc\n"},
 		},
 		{
 			name: "multiple-rows",
@@ -55,7 +61,7 @@ func TestLineReader(t *testing.T) {
 b
 b
 `,
-			expected: []string{"a\n", "\n", "b\n", "b\n", ""},
+			expected: []string{"a\n", "\n", "b\n", "b\n"},
 		},
 		{
 			name:     "large-row",
@@ -112,9 +118,6 @@ func TestLineReader_error(t *testing.T) {
 	require.False(t, errors.Is(err, io.EOF))
 
 	r := newStringReader("")
-	_, err = r.ReadLine()
-	require.NoError(t, err)
-
 	_, err = r.ReadLine()
 	require.True(t, errors.Is(err, io.EOF))
 }
