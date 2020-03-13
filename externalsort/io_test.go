@@ -51,8 +51,9 @@ func TestLineReader(t *testing.T) {
 		{
 			name: "linebreak",
 			in: `abc
+
 `,
-			expected: []string{"abc\n"},
+			expected: []string{"abc", ""},
 		},
 		{
 			name: "multiple-rows",
@@ -61,7 +62,7 @@ func TestLineReader(t *testing.T) {
 b
 b
 `,
-			expected: []string{"a\n", "\n", "b\n", "b\n"},
+			expected: []string{"a", "", "b", "b"},
 		},
 		{
 			name:     "large-row",
@@ -98,7 +99,6 @@ b
 			lines, err := readAll(lineReader)
 			require.NoError(t, err)
 
-			require.Equal(t, strings.Join(lines, ""), tc.in)
 			require.Len(t, lines, len(tc.expected),
 				"expected: %+v, got: %+v", tc.expected, lines)
 			require.Equal(t, tc.expected, lines)
@@ -108,8 +108,14 @@ b
 
 type brokenReader int
 
-func (b brokenReader) Read(data []byte) (n int, err error) {
+func (r brokenReader) Read(data []byte) (n int, err error) {
 	return 0, errors.New("read is broken")
+}
+
+type eofReader int
+
+func (r eofReader) Read(p []byte) (n int, err error) {
+	return 0, io.EOF
 }
 
 func TestLineReader_error(t *testing.T) {
@@ -117,7 +123,7 @@ func TestLineReader_error(t *testing.T) {
 	require.Error(t, err)
 	require.False(t, errors.Is(err, io.EOF))
 
-	r := newStringReader("")
+	r := NewReader(new(eofReader))
 	_, err = r.ReadLine()
 	require.True(t, errors.Is(err, io.EOF))
 }
@@ -128,11 +134,12 @@ func TestLineWriter(t *testing.T) {
 		lines []string
 	}{
 		{
-			name: "empty",
+			name:  "empty",
+			lines: []string{""},
 		},
 		{
 			name:  "simple",
-			lines: []string{"a\n", "b\n", "c\n"},
+			lines: []string{"a", "b", "c"},
 		},
 		{
 			name:  "large-line",
@@ -153,7 +160,8 @@ func TestLineWriter(t *testing.T) {
 			}
 
 			require.NoError(t, w.Flush())
-			require.Equal(t, strings.Join(tc.lines, ""), buf.String())
+			expected := strings.Join(tc.lines, "\n") + "\n"
+			require.Equal(t, expected, buf.String())
 		})
 	}
 }

@@ -28,7 +28,8 @@ func TestMerge(t *testing.T) {
 			out: `0
 1
 1
-1`,
+1
+`,
 		},
 		{
 			// Merge believes lines are read in sorted order.
@@ -36,7 +37,8 @@ func TestMerge(t *testing.T) {
 			in: []string{`1
 0`},
 			out: `1
-0`,
+0
+`,
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
