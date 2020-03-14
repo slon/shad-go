@@ -14,6 +14,7 @@ func BenchmarkMutex_Baseline(b *testing.B) {
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
 			mu.Lock()
+			_ = 0
 			mu.Unlock()
 		}
 	})
