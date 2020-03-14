@@ -79,6 +79,9 @@ func (c *Client) Build(ctx context.Context, graph build.Graph, lsn BuildListener
 		case update.BuildFailed != nil:
 			return fmt.Errorf("build failed: %s", update.BuildFailed.Error)
 
+		case update.BuildFinished != nil:
+			return nil
+
 		case update.JobFinished != nil:
 			jf := update.JobFinished
 

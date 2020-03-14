@@ -15,7 +15,7 @@ var echoGraph = build.Graph{
 			ID:   build.ID{'a'},
 			Name: "echo",
 			Cmds: []build.Cmd{
-				{Exec: []string{"echo", "-n", "OK"}},
+				{Exec: []string{"echo", "OK"}},
 			},
 		},
 	},
@@ -25,9 +25,9 @@ func TestSingleCommand(t *testing.T) {
 	env, cancel := newEnv(t)
 	defer cancel()
 
-	var recorder Recorder
-	require.NoError(t, env.Client.Build(env.Ctx, echoGraph, &recorder))
+	recorder := NewRecorder()
+	require.NoError(t, env.Client.Build(env.Ctx, echoGraph, recorder))
 
-	assert.Len(t, len(recorder.Jobs), 1)
-	assert.Equal(t, &JobResult{Stdout: "OK", Code: new(int)}, recorder.Jobs[build.ID{'a'}])
+	assert.Len(t, recorder.Jobs, 1)
+	assert.Equal(t, &JobResult{Stdout: "OK\n", Code: new(int)}, recorder.Jobs[build.ID{'a'}])
 }

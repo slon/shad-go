@@ -2,6 +2,7 @@ package disttest
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -116,8 +117,22 @@ func newEnv(t *testing.T) (e *env, cancel func()) {
 	require.NoError(t, err)
 
 	go func() {
-		env.Logger.Error("http server stopped", zap.Error(env.HTTP.Serve(lsn)))
+		err := env.HTTP.Serve(lsn)
+		if err != http.ErrServerClosed {
+			env.Logger.Fatal("http server stopped", zap.Error(err))
+		}
 	}()
+
+	for _, w := range env.Workers {
+		go func(w *worker.Worker) {
+			err := w.Run(env.Ctx)
+			if errors.Is(err, context.Canceled) {
+				return
+			}
+
+			env.Logger.Fatal("worker stopped", zap.Error(err))
+		}(w)
+	}
 
 	return env, func() {
 		cancelRootContext()
