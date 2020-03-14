@@ -8,6 +8,8 @@
       score: 100
     - task: externalsort
       score: 100
+    - task: keylock
+      score: 200
 
 - group:    Interfaces
   start:    27-02-2020 18:00
