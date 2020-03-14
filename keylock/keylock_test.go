@@ -67,8 +67,8 @@ func TestKeyLock_DeadlockFree(t *testing.T) {
 		defer wg.Done()
 
 		for i := 0; i < N; i++ {
-			locked, unlock := l.LockKeys(keys, nil)
-			if !locked {
+			cancelled, unlock := l.LockKeys(keys, nil)
+			if cancelled {
 				t.Error("spurious lock failure")
 				return
 			}
@@ -100,8 +100,8 @@ func TestKeyLock_SingleKeyStress(t *testing.T) {
 			defer wg.Done()
 
 			for i := 0; i < N; i++ {
-				locked, unlock := l.LockKeys([]string{"a"}, timeout(time.Millisecond))
-				if locked {
+				cancelled, unlock := l.LockKeys([]string{"a"}, timeout(time.Millisecond))
+				if !cancelled {
 					unlock()
 				}
 			}
