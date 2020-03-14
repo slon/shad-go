@@ -21,6 +21,9 @@ func readAll(r LineReader) (lines []string, err error) {
 		l, err := r.ReadLine()
 		if err != nil {
 			if errors.Is(err, io.EOF) {
+				if l != "" {
+					lines = append(lines, l)
+				}
 				return lines, nil
 			}
 			return nil, err
