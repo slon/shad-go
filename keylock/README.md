@@ -15,3 +15,7 @@ type KeyLock interface {
     LockKeys(keys []string, cancel <-chan struct{}) (canceled bool, unlock func())
 }
 ```
+
+Реализация не должна содержать busy wait. Тоесть, если вызов LockKeys не может выполниться,
+потому что какие-то из ключей залочены другими горутинами, то текущая горутина
+должна засыпать.
