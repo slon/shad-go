@@ -61,3 +61,29 @@ func BenchmarkKeyLock_DifferentKeys(b *testing.B) {
 		}
 	})
 }
+
+func BenchmarkKeyLock_NoBusyWait(b *testing.B) {
+	l := New()
+
+	lockedKey := []string{"locked"}
+	l.LockKeys(lockedKey, nil)
+
+	cancel := make(chan struct{})
+	defer close(cancel)
+	for i := 0; i < 10000; i++ {
+		go func() {
+			l.LockKeys(lockedKey, cancel)
+		}()
+	}
+
+	b.ResetTimer()
+
+	openKey := []string{"a"}
+	for i := 0; i < b.N; i++ {
+		canceled, unlock := l.LockKeys(openKey, nil)
+		if canceled {
+			b.Fatal("spurious lock fail")
+		}
+		unlock()
+	}
+}
