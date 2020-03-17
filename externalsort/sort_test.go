@@ -24,11 +24,14 @@ func TestMerge(t *testing.T) {
 			name: "simple",
 			in: []string{`0`, `1
 1
-1`},
+1`, `0
+2`},
 			out: `0
+0
 1
 1
 1
+2
 `,
 		},
 		{
