@@ -2,3 +2,4 @@ grade:
   image: eu.gcr.io/shad-ts/grader/go
   script:
     - testtool grade
+  timeout: 10 minutes
