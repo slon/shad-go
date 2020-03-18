@@ -29,15 +29,13 @@ type CoverageRequirements struct {
 func getCoverageRequirements(rootPackage string) *CoverageRequirements {
 	files := listTestFiles(rootPackage)
 
-	r := &CoverageRequirements{}
 	for _, f := range files {
-		r, _ := searchCoverageComment(f)
-		if r.Enabled {
+		if r, _ := searchCoverageComment(f); r.Enabled {
 			return r
 		}
 	}
 
-	return r
+	return &CoverageRequirements{}
 }
 
 // searchCoverageComment searches for the first occurrence of the comment of the form
