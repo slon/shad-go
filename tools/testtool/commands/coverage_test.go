@@ -10,8 +10,4 @@ func Test_getCoverageRequirements(t *testing.T) {
 	r := getCoverageRequirements("../testdata/coverage/sum")
 	require.True(t, r.Enabled)
 	require.Equal(t, 90.0, r.Percent)
-	t.Logf("r: %+v", r)
-	//require.Equal(t,
-	//	absPaths([]string{"sum/private_test.go", "sum/public_test.go"}),
-	//	getCoverageRequirements("../testdata/coverage"))
 }
