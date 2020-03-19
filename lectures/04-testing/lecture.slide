@@ -486,4 +486,17 @@ Good example
 
 .play mocks/mocks_test.go /func/,/^}/
 
+* gomock
 
+.play gomock/example.go
+
+- Запуск `go`generate`.` создаст файл `mock.go`
+- Хорошая идея - класть `mock`-и в отдельный пакет.
+
+* gomock
+
+.play gomock/example_test.go
+
+* httptest
+
+.play httptest/main.go /func/,/^}/
