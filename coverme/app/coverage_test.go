@@ -2,4 +2,4 @@
 
 package app
 
-// min coverage: 85%
+// min coverage: 90%
