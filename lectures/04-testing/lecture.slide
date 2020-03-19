@@ -516,5 +516,5 @@ Good example
       g.Assert(t, "example", recorder.Body.Bytes())
   }
 
-* `go test -update` сохраняет результат в файл
-* `go test` сравнивает вывод с сохранённым результатом
+- `go test -update` сохраняет результат в файл
+- `go test` сравнивает вывод с сохранённым результатом
