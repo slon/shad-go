@@ -2,12 +2,13 @@
 
 В этой задаче нужно покрыть простой todo-app http сервис unit тестами.
 
-Имеющиеся `_test.go` файлы лучше не трогать,
-при тестировании все изменения перетираются.
-
+Необходимо покрыть все sub-package'и.
 Package main можно не тестировать.
 
-Тестирующая система будет проверяться code coverage.
+Существующие файлы менять не нужно.
+Нужно создавать новые файлы с тестами.
+
+Тестирующая система будет проверять code coverage.
 Порог задан в [coverage_test.go](./app/coverage_test.go)
 
 Как посмотреть coverage:
@@ -15,12 +16,15 @@ Package main можно не тестировать.
 go test -v -cover ./coverme/...
 ```
 
+Coverage можно выводить в html (см. ссылки), и эта функциональность поддерживается в Goland.
+
 ## Ссылки
 
 1. cover: https://blog.golang.org/cover
 2. [gomock](https://github.com/golang/mock) для создания мока базы данных при тестировании серевера
 3. [httptest.ResponseRecorder](https://golang.org/pkg/net/http/httptest/#ResponseRecorder) для тестирования handler'ов сервера
 4. [httptest.Server](https://golang.org/pkg/net/http/httptest/#Server) для тестирования клинета
+5. Если вы ждёте, когда же выложат лекцию: https://www.youtube.com/watch?v=ndmB0bj7eyw
 
 ## O сервисе
 
