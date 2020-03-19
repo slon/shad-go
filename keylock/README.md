@@ -11,7 +11,7 @@ type KeyLock interface {
     // Upon successful completion, function guarantees that no other call with intersecting set of keys
     // will finish, until unlock() is called.
     //
-    // If cancel channel is closed, function returns immediately.
+    // If cancel channel is closed, function stops trying to lock received keys and returns immediately
     LockKeys(keys []string, cancel <-chan struct{}) (canceled bool, unlock func())
 }
 ```
