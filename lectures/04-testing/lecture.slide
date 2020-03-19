@@ -507,14 +507,14 @@ Good example
       recorder := httptest.NewRecorder()
 
       req, err := http.NewRequest("GET", "/example", nil)
-      assert.Nil(t, err)
+      require.NoError(t, err)
 
       handler := http.HandlerFunc(ExampleHandler)
-      handler.ServeHTTP()
+      handler.ServeHTTP(req, recorder)
 
       g := goldie.New(t)
       g.Assert(t, "example", recorder.Body.Bytes())
   }
 
-- `go test -update` сохраняет результат в файл
-- `go test` сравнивает вывод с сохранённым результатом
+- `go`test`-update` сохраняет результат в файл
+- `go`test` сравнивает вывод с сохранённым результатом
