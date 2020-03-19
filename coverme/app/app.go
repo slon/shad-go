@@ -13,8 +13,8 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 
-	"gitlab.com/slon/shad-go/todo/models"
-	"gitlab.com/slon/shad-go/todo/utils"
+	"gitlab.com/slon/shad-go/coverme/models"
+	"gitlab.com/slon/shad-go/coverme/utils"
 )
 
 type App struct {

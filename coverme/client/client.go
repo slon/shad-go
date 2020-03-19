@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"gitlab.com/slon/shad-go/todo/models"
+	"gitlab.com/slon/shad-go/coverme/models"
 )
 
 type Client struct {
