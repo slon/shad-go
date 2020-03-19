@@ -1,0 +1,448 @@
+Тестирование
+Лекция 5
+
+Фёдор Короткий
+
+* go test
+
+- `*_test.go` файлы не являются частью пакета, а содержат тесты.
+- `go`test` создаёт нужный main, компилирует исполняемый файл и запускает его.
+
+* Тестовые функции
+
+Тестовые функции должны иметь сигнатуру:
+
+  func TestName(t *testing.T) {
+      // ...
+  }
+
+Параметр `*testing.T` используется, чтобы сообщить о падении теста.
+
+* Пример Palindrome
+
+.play word1/word.go /func IsPa/,/^}/
+
+.play word1/word_test.go /func TestPa/,/^}/
+
+.play word1/word_test.go /func TestNonPa/,/^}/
+
+* Пример Palindrome
+
+.play word1/word_test.go /func TestFrench/,/OMIT/
+
+  $ go test -v -run="French|Canal"
+  === RUN TestFrenchPalindrome
+  --- FAIL: TestFrenchPalindrome (0.00s)
+  word_test.go:28: IsPalindrome("été") = false
+  === RUN TestCanalPalindrome
+  --- FAIL: TestCanalPalindrome (0.00s)
+  word_test.go:35: IsPalindrome("A man, a plan, a canal: Panama") = false
+  FAIL
+  exit status 1
+  FAIL gopl.io/ch11/word1 0.014s
+
+* Пример Palindrome
+
+.play word2/word.go /func IsPa/,/^}/
+
+* Table Driven Test
+
+.play word2/word_test.go /func Test/,/^}/
+
+* Пример Echo
+
+.play echo/echo.go /var/,/OMIT/
+
+* Пример Echo
+
+.play echo/echo_test.go /func TestEcho/,/^}/
+
+* External Tests
+
+  $ go list -f={{.GoFiles}} fmt
+  [doc.go format.go print.go scan.go]
+
+  $ go list -f={{.TestGoFiles}} fmt
+  [export_test.go]
+
+  $ go list -f={{.XTestGoFiles}} fmt
+  [fmt_test.go scan_test.go stringer_test.go]
+
+Package test
+
+  package fmt
+
+  func TestXXX(t *testing.T) {}
+
+External test
+
+  package fmt_test
+
+  func TestYYY(t *testing.T) {}
+
+* fmt isSpace example
+
+  // export_test.go
+  package fmt
+
+  var IsSpace = isSpace
+
+- fmt не зависит от unicode, и содержит упрощённую реализацию isSpace.
+
+- External тесты fmt проверяют, что fmt.isSpace и unicode.IsSpace не
+отличаются в поведении.
+
+* Writing Effective tests
+
+Bad example
+
+  import (
+      "fmt"
+      "strings"
+      "testing"
+  )
+
+  // A poor assertion function.
+  func assertEqual(x, y int) {
+      if x != y {
+          panic(fmt.Sprintf("%d != %d", x, y))
+      }
+  }
+
+  func TestSplit(t *testing.T) {
+      words := strings.Split("a:b:c", ":")
+      assertEqual(len(words), 4)
+      // ...
+  }
+
+Тест упадёт с сообщением `3 != 4` после страниц стектрейсов.
+
+* Writing Effective tests
+
+Good example
+
+  func TestSplit(t *testing.T) {
+      s, sep := "a:b:c", ":"
+      words := strings.Split(s, sep)
+      if got, want := len(words), 3; got != want {
+          t.Errorf("Split(%q, %q) returned %d words, want %d",
+              s, sep, got, want)
+      }
+      // ...
+  }
+
+* Завершение теста
+
+  type Banana struct {
+      Color string
+      Tasty bool
+  }
+
+  func TestBanana(t *testing.T) {
+      banana, err := GetBanana()
+      if err != nil {
+          t.Fatalf("GetBanana() failed: %v", err)
+      }
+
+      if banana.Color != "yellow" {
+          t.Errorf("banana colors is %s, want yellow", banana.Color)
+      }
+      if !banana.Tasty {
+          t.Errorf("banana is not tasty")
+      }
+  }
+
+* Завершение теста
+
+- Иногда тест нужно завершить преждевременно.
+
+  t.Fatal("gcc not found in PATH")
+  t.Fatalf("request failed: %v", err)
+  t.FailNow()
+
+- Иногда тест нужно продолжать, чтобы узнать больше информации
+
+  t.Error("i got a bad feeling about this")
+  t.Errorf("%d documents found, want %d", 2, 3)
+  t.Fail()
+
+- Иногда нужно просто залогировать информацию на будущее
+
+  t.Logf("using go from %s", path)
+
+* Тестовые проверки в других горутинах
+
+  func TestGo(t *testing.T) {
+     var wg sync.WaitGroup
+     wg.Add(2)
+
+     go func () {
+         defer wg.Done()
+         // This is OK
+         t.Error("1 != 2")
+     }()
+
+     go func () {
+         defer wg.Done()
+         // This is INVALID
+         t.Fatal("1 != 2")
+     }()
+
+     wg.Wait()
+  }
+
+* Горутины и завершение теста
+
+  func TestGo(t *testing.T) {
+      go func() {
+          for {
+              time.Sleep(time.Second)
+              t.Logf("tick") // This will panic
+          }
+      }()
+  }
+
+* Правильное завершение
+
+  func TestGo(t *testing.T) {
+      var wg sync.WaitGroup
+      defer wg.Wait()
+
+      ctx, cancel := context.WithCancel(context.Background())
+      defer cancel()
+
+      wg.Add(1)
+      go func() {
+          defer wg.Done()
+          for {
+              select {
+              case <-time.After(time.Second):
+              case <-ctx.Done():
+                  return
+              }
+
+              t.Logf("tick")
+          }
+      }()
+  }
+
+* testify
+
+  func TestSum(t *testing.T) {
+      if got, want := Sum(1, 2), 4; got != want {
+          t.Errorf("Sum(%d, %d) = %d, want %d", 1, 2, got, want)
+      }
+  }
+
+  === RUN   TestSum
+  --- FAIL: TestSum (0.00s)
+      example_test.go:11: Sum(1, 2) = 3, want 4
+  FAIL
+
+* testify
+
+  func TestSum0(t *testing.T) {
+      assert.Equalf(t, 4, Sum(1, 2), "Sum(%d, %d)", 1, 2)
+  }
+
+  === RUN   TestSum0
+  --- FAIL: TestSum0 (0.00s)
+      example_test.go:20: 
+        	Error Trace:	example_test.go:20
+        	Error:      	Not equal: 
+        	            	expected: 4
+        	            	actual  : 3
+        	Test:       	TestSum0
+        	Messages:   	Sum(1, 2)
+
+- Функции из пакета `assert` работают как `t.Errorf`.
+- Функции из пакета `require` работают как `t.Fatalf`.
+
+* testify
+
+  func TestCall(t *testing.T) {
+      res, err := Call()
+      require.NoError(t, err)
+
+      assert.Equal(t, 42, res)
+  }
+
+- Для проверок ошибок используйте `require.Error` и `require.NoError`.
+
+* Coverage
+
+- Пример в goland.
+
+* Benchmark Functions
+
+  func BenchmarkIsPalindrome(b *testing.B) {
+      for i := 0; i < b.N; i++ {
+          IsPalindrome("A man, a plan, a canal: Panama")
+      }
+  }
+
+  $ go test -bench=.
+  PASS
+  BenchmarkIsPalindrome-8 1000000  1035 ns/op
+  ok  gopl.io/ch11/word2  2.179s
+
+- `b.ReportAllocs()` включает подсчёт аллокаций
+- `-benchmem` включает подсчёт аллокаций глобально
+
+* Benchmark & Test Parameters
+
+  func benchmark(b *testing.B, size int) { /* ... */ }
+  func Benchmark10(b *testing.B) { benchmark(b, 10) }
+  func Benchmark100(b *testing.B) { benchmark(b, 100) }
+  func Benchmark1000(b *testing.B) { benchmark(b, 1000) }
+
+Или через под-тесты
+
+  func benchmark(b *testing.B, size int) { /* ... */ }
+
+  func BenchmarkN(b *testing.B) {
+      for _, n := range []int{10, 100, 1000} {
+          b.Run(fmt.Sprint(n), func(b *testing.B) {
+              benchmark(b, n)
+          })
+      }
+  }
+
+* Parallel tests
+
+  func TestA(t *testing.T) {
+      t.Parallel()
+      // ...
+  }
+
+  func TestB(t *testing.T) {
+      t.Parallel()
+      // ...
+  }
+
+  func TestC(t *testing.T) {
+      // ...
+  }
+
+* Example Tests
+
+  func ExampleIsPalindrome() {
+      fmt.Println(IsPalindrome("A man, a plan, a canal: Panama"))
+      fmt.Println(IsPalindrome("palindrome"))
+      // Output:
+      // true
+      // false
+  }
+
+Если `Output` нет, то `Example` слушит только для документации.
+
+  func ExampleAPI() {
+      var c *Client // skip initialization
+
+      rsp, err := c.Call(&Request{})
+      _ = err
+      _ = rsp
+  }
+
+* TestMain
+
+Иногда нужно сделать глобальную инициализацию.
+
+  func TestMain(m *testing.M) {
+      if os.Getenv("INSIDE_DOCKER") == "" {
+          os.Exit(runSelfInDocker())
+      }
+
+      os.Exit(m.Run())
+  }
+
+* t.Helper()
+
+  func assertGood(t *testing.T, i int) {
+      if i != 0 {
+          t.Errorf("i (= %d) != 0", i)
+      }
+  }
+
+  func TestA(t *testing.T) {
+      // which one failed?
+      assertGood(t, 0) 
+      assertGood(t, 1)
+  }
+
+  === RUN   TestA
+  --- FAIL: TestA (0.00s)
+      example_test.go:25: i (= 1) != 0
+  FAIL
+
+* t.Helper()
+
+  func assertGood(t *testing.T, i int) {
+      if i != 0 {
+          t.Errorf("i (= %d) != 0", i)
+      }
+  }
+
+  func TestA(t *testing.T) {
+      assertGood(t, 0)
+      assertGood(t, 1) // line 32
+  }
+
+  === RUN   TestA
+  --- FAIL: TestA (0.00s)
+      example_test.go:32: i (1) != 0
+  FAIL
+
+* t.Skip()
+
+  func TestingDB(t *testing.T) {
+      dbConn := os.Getenv("DB")
+      if dbConn == "off" {
+          t.Skipf("DB=off is set; disabling tests relying on database")
+      }
+  }
+
+Иногда полезно пропускать тесты, которые используют внешние зависимости.
+
+* Test Fixtures
+
+  type env struct {
+      Client *s3.Client
+      DB     *sql.Conn
+  }
+
+  func newEnv(t *testing.T) (*env, func()) {
+      // ...
+  }
+
+  func TestA(t *testing.T) {
+      env, stop := newEnv(t)
+      defer stop()
+
+      // ...
+  }
+
+  func TestB(t *testing.T) {
+      env, stop := newEnv(t)
+      defer stop()
+
+      // ...
+  }
+
+* Fixture Composition
+
+  type MyFixture struct {
+      other.Fixture
+      third.Fixture
+  }
+
+  func newFixture(t *testing.T) (*MyFixture, func()) {
+      other, stopOther := other.NewFixture(t)
+      third, stopThird := third.NewFixture(t)
+
+      return &MyFixture{other, third}, func() {
+          stopOther()
+          stopThird()
+      }
+  }
+
