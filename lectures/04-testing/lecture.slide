@@ -241,6 +241,11 @@ Good example
 
 * testify
 
+  import (
+      "testing"
+      "github.com/stretchr/testify/assert"
+  )
+
   func TestSum0(t *testing.T) {
       assert.Equalf(t, 4, Sum(1, 2), "Sum(%d, %d)", 1, 2)
   }
@@ -334,7 +339,7 @@ Good example
       // false
   }
 
-Если `Output` нет, то `Example` слушит только для документации.
+Если `Output` нет, то `Example` служит только для документации.
 
   func ExampleAPI() {
       var c *Client // skip initialization
@@ -378,6 +383,7 @@ Good example
 * t.Helper()
 
   func assertGood(t *testing.T, i int) {
+      t.Helper()
       if i != 0 {
           t.Errorf("i (= %d) != 0", i)
       }
@@ -445,4 +451,39 @@ Good example
           stopThird()
       }
   }
+
+* Race detector
+
+.play race/race_test.go
+
+* Race detector
+
+  prime@bee ~/C/shad-go> go test -race ./lectures/04-testing/race
+  ==================
+  WARNING: DATA RACE
+  Read at 0x00c000092090 by goroutine 8:
+    gitlab.com/slon/shad-go/lectures/04-testing/race.TestRace()
+        /home/prime/Code/shad-go/lectures/04-testing/race/race_test.go:25 +0x144
+    testing.tRunner()
+        /usr/local/go/src/testing/testing.go:909 +0x199
+
+  Previous write at 0x00c000092090 by goroutine 9:
+    gitlab.com/slon/shad-go/lectures/04-testing/race.TestRace.func1()
+        /home/prime/Code/shad-go/lectures/04-testing/race/race_test.go:17 +0x6c
+
+  ...
+  ==================
+  --- FAIL: TestRace (0.00s)
+      testing.go:853: race detected during execution of test
+  FAIL
+  FAIL	gitlab.com/slon/shad-go/lectures/04-testing/race	0.007s
+
+* White box testing
+
+.play mocks/mocks.go /var/,/OMIT/
+
+* White box testing
+
+.play mocks/mocks_test.go /func/,/^}/
+
 
