@@ -25,11 +25,13 @@ Coverage можно выводить в html (см. ссылки), и эта ф�
 
 ## Ссылки
 
-1. cover: https://blog.golang.org/cover
-2. [gomock](https://github.com/golang/mock) для создания мока базы данных при тестировании серевера
-3. [httptest.ResponseRecorder](https://golang.org/pkg/net/http/httptest/#ResponseRecorder) для тестирования handler'ов сервера
-4. [httptest.Server](https://golang.org/pkg/net/http/httptest/#Server) для тестирования клинета
-5. Если вы ждёте, когда же выложат лекцию: https://www.youtube.com/watch?v=ndmB0bj7eyw
+1. слайды: https://p.go.manytask.org/04-testing/lecture.slide
+2. cover: https://blog.golang.org/cover
+3. assertions: https://github.com/stretchr/testify
+4. [gomock](https://github.com/golang/mock) для создания мока базы данных при тестировании серевера
+5. [httptest.ResponseRecorder](https://golang.org/pkg/net/http/httptest/#ResponseRecorder) для тестирования handler'ов сервера
+6. [httptest.Server](https://golang.org/pkg/net/http/httptest/#Server) для тестирования клинета
+7. Если вы ждёте, когда же выложат лекцию: https://www.youtube.com/watch?v=ndmB0bj7eyw
 
 ## O сервисе
 
