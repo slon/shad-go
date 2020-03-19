@@ -1,3 +1,5 @@
+package mocks
+
 import (
 	"strings"
 	"testing"

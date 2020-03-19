@@ -1,8 +1,17 @@
+package mocks
+
 import (
 	"fmt"
 	"log"
 	"net/smtp"
 )
+
+var sender, password, hostname string
+var template = "%d. %d%% of your quota"
+
+func bytesInUse(username string) int {
+	return 10000000000
+}
 
 var notifyUser = doNotifyUser
 
