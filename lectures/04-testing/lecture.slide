@@ -500,3 +500,21 @@ Good example
 * httptest
 
 .play httptest/main.go /func/,/^}/
+
+* golden files
+
+  func TestExample(t *testing.T) {
+      recorder := httptest.NewRecorder()
+
+      req, err := http.NewRequest("GET", "/example", nil)
+      assert.Nil(t, err)
+
+      handler := http.HandlerFunc(ExampleHandler)
+      handler.ServeHTTP()
+
+      g := goldie.New(t)
+      g.Assert(t, "example", recorder.Body.Bytes())
+  }
+
+* `go test -update` сохраняет результат в файл
+* `go test` сравнивает вывод с сохранённым результатом
