@@ -263,11 +263,12 @@ func runTests(testDir, privateRepo, problem string) error {
 
 	for testPkg, testBinary := range testBinaries {
 		relPath := strings.TrimPrefix(testPkg, moduleImportPath)
+		coverProfile := path.Join(os.TempDir(), randomName())
 
 		{
 			cmd := exec.Command(testBinary)
 			if coverageReq.Enabled {
-				cmd = exec.Command(testBinary, "-test.coverprofile", "c.out")
+				cmd = exec.Command(testBinary, "-test.coverprofile", coverProfile)
 			}
 			if currentUserIsRoot() {
 				if err := sandbox(cmd); err != nil {
@@ -288,7 +289,7 @@ func runTests(testDir, privateRepo, problem string) error {
 		if coverageReq.Enabled {
 			log.Printf("checking coverage is at least %.2f%% for %s", coverageReq.Percent, testPkg)
 
-			percent, err := calCoverage(filepath.Join(testDir, relPath, "c.out"))
+			percent, err := calCoverage(coverProfile)
 			if err != nil {
 				return err
 			}
