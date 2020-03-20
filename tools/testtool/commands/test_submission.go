@@ -242,7 +242,7 @@ func runTests(testDir, privateRepo, problem string) error {
 		}
 	}
 
-	coverageReq := getCoverageRequirements(privateRepo)
+	coverageReq := getCoverageRequirements(path.Join(privateRepo, problem))
 	if coverageReq.Enabled {
 		log.Printf("required coverage: %.2f%%", coverageReq.Percent)
 	}
