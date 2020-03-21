@@ -20,6 +20,6 @@ func (t *Todo) MarkFinished() {
 	t.Finished = true
 }
 
-func (t *Todo) MarkUnfished() {
+func (t *Todo) MarkUnfinished() {
 	t.Finished = false
 }
