@@ -261,6 +261,7 @@ func runTests(testDir, privateRepo, problem string) error {
 		}
 	}
 
+	coverProfiles := []string{}
 	for testPkg, testBinary := range testBinaries {
 		relPath := strings.TrimPrefix(testPkg, moduleImportPath)
 		coverProfile := path.Join(os.TempDir(), randomName())
@@ -269,6 +270,7 @@ func runTests(testDir, privateRepo, problem string) error {
 			cmd := exec.Command(testBinary)
 			if coverageReq.Enabled {
 				cmd = exec.Command(testBinary, "-test.coverprofile", coverProfile)
+				coverProfiles = append(coverProfiles, coverProfile)
 			}
 			if currentUserIsRoot() {
 				if err := sandbox(cmd); err != nil {
@@ -283,20 +285,6 @@ func runTests(testDir, privateRepo, problem string) error {
 
 			if err := cmd.Run(); err != nil {
 				return &TestFailedError{E: err}
-			}
-		}
-
-		if coverageReq.Enabled {
-			log.Printf("checking coverage is at least %.2f%% for %s", coverageReq.Percent, testPkg)
-
-			percent, err := calCoverage(coverProfile)
-			if err != nil {
-				return err
-			}
-
-			if percent < coverageReq.Percent {
-				return fmt.Errorf("poor coverage %.2f%%; expected at least %.2f%%",
-					percent, coverageReq.Percent)
 			}
 		}
 
@@ -326,6 +314,21 @@ func runTests(testDir, privateRepo, problem string) error {
 			if err := compareToBaseline(testPkg, privateRepo, buf.Bytes()); err != nil {
 				return err
 			}
+		}
+	}
+
+	if coverageReq.Enabled {
+		log.Printf("checking coverage is at least %.2f%%...", coverageReq.Percent)
+
+		percent, err := calCoverage(coverProfiles)
+		if err != nil {
+			return err
+		}
+		log.Printf("coverage is %.2f%%", percent)
+
+		if percent < coverageReq.Percent {
+			return fmt.Errorf("poor coverage %.2f%%; expected at least %.2f%%",
+				percent, coverageReq.Percent)
 		}
 	}
 

@@ -72,19 +72,38 @@ func searchCoverageComment(fname string) (*CoverageRequirements, error) {
 }
 
 // calCoverage calculates coverage percent for given coverage profile.
-func calCoverage(profile string) (float64, error) {
-	profiles, err := cover.ParseProfiles(profile)
-	if err != nil {
-		return 0.0, fmt.Errorf("cannot parse coverage profile file %s: %w", profile, err)
+func calCoverage(fileNames []string) (float64, error) {
+	type block struct {
+		fileName            string
+		startLine, startCol int
+		endLine, endCol     int
+		numStmt             int
+	}
+	counts := map[block]int{}
+
+	for _, f := range fileNames {
+		profiles, err := cover.ParseProfiles(f)
+		if err != nil {
+			return 0.0, fmt.Errorf("cannot parse coverage profile file %s: %w", f, err)
+		}
+
+		for _, p := range profiles {
+			for _, b := range p.Blocks {
+				counts[block{
+					p.FileName,
+					b.StartLine, b.StartCol,
+					b.EndLine, b.EndCol,
+					b.NumStmt,
+				}] += b.Count
+			}
+		}
 	}
 
 	var total, covered int
-	for _, p := range profiles {
-		for _, block := range p.Blocks {
-			total += block.NumStmt
-			if block.Count > 0 {
-				covered += block.NumStmt
-			}
+	for b, count := range counts {
+		total += b.numStmt
+		if count > 0 {
+			covered += b.numStmt
 		}
 	}
 
