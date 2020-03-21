@@ -9,6 +9,9 @@ func RequireEqual(t T, expected, actual interface{}, msgAndArgs ...interface{})
 func RequireNotEqual(t T, expected, actual interface{}, msgAndArgs ...interface{})
 ```
 
+Функции проверяют на равенство expected и actual и завершают тест, если проверка не прошла.
+msgAndArgs попадают в описание ошибки через fmt.Sprintf.
+
 Пример использования:
 ```
 func TestMath(t *testing.T) {
