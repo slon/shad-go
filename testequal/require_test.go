@@ -106,7 +106,7 @@ func BenchmarkTestifyRequireEqual(b *testing.B) {
 	}
 }
 
-func BenchmarkRequireBytesEqual(b *testing.B) {
+func BenchmarkRequireStringsEqual(b *testing.B) {
 	s1 := strings.Repeat("abacaba", 1024)
 	s2 := strings.Repeat("abacaba", 1024)
 
