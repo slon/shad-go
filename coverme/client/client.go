@@ -22,7 +22,7 @@ func New(addr string) *Client {
 func (c *Client) Add(r *models.AddRequest) (*models.Todo, error) {
 	data, _ := json.Marshal(r)
 
-	resp, err := http.Post(c.addr+"/create", "application/json", bytes.NewReader(data))
+	resp, err := http.Post(c.addr+"/todo/create", "application/json", bytes.NewReader(data))
 	if err != nil {
 		return nil, err
 	}
