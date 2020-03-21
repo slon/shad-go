@@ -90,7 +90,7 @@ func (m *mockT) FailNow() {}
 
 func (m *mockT) Helper() {}
 
-func BenchmarkRequireEqual(b *testing.B) {
+func BenchmarkRequireEqualInt64(b *testing.B) {
 	t := &mockT{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -98,7 +98,7 @@ func BenchmarkRequireEqual(b *testing.B) {
 	}
 }
 
-func BenchmarkTestifyRequireEqual(b *testing.B) {
+func BenchmarkTestifyRequireEqualInt64(b *testing.B) {
 	t := &mockT{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -106,7 +106,7 @@ func BenchmarkTestifyRequireEqual(b *testing.B) {
 	}
 }
 
-func BenchmarkRequireStringsEqual(b *testing.B) {
+func BenchmarkRequireEqualString(b *testing.B) {
 	s1 := strings.Repeat("abacaba", 1024)
 	s2 := strings.Repeat("abacaba", 1024)
 
@@ -117,13 +117,35 @@ func BenchmarkRequireStringsEqual(b *testing.B) {
 	}
 }
 
-func BenchmarkTestifyRequireStringsEqual(b *testing.B) {
-	s1 := strings.Repeat("abacaba", 1024*8)
-	s2 := strings.Repeat("abacaba", 1024*8)
+func BenchmarkTestifyRequireEqualString(b *testing.B) {
+	s1 := strings.Repeat("abacaba", 1024)
+	s2 := strings.Repeat("abacaba", 1024)
 
 	mockT := &mockT{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		require.Equal(mockT, s1, s2)
+	}
+}
+
+func BenchmarkRequireEqualMap(b *testing.B) {
+	m1 := map[string]string{"a": "b", "c": "d", "e": "f"}
+	m2 := map[string]string{"a": "b", "c": "d", "e": "f"}
+
+	mockT := &mockT{}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		RequireEqual(mockT, m1, m2)
+	}
+}
+
+func BenchmarkTestifyRequireEqualMap(b *testing.B) {
+	m1 := map[string]string{"a": "b", "c": "d", "e": "f"}
+	m2 := map[string]string{"a": "b", "c": "d", "e": "f"}
+
+	mockT := &mockT{}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		require.Equal(mockT, m1, m2)
 	}
 }
