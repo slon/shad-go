@@ -1,6 +1,6 @@
 ## testequal
 
-В этой задаче нужно реализовать 4 test helper'а аналогичных функциям из [testify](https://github.com/stretchr/testify):
+В этой задаче нужно реализовать 4 test helper'а, аналогичных функциям из [testify](https://github.com/stretchr/testify):
 
 ```
 func AssertEqual(t T, expected, actual interface{}, msgAndArgs ...interface{}) bool
@@ -9,22 +9,22 @@ func RequireEqual(t T, expected, actual interface{}, msgAndArgs ...interface{})
 func RequireNotEqual(t T, expected, actual interface{}, msgAndArgs ...interface{})
 ```
 
-Пример теста:
+Пример использования:
 ```
 func TestMath(t *testing.T) {
 	AssertEqual(t, 1, 2, "1 == 2")
 }
 ```
-вывод:
+вывод теста:
 ```
 === RUN   TestMath
 --- FAIL: TestMath (0.00s)
-    helper_test.go:43: not equal:
+    math_test.go:43: not equal:
         expected: 1
         actual  : 2
         message : 1 == 2
 FAIL
-FAIL    gitlab.com/slon/shad-go/require 0.003s
+FAIL    gitlab.com/slon/shad-go/testequal 0.003s
 FAIL
 ```
 
