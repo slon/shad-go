@@ -6,7 +6,7 @@
       score: 200
     - task: coverme
       score: 200
-    - task: coverme
+    - task: testequal
       score: 100
 
 - group:    Goroutines
