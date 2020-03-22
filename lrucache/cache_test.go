@@ -110,7 +110,7 @@ func TestCache_eviction(t *testing.T) {
 
 			var keys, values []int
 			c.Range(func(key, value int) bool {
-				require.Equal(t, value, keyToValue[key])
+				require.Equal(t, keyToValue[key], value)
 				keys = append(keys, key)
 				values = append(values, value)
 				return true
