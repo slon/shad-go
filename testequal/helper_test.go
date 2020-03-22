@@ -13,7 +13,7 @@ func TestHelper(t *testing.T) {
 	if os.Getenv("FAIL_ASSERTIONS") == "1" {
 		AssertEqual(t, 1, 2, "%d must be equal to %d", 1, 2)
 		AssertNotEqual(t, 1, 1, "1 != 1")
-		RequireEqual(t, 1, 2, errMsgLog{Exp: 1, Act: 2})
+		RequireEqual(t, 1, 2)
 		return
 	}
 
@@ -25,16 +25,9 @@ func TestHelper(t *testing.T) {
 	err := cmd.Run()
 	if e, ok := err.(*exec.ExitError); ok && !e.Success() {
 		require.Contains(t, buf.String(), "helper_test.go:14")
-		require.Contains(t, buf.String(), "1 must be equal to 2")
 		require.Contains(t, buf.String(), "helper_test.go:15")
-		require.Contains(t, buf.String(), "1 != 1")
 		require.Contains(t, buf.String(), "helper_test.go:16")
 		return
 	}
 	t.Fatalf("process ran with err %v, want exit status 1", err)
-}
-
-type errMsgLog struct {
-	Exp int
-	Act int
 }

@@ -82,13 +82,26 @@ func TestNotEqual(t *testing.T) {
 	}
 }
 
-type mockT struct{}
+type mockT struct {
+	errMsg string
+}
 
-func (m *mockT) Errorf(format string, args ...interface{}) {}
+func (m *mockT) Errorf(format string, args ...interface{}) {
+	m.errMsg = fmt.Sprintf(format, args...)
+}
 
 func (m *mockT) FailNow() {}
 
 func (m *mockT) Helper() {}
+
+func TestErrorMessage(t *testing.T) {
+	mockT := &mockT{}
+	RequireNotEqual(mockT, 1, 1, "1 != 1")
+	require.Contains(t, mockT.errMsg, "1 != 1")
+
+	RequireEqual(mockT, 1, 2, "%d must be equal to %d", 1, 2)
+	require.Contains(t, mockT.errMsg, "1 must be equal to 2")
+}
 
 func BenchmarkRequireEqualInt64(b *testing.B) {
 	t := &mockT{}
