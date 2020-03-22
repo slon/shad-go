@@ -6,6 +6,8 @@
       score: 200
     - task: coverme
       score: 200
+    - task: coverme
+      score: 100
 
 - group:    Goroutines
   start:    12-03-2020 18:00
