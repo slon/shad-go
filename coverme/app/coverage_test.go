@@ -2,4 +2,4 @@
 
 package app
 
-// min coverage: 90%
+// min coverage: app,client,models,utils 90%

@@ -10,7 +10,7 @@ import (
 	"gitlab.com/slon/shad-go/coverme"
 )
 
-// min coverage: 70%
+// min coverage: .,subpkg 70%
 
 func TestSum(t *testing.T) {
 	require.Equal(t, int64(2), coverme.Sum(1, 1))

@@ -18,8 +18,9 @@ import (
 const coverageCommentPrefix = "min coverage: "
 
 type CoverageRequirements struct {
-	Enabled bool
-	Percent float64
+	Enabled  bool
+	Percent  float64
+	Packages []string
 }
 
 // getCoverageRequirements searches for comment in test files
@@ -58,14 +59,25 @@ func searchCoverageComment(fname string) (*CoverageRequirements, error) {
 		}
 		t = strings.TrimPrefix(t, coverageCommentPrefix)
 		t = strings.TrimSuffix(t, "%\n")
-		percent, err := strconv.ParseFloat(t, 64)
+
+		parts := strings.Split(t, " ")
+		if len(parts) != 2 {
+			continue
+		}
+
+		percent, err := strconv.ParseFloat(parts[1], 64)
 		if err != nil {
 			continue
 		}
 		if percent < 0 || percent > 100.0 {
 			continue
 		}
-		return &CoverageRequirements{Enabled: true, Percent: percent}, nil
+
+		return &CoverageRequirements{
+			Enabled:  true,
+			Percent:  percent,
+			Packages: strings.Split(parts[0], ","),
+		}, nil
 	}
 
 	return &CoverageRequirements{}, nil

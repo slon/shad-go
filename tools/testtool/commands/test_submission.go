@@ -254,7 +254,11 @@ func runTests(testDir, privateRepo, problem string) error {
 		testBinaries[testPkg] = binPath
 		cmd := []string{"test", "-mod", "readonly", "-tags", "private", "-c", "-o", binPath, testPkg}
 		if coverageReq.Enabled {
-			cmd = append(cmd, "-cover")
+			pkgs := make([]string, len(coverageReq.Packages))
+			for i, pkg := range coverageReq.Packages {
+				pkgs[i] = path.Join(moduleImportPath, problem, pkg)
+			}
+			cmd = append(cmd, "-cover", "-coverpkg", strings.Join(pkgs, ","))
 		}
 		if err := runGo(cmd...); err != nil {
 			return fmt.Errorf("error building test in %s: %w", testPkg, err)
