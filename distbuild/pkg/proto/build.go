@@ -9,7 +9,7 @@ type MissingSources struct {
 }
 
 type StatusUpdate struct {
-	JobFinished   *FinishedJob
+	JobFinished   *JobResult
 	BuildFailed   *BuildFailed
 	BuildFinished *BuildFinished
 }

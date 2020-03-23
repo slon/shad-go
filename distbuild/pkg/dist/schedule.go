@@ -9,7 +9,7 @@ import (
 
 type scheduledJob struct {
 	job      *build.Job
-	finished *proto.FinishedJob
+	finished *proto.JobResult
 
 	mu   sync.Mutex
 	done chan struct{}
@@ -22,7 +22,7 @@ func newScheduledJob(job *build.Job) *scheduledJob {
 	}
 }
 
-func (s *scheduledJob) finish(f *proto.FinishedJob) {
+func (s *scheduledJob) finish(f *proto.JobResult) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 

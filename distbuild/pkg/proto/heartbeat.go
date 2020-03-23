@@ -4,8 +4,8 @@ import (
 	"gitlab.com/slon/shad-go/distbuild/pkg/build"
 )
 
-// CompleteJob описывает результат работы джоба.
-type FinishedJob struct {
+// JobResult описывает результат работы джоба.
+type JobResult struct {
 	ID build.ID
 
 	Stdout, Stderr []byte
@@ -44,9 +44,9 @@ type HeartbeatRequest struct {
 	// FreeSlots сообщаяет, сколько еще процессов можно запустить на этом воркере.
 	FreeSlots int
 
-	// FinishedJob сообщает координатору, какие джобы завершили исполнение на этом воркере
+	// JobResult сообщает координатору, какие джобы завершили исполнение на этом воркере
 	// на этой итерации цикла.
-	FinishedJob []FinishedJob
+	FinishedJob []JobResult
 
 	// AddedArtifacts говорит, какие артефакты появились в кеше на этой итерации цикла.
 	AddedArtifacts []build.ID

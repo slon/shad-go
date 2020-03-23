@@ -18,7 +18,7 @@ func (w *Worker) buildHeartbeat() *proto.HeartbeatRequest {
 	return req
 }
 
-func (w *Worker) jobFinished(job *proto.FinishedJob) {
+func (w *Worker) jobFinished(job *proto.JobResult) {
 	w.log.Debug("job finished", zap.String("job_id", job.ID.String()))
 
 	w.mu.Lock()

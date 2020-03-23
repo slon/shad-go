@@ -31,7 +31,7 @@ type Worker struct {
 	mu           sync.Mutex
 	newArtifacts []build.ID
 	newSources   []build.ID
-	finishedJobs []proto.FinishedJob
+	finishedJobs []proto.JobResult
 }
 
 func New(
@@ -118,7 +118,7 @@ func (w *Worker) Run(ctx context.Context) error {
 			zap.Int("num_jobs", len(rsp.JobsToRun)))
 
 		for _, job := range rsp.JobsToRun {
-			var finished proto.FinishedJob
+			var finished proto.JobResult
 			finished.ID = job.Job.ID
 
 			var stdout bytes.Buffer
