@@ -1,4 +1,4 @@
-// + build private
+// +build private
 
 package sum
 
