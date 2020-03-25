@@ -31,6 +31,9 @@ func TestEqual(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			AssertEqual(t, tc.expected, tc.actual)
 			RequireEqual(t, tc.expected, tc.actual)
+
+			mockT := new(testing.T)
+			require.False(t, AssertNotEqual(mockT, tc.expected, tc.actual))
 		})
 	}
 }
@@ -78,6 +81,9 @@ func TestNotEqual(t *testing.T) {
 		t.Run(fmt.Sprintf("%T_%T", tc.expected, tc.actual), func(t *testing.T) {
 			AssertNotEqual(t, tc.expected, tc.actual)
 			RequireNotEqual(t, tc.expected, tc.actual)
+
+			mockT := new(testing.T)
+			require.False(t, AssertEqual(mockT, tc.expected, tc.actual))
 		})
 	}
 }
