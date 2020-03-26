@@ -3,6 +3,11 @@ Concurrency with Shared Memory
 
 Фёдор Короткий
 
+* Concurrency with Shared Memory
+
+- Принципы синхронизации, такие же как в C++ или java.
+- Различается набор инструментов в стандартной библиотеке.
+
 * Happens Before
 
 - Одно событие в программе может _произойти_раньше_ (_happens_before_) другого события.
@@ -296,3 +301,36 @@ Concurrency with Shared Memory
 
 .play synconce/map.go /type result/,/OMIT/
 
+* sync.Cond
+
+  type Once struct {
+      done, running bool
+      mu            sync.Mutex
+      cond          *sync.Cond
+  }
+
+  func (once *Once) Do(f func()) {
+      once.mu.Lock()
+      defer once.mu.Unlock()
+      if done {
+          return
+      }
+      if running {
+          once.cond.Wait() // releases and acquires mutex
+          return
+      }
+      running = true
+      once.mu.Unlock()
+      f()
+      once.mu.Lock()
+      done = true
+      once.cond.Broadcast()
+  }
+
+* golang.org/x/sync
+
+Пакеты в golang.org/x содержат код, который не вошёл в стандартную библиотеку.
+
+- errgroup - `sync.WaitGroup` в встроенной обработкой ошибок
+- semaphore - семафор
+- singleflight - дедубликация вызовов
