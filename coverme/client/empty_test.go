@@ -2,4 +2,3 @@
 
 package client
 
-// min coverage: 90%
