@@ -4,7 +4,7 @@
 
 ```
 func AssertEqual(t T, expected, actual interface{}, msgAndArgs ...interface{}) bool
-func AssertNotEqual(t T, expected, actual interface{}, msgAndArgs ...interface{})
+func AssertNotEqual(t T, expected, actual interface{}, msgAndArgs ...interface{}) bool
 func RequireEqual(t T, expected, actual interface{}, msgAndArgs ...interface{})
 func RequireNotEqual(t T, expected, actual interface{}, msgAndArgs ...interface{})
 ```
