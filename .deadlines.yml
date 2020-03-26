@@ -1,3 +1,10 @@
+- group:    Concurrency with shared memory
+  start:    26-03-2020 18:00
+  deadline: 05-04-2020 23:59
+  tasks:
+    - task: batcher
+      score: 200
+
 - group:    Testing
   start:    19-03-2020 18:00
   deadline: 29-03-2020 23:59
