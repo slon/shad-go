@@ -4,6 +4,8 @@
   tasks:
     - task: batcher
       score: 200
+    - task: pubsub
+      score: 300
 
 - group:    Testing
   start:    19-03-2020 18:00
