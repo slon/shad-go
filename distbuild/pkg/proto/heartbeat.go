@@ -18,13 +18,15 @@ type JobResult struct {
 	Error *string
 }
 
+type WorkerID string
+
 type HeartbeatRequest struct {
 	// WorkerID задаёт персистентный идентификатор данного воркера.
 	//
 	// WorkerID так же выступает в качестве endpoint-а, к которому можно подключиться по HTTP.
 	//
 	// В наших тестов, идентификатор будет иметь вид "localhost:%d".
-	WorkerID string
+	WorkerID WorkerID
 
 	// ProcessID задаёт эфемерный идентификатор текущего процесса воркера.
 	//
