@@ -2,6 +2,7 @@ package lrucache
 
 import (
 	"math/rand"
+	"runtime/debug"
 	"sort"
 	"testing"
 
