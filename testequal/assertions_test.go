@@ -23,7 +23,7 @@ func TestEqual(t *testing.T) {
 		{name: "uint16", expected: uint16(1), actual: uint16(1)},
 		{name: "uint32", expected: uint32(1), actual: uint32(1)},
 		{name: "uint64", expected: uint64(1), actual: uint64(1)},
-		{name: "string", expected: 1, actual: 1},
+		{name: "string", expected: "1", actual: "1"},
 		{name: "slice", expected: []int{1, 2, 3}, actual: []int{1, 2, 3}},
 		{name: "map", expected: map[string]string{"a": "b"}, actual: map[string]string{"a": "b"}},
 		{name: "bytes", expected: []byte(`abc`), actual: []byte(`abc`)},
