@@ -66,7 +66,7 @@ func (c *Cache) readLock(id build.ID) error {
 		return ErrWriteLocked
 	}
 
-	c.readLocked[id] += 1
+	c.readLocked[id]++
 	return nil
 }
 
@@ -74,7 +74,7 @@ func (c *Cache) readUnlock(id build.ID) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	c.readLocked[id] -= 1
+	c.readLocked[id]--
 	if c.readLocked[id] == 0 {
 		delete(c.readLocked, id)
 	}

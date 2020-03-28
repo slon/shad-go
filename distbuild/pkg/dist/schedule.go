@@ -38,12 +38,12 @@ func (c *Coordinator) scheduleJob(job *build.Job) *scheduledJob {
 
 	if scheduled, ok := c.scheduledJobs[job.ID]; ok {
 		return scheduled
-	} else {
-		scheduled = newScheduledJob(job)
-		c.scheduledJobs[job.ID] = scheduled
-		c.queue = append(c.queue, scheduled)
-		return scheduled
 	}
+
+	scheduled := newScheduledJob(job)
+	c.scheduledJobs[job.ID] = scheduled
+	c.queue = append(c.queue, scheduled)
+	return scheduled
 }
 
 func (c *Coordinator) pickJob() (*build.Job, bool) {

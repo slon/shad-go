@@ -117,6 +117,7 @@ func (w *Worker) Run(ctx context.Context) error {
 			zap.Int("num_jobs", len(rsp.JobsToRun)))
 
 		for _, spec := range rsp.JobsToRun {
+			spec := spec
 			result, err := w.runJob(ctx, &spec)
 			if err != nil {
 				errStr := fmt.Sprintf("job %s failed: %v", spec.Job.ID, err)

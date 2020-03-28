@@ -84,10 +84,12 @@ func newEnv(t *testing.T) (e *env, cancel func()) {
 		workerName := fmt.Sprintf("worker%d", i)
 		workerDir := filepath.Join(env.RootDir, workerName)
 
-		fileCache, err := filecache.New(filepath.Join(workerDir, "filecache"))
+		var fileCache *filecache.Cache
+		fileCache, err = filecache.New(filepath.Join(workerDir, "filecache"))
 		require.NoError(t, err)
 
-		artifacts, err := artifact.NewCache(filepath.Join(workerDir, "artifacts"))
+		var artifacts *artifact.Cache
+		artifacts, err = artifact.NewCache(filepath.Join(workerDir, "artifacts"))
 		require.NoError(t, err)
 
 		w := worker.New(

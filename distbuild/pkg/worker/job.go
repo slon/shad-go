@@ -63,30 +63,30 @@ func executeCmd(ctx context.Context, cmd *build.Cmd) (stdout, stderr []byte, exi
 	if cmd.CatOutput != "" {
 		err = ioutil.WriteFile(cmd.CatOutput, []byte(cmd.CatTemplate), 0666)
 		return
-	} else {
-		p := exec.CommandContext(ctx, cmd.Exec[0], cmd.Exec[1:]...)
-		p.Dir = cmd.WorkingDirectory
-		p.Env = cmd.Environ
-		p.Stdout = &stdoutBuf
-		p.Stderr = &stderrBuf
-
-		err = p.Run()
-
-		stdout = stdoutBuf.Bytes()
-		stderr = stderrBuf.Bytes()
-
-		if err != nil {
-			var exitErr *exec.ExitError
-			if errors.As(err, &exitErr) {
-				exitCode = exitErr.ExitCode()
-				err = nil
-			}
-		}
-		return
 	}
+
+	p := exec.CommandContext(ctx, cmd.Exec[0], cmd.Exec[1:]...)
+	p.Dir = cmd.WorkingDirectory
+	p.Env = cmd.Environ
+	p.Stdout = &stdoutBuf
+	p.Stderr = &stderrBuf
+
+	err = p.Run()
+
+	stdout = stdoutBuf.Bytes()
+	stderr = stderrBuf.Bytes()
+
+	if err != nil {
+		var exitErr *exec.ExitError
+		if errors.As(err, &exitErr) {
+			exitCode = exitErr.ExitCode()
+			err = nil
+		}
+	}
+	return
 }
 
-func (w *Worker) prepareSourceDir(sourceDir string, sourceFiles map[build.ID]string) (unlock func(), err error) {
+func (w *Worker) prepareSourceDir(sourceDir string, sourceFiles map[build.ID]string) (unlockSources func(), err error) {
 	var unlocks []func()
 	doUnlock := func() {
 		for _, u := range unlocks {
@@ -119,12 +119,12 @@ func (w *Worker) prepareSourceDir(sourceDir string, sourceFiles map[build.ID]str
 		}
 	}
 
-	unlock = doUnlock
+	unlockSources = doUnlock
 	doUnlock = nil
 	return
 }
 
-func (w *Worker) lockDeps(deps []build.ID) (paths map[build.ID]string, unlock func(), err error) {
+func (w *Worker) lockDeps(deps []build.ID) (paths map[build.ID]string, unlockDeps func(), err error) {
 	var unlocks []func()
 	doUnlock := func() {
 		for _, u := range unlocks {
@@ -150,7 +150,7 @@ func (w *Worker) lockDeps(deps []build.ID) (paths map[build.ID]string, unlock fu
 		paths[id] = filepath.Join(path, outputDirName)
 	}
 
-	unlock = doUnlock
+	unlockDeps = doUnlock
 	doUnlock = nil
 	return
 }
@@ -173,18 +173,18 @@ func (w *Worker) runJob(ctx context.Context, spec *proto.JobSpec) (*proto.JobRes
 			return
 		}
 
-		if err := abort(); err != nil {
+		if err = abort(); err != nil {
 			w.log.Warn("error aborting job", zap.Any("job_id", spec.Job.ID), zap.Error(err))
 		}
 	}()
 
 	outputDir := filepath.Join(aRoot, outputDirName)
-	if err := os.Mkdir(outputDir, 0777); err != nil {
+	if err = os.Mkdir(outputDir, 0777); err != nil {
 		return nil, err
 	}
 
 	sourceDir := filepath.Join(aRoot, srcDirName)
-	if err := os.Mkdir(sourceDir, 0777); err != nil {
+	if err = os.Mkdir(sourceDir, 0777); err != nil {
 		return nil, err
 	}
 

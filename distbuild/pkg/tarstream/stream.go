@@ -24,12 +24,14 @@ func Send(dir string, w io.Writer) error {
 			return nil
 		}
 
-		if info.IsDir() {
+		switch {
+		case info.IsDir():
 			return tw.WriteHeader(&tar.Header{
 				Name:     rel,
 				Typeflag: tar.TypeDir,
 			})
-		} else {
+
+		default:
 			h := &tar.Header{
 				Typeflag: tar.TypeReg,
 				Name:     rel,
