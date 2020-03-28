@@ -67,6 +67,34 @@ func TestJobCaching(t *testing.T) {
 	require.Equal(t, []byte("OK\n"), output)
 }
 
-func TestSourceFiles(t *testing.T) {
+var sourceFilesGraph = build.Graph{
+	SourceFiles: map[build.ID]string{
+		build.ID{'a'}: "a.txt",
+		build.ID{'c'}: "b/c.txt",
+	},
+	Jobs: []build.Job{
+		{
+			ID:   build.ID{'a'},
+			Name: "echo",
+			Cmds: []build.Cmd{
+				{Exec: []string{"cat", "{{.SourceDir}}/a.txt"}},
+				{Exec: []string{"bash", "-c", "cat {{.SourceDir}}/b/c.txt > /dev/stderr"}},
+			},
+			Inputs: []string{
+				"a.txt",
+				"b/c.txt",
+			},
+		},
+	},
+}
 
+func TestSourceFiles(t *testing.T) {
+	env, cancel := newEnv(t)
+	defer cancel()
+
+	recorder := NewRecorder()
+	require.NoError(t, env.Client.Build(env.Ctx, sourceFilesGraph, recorder))
+
+	assert.Len(t, recorder.Jobs, 1)
+	assert.Equal(t, &JobResult{Stdout: "foo", Stderr: "bar", Code: new(int)}, recorder.Jobs[build.ID{'a'}])
 }
