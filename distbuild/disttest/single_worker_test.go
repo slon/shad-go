@@ -1,6 +1,7 @@
 package disttest
 
 import (
+	"fmt"
 	"io/ioutil"
 	"testing"
 
@@ -69,8 +70,8 @@ func TestJobCaching(t *testing.T) {
 
 var sourceFilesGraph = build.Graph{
 	SourceFiles: map[build.ID]string{
-		build.ID{'a'}: "a.txt",
-		build.ID{'c'}: "b/c.txt",
+		{'a'}: "a.txt",
+		{'c'}: "b/c.txt",
 	},
 	Jobs: []build.Job{
 		{
@@ -97,4 +98,35 @@ func TestSourceFiles(t *testing.T) {
 
 	assert.Len(t, recorder.Jobs, 1)
 	assert.Equal(t, &JobResult{Stdout: "foo", Stderr: "bar", Code: new(int)}, recorder.Jobs[build.ID{'a'}])
+}
+
+var artifactTransferGraph = build.Graph{
+	Jobs: []build.Job{
+		{
+			ID:   build.ID{'a'},
+			Name: "write",
+			Cmds: []build.Cmd{
+				{CatTemplate: "OK", CatOutput: "{{.OutputDir}}/out.txt"},
+			},
+		},
+		{
+			ID:   build.ID{'b'},
+			Name: "cat",
+			Cmds: []build.Cmd{
+				{Exec: []string{"cat", fmt.Sprintf("{{index .Deps %q}}/out.txt", build.ID{'a'})}},
+			},
+			Deps: []build.ID{{'a'}},
+		},
+	},
+}
+
+func TestArtifactTransfer(t *testing.T) {
+	env, cancel := newEnv(t)
+	defer cancel()
+
+	recorder := NewRecorder()
+	require.NoError(t, env.Client.Build(env.Ctx, artifactTransferGraph, recorder))
+
+	assert.Len(t, recorder.Jobs, 2)
+	assert.Equal(t, &JobResult{Stdout: "OK", Code: new(int)}, recorder.Jobs[build.ID{'b'}])
 }

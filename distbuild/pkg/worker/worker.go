@@ -119,7 +119,7 @@ func (w *Worker) Run(ctx context.Context) error {
 		for _, spec := range rsp.JobsToRun {
 			result, err := w.runJob(ctx, &spec)
 			if err != nil {
-				errStr := err.Error()
+				errStr := fmt.Sprintf("job %s failed: %v", spec.Job.ID, err)
 				w.jobFinished(&proto.JobResult{ID: spec.Job.ID, Error: &errStr})
 				continue
 			}
