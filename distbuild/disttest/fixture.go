@@ -34,7 +34,7 @@ type env struct {
 	HTTP *http.Server
 }
 
-const nWorkers = 4
+const nWorkers = 1
 
 func newEnv(t *testing.T) (e *env, cancel func()) {
 	cwd, err := os.Getwd()

@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os/exec"
 	"sync"
 
 	"go.uber.org/zap"
@@ -117,29 +116,15 @@ func (w *Worker) Run(ctx context.Context) error {
 		w.log.Debug("received heartbeat response",
 			zap.Int("num_jobs", len(rsp.JobsToRun)))
 
-		for _, job := range rsp.JobsToRun {
-			var finished proto.JobResult
-			finished.ID = job.Job.ID
-
-			var stdout bytes.Buffer
-			var stderr bytes.Buffer
-
-			for _, jobCmd := range job.Job.Cmds {
-				cmd := exec.Command(jobCmd.Exec[0], jobCmd.Exec[1:]...)
-				cmd.Stdout = &stdout
-				cmd.Stderr = &stderr
-
-				if err := cmd.Run(); err != nil {
-					errorString := err.Error()
-					finished.Error = &errorString
-					finished.ExitCode = cmd.ProcessState.ExitCode()
-					break
-				}
+		for _, spec := range rsp.JobsToRun {
+			result, err := w.runJob(ctx, &spec)
+			if err != nil {
+				errStr := err.Error()
+				w.jobFinished(&proto.JobResult{ID: spec.Job.ID, Error: &errStr})
+				continue
 			}
 
-			finished.Stdout = stdout.Bytes()
-			finished.Stderr = stderr.Bytes()
-			w.jobFinished(&finished)
+			w.jobFinished(result)
 		}
 	}
 }

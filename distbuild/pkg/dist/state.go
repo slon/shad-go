@@ -11,5 +11,5 @@ type Cluster struct {
 }
 
 func (c *Cluster) FindOptimalWorkers(task build.ID, sources, deps []build.ID) []proto.WorkerID {
-
+	panic("implement me")
 }
