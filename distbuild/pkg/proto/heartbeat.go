@@ -20,6 +20,10 @@ type JobResult struct {
 
 type WorkerID string
 
+func (w WorkerID) String() string {
+	return string(w)
+}
+
 type HeartbeatRequest struct {
 	// WorkerID задаёт персистентный идентификатор данного воркера.
 	//

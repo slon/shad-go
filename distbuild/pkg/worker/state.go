@@ -1,8 +1,6 @@
 package worker
 
 import (
-	"go.uber.org/zap"
-
 	"gitlab.com/slon/shad-go/distbuild/pkg/proto"
 )
 
@@ -11,6 +9,7 @@ func (w *Worker) buildHeartbeat() *proto.HeartbeatRequest {
 	defer w.mu.Unlock()
 
 	req := &proto.HeartbeatRequest{
+		WorkerID:    w.id,
 		FinishedJob: w.finishedJobs,
 	}
 
@@ -19,8 +18,6 @@ func (w *Worker) buildHeartbeat() *proto.HeartbeatRequest {
 }
 
 func (w *Worker) jobFinished(job *proto.JobResult) {
-	w.log.Debug("job finished", zap.String("job_id", job.ID.String()))
-
 	w.mu.Lock()
 	defer w.mu.Unlock()
 

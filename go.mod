@@ -8,6 +8,7 @@ require (
 	github.com/golang/mock v1.4.1
 	github.com/gorilla/handlers v1.4.2
 	github.com/gorilla/mux v1.7.4
+	github.com/jonboulle/clockwork v0.1.0
 	github.com/spf13/cobra v0.0.5
 	github.com/stretchr/testify v1.4.0
 	go.uber.org/goleak v1.0.0

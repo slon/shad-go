@@ -15,6 +15,7 @@ import (
 	"gitlab.com/slon/shad-go/distbuild/pkg/client"
 	"gitlab.com/slon/shad-go/distbuild/pkg/dist"
 	"gitlab.com/slon/shad-go/distbuild/pkg/filecache"
+	"gitlab.com/slon/shad-go/distbuild/pkg/proto"
 	"gitlab.com/slon/shad-go/distbuild/pkg/worker"
 	"gitlab.com/slon/shad-go/tools/testtool"
 
@@ -80,6 +81,9 @@ func newEnv(t *testing.T) (e *env, cancel func()) {
 		coordinatorCache,
 	)
 
+	router := http.NewServeMux()
+	router.Handle("/coordinator/", http.StripPrefix("/coordinator", env.Coordinator))
+
 	for i := 0; i < nWorkers; i++ {
 		workerName := fmt.Sprintf("worker%d", i)
 		workerDir := filepath.Join(env.RootDir, workerName)
@@ -92,7 +96,11 @@ func newEnv(t *testing.T) (e *env, cancel func()) {
 		artifacts, err = artifact.NewCache(filepath.Join(workerDir, "artifacts"))
 		require.NoError(t, err)
 
+		workerPrefix := fmt.Sprintf("/worker/%d", i)
+		workerID := proto.WorkerID("http://" + addr + workerPrefix)
+
 		w := worker.New(
+			workerID,
 			coordinatorEndpoint,
 			env.Logger.Named(workerName),
 			fileCache,
@@ -100,19 +108,13 @@ func newEnv(t *testing.T) (e *env, cancel func()) {
 		)
 
 		env.Workers = append(env.Workers, w)
-	}
 
-	mux := http.NewServeMux()
-	mux.Handle("/coordinator/", http.StripPrefix("/coordinator", env.Coordinator))
-
-	for i, w := range env.Workers {
-		workerPrefix := fmt.Sprintf("/worker/%d", i)
-		mux.Handle(workerPrefix+"/", http.StripPrefix(workerPrefix, w))
+		router.Handle(workerPrefix+"/", http.StripPrefix(workerPrefix, w))
 	}
 
 	env.HTTP = &http.Server{
 		Addr:    addr,
-		Handler: mux,
+		Handler: router,
 	}
 
 	lsn, err := net.Listen("tcp", env.HTTP.Addr)

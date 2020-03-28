@@ -13,19 +13,22 @@ import (
 	"gitlab.com/slon/shad-go/distbuild/pkg/build"
 	"gitlab.com/slon/shad-go/distbuild/pkg/filecache"
 	"gitlab.com/slon/shad-go/distbuild/pkg/proto"
+	"gitlab.com/slon/shad-go/distbuild/pkg/scheduler"
 )
-
-type Build struct {
-}
 
 type Coordinator struct {
 	log       *zap.Logger
 	mux       *http.ServeMux
 	fileCache *filecache.Cache
 
-	mu            sync.Mutex
-	scheduledJobs map[build.ID]*scheduledJob
-	queue         []*scheduledJob
+	mu        sync.Mutex
+	builds    map[build.ID]*Build
+	scheduler *scheduler.Scheduler
+}
+
+var defaultConfig = scheduler.Config{
+	CacheTimeout: time.Millisecond * 10,
+	DepsTimeout:  time.Millisecond * 100,
 }
 
 func NewCoordinator(
@@ -37,10 +40,12 @@ func NewCoordinator(
 		mux:       http.NewServeMux(),
 		fileCache: fileCache,
 
-		scheduledJobs: make(map[build.ID]*scheduledJob),
+		builds:    make(map[build.ID]*Build),
+		scheduler: scheduler.NewScheduler(log, defaultConfig),
 	}
 
 	c.mux.HandleFunc("/build", c.Build)
+	c.mux.HandleFunc("/signal", c.Signal)
 	c.mux.HandleFunc("/heartbeat", c.Heartbeat)
 	return c
 }
@@ -69,12 +74,17 @@ func (c *Coordinator) doBuild(w http.ResponseWriter, r *http.Request) error {
 	for _, job := range g.Jobs {
 		job := job
 
-		s := c.scheduleJob(&job)
-		<-s.done
+		s := c.scheduler.ScheduleJob(&job)
+
+		select {
+		case <-r.Context().Done():
+			return r.Context().Err()
+		case <-s.Finished:
+		}
 
 		c.log.Debug("job finished", zap.String("job_id", job.ID.String()))
 
-		update := proto.StatusUpdate{JobFinished: s.finished}
+		update := proto.StatusUpdate{JobFinished: s.Result}
 		if err := enc.Encode(update); err != nil {
 			return err
 		}
@@ -82,6 +92,18 @@ func (c *Coordinator) doBuild(w http.ResponseWriter, r *http.Request) error {
 
 	update := proto.StatusUpdate{BuildFinished: &proto.BuildFinished{}}
 	return enc.Encode(update)
+}
+
+func (c *Coordinator) Signal(w http.ResponseWriter, r *http.Request) {
+	c.log.Debug("build signal started")
+	if err := c.doHeartbeat(w, r); err != nil {
+		c.log.Error("build signal failed", zap.Error(err))
+
+		w.WriteHeader(http.StatusBadRequest)
+		_, _ = w.Write([]byte(err.Error()))
+		return
+	}
+	c.log.Debug("build signal finished")
 }
 
 func (c *Coordinator) Build(w http.ResponseWriter, r *http.Request) {
@@ -100,34 +122,21 @@ func (c *Coordinator) doHeartbeat(w http.ResponseWriter, r *http.Request) error 
 		return fmt.Errorf("invalid request: %w", err)
 	}
 
+	c.scheduler.RegisterWorker(req.WorkerID)
+
 	for _, job := range req.FinishedJob {
 		job := job
 
-		scheduled, ok := c.lookupJob(job.ID)
-		if !ok {
-			continue
-		}
-
-		c.log.Debug("job finished")
-		scheduled.finish(&job)
+		c.scheduler.OnJobComplete(req.WorkerID, job.ID, &job)
 	}
 
-	var rsp proto.HeartbeatResponse
+	rsp := proto.HeartbeatResponse{
+		JobsToRun: map[build.ID]proto.JobSpec{},
+	}
 
-	var job *build.Job
-	for i := 0; i < 10; i++ {
-		var ok bool
-		job, ok = c.pickJob()
-
-		if ok {
-			rsp.JobsToRun = map[build.ID]proto.JobSpec{
-				job.ID: {Job: *job},
-			}
-
-			break
-		}
-
-		time.Sleep(time.Millisecond)
+	job := c.scheduler.PickJob(req.WorkerID, r.Context().Done())
+	if job != nil {
+		rsp.JobsToRun[job.Job.ID] = proto.JobSpec{Job: *job.Job}
 	}
 
 	if err := json.NewEncoder(w).Encode(rsp); err != nil {

@@ -32,7 +32,9 @@ func (w *Worker) getJobFromCache(jobID build.ID) (*proto.JobResult, error) {
 	}
 	defer unlock()
 
-	res := &proto.JobResult{}
+	res := &proto.JobResult{
+		ID: jobID,
+	}
 
 	exitCodeStr, err := ioutil.ReadFile(filepath.Join(aRoot, exitCodeFileName))
 	if err != nil {

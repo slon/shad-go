@@ -18,6 +18,7 @@ import (
 )
 
 type Worker struct {
+	id                  proto.WorkerID
 	coordinatorEndpoint string
 
 	log *zap.Logger
@@ -34,12 +35,14 @@ type Worker struct {
 }
 
 func New(
+	workerID proto.WorkerID,
 	coordinatorEndpoint string,
 	log *zap.Logger,
 	fileCache *filecache.Cache,
 	artifacts *artifact.Cache,
 ) *Worker {
 	return &Worker{
+		id:                  workerID,
 		coordinatorEndpoint: coordinatorEndpoint,
 		log:                 log,
 		fileCache:           fileCache,
@@ -54,27 +57,19 @@ func (w *Worker) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (w *Worker) recover() error {
-	//err := w.fileCache.Range(func(file build.ID) error {
-	//	w.newSources = append(w.newSources, file)
-	//	return nil
-	//})
-	//if err != nil {
-	//	return err
-	//}
-
 	return w.artifacts.Range(func(file build.ID) error {
 		w.newArtifacts = append(w.newArtifacts, file)
 		return nil
 	})
 }
 
-func (w *Worker) sendHeartbeat(req *proto.HeartbeatRequest) (*proto.HeartbeatResponse, error) {
+func (w *Worker) sendHeartbeat(ctx context.Context, req *proto.HeartbeatRequest) (*proto.HeartbeatResponse, error) {
 	reqJS, err := json.Marshal(req)
 	if err != nil {
 		return nil, err
 	}
 
-	httpReq, err := http.NewRequest("POST", w.coordinatorEndpoint+"/heartbeat", bytes.NewBuffer(reqJS))
+	httpReq, err := http.NewRequestWithContext(ctx, "POST", w.coordinatorEndpoint+"/heartbeat", bytes.NewBuffer(reqJS))
 	if err != nil {
 		return nil, err
 	}
@@ -104,7 +99,7 @@ func (w *Worker) Run(ctx context.Context) error {
 
 	for {
 		w.log.Debug("sending heartbeat request")
-		rsp, err := w.sendHeartbeat(w.buildHeartbeat())
+		rsp, err := w.sendHeartbeat(ctx, w.buildHeartbeat())
 		if err != nil {
 			if ctx.Err() != nil {
 				return ctx.Err()
@@ -118,13 +113,18 @@ func (w *Worker) Run(ctx context.Context) error {
 
 		for _, spec := range rsp.JobsToRun {
 			spec := spec
+
+			w.log.Debug("running job", zap.String("job_id", spec.Job.ID.String()))
 			result, err := w.runJob(ctx, &spec)
 			if err != nil {
 				errStr := fmt.Sprintf("job %s failed: %v", spec.Job.ID, err)
+
+				w.log.Debug("job failed", zap.String("job_id", spec.Job.ID.String()), zap.Error(err))
 				w.jobFinished(&proto.JobResult{ID: spec.Job.ID, Error: &errStr})
 				continue
 			}
 
+			w.log.Debug("job finished", zap.String("job_id", spec.Job.ID.String()))
 			w.jobFinished(result)
 		}
 	}
