@@ -6,7 +6,7 @@ require (
 	github.com/go-resty/resty/v2 v2.1.0
 	github.com/gofrs/uuid v3.2.0+incompatible
 	github.com/golang/mock v1.4.1
-	github.com/google/go-cmp v0.4.0 // indirect
+	github.com/google/go-cmp v0.4.0
 	github.com/gorilla/handlers v1.4.2
 	github.com/gorilla/mux v1.7.4
 	github.com/spf13/cobra v0.0.5

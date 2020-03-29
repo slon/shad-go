@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/go-resty/resty/v2"
+	"github.com/google/go-cmp/cmp"
 	"github.com/stretchr/testify/require"
 	"gitlab.com/slon/shad-go/tools/testtool"
 )
@@ -100,7 +101,18 @@ func TestServer_valid(t *testing.T) {
 					require.Equal(t, http.StatusOK, resp.StatusCode())
 					require.Contains(t, resp.Header().Get("Content-Type"), "application/json")
 
-					require.JSONEq(t, string(out), resp.String())
+					var got interface{}
+					err = json.Unmarshal(resp.Body(), &got)
+					if err != nil {
+						t.Fatalf("Could not parse response body: %v", err)
+					}
+
+					var want interface{}
+					_ = json.Unmarshal(out, &want)
+
+					if diff := cmp.Diff(want, got); diff != "" {
+						t.Errorf("Response diff (-want +got):\n%s", diff)
+					}
 				})
 			}
 		})
