@@ -2,11 +2,12 @@ package filecache
 
 import (
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"os"
+	"path/filepath"
 
+	"gitlab.com/slon/shad-go/distbuild/pkg/artifact"
 	"gitlab.com/slon/shad-go/distbuild/pkg/build"
 )
 
@@ -16,33 +17,95 @@ var (
 	ErrReadLocked  = errors.New("file is locked for read")
 )
 
+const fileName = "file"
+
+func convertErr(err error) error {
+	switch {
+	case errors.Is(err, artifact.ErrNotFound):
+		return ErrNotFound
+	case errors.Is(err, artifact.ErrWriteLocked):
+		return ErrWriteLocked
+	case errors.Is(err, artifact.ErrReadLocked):
+		return ErrReadLocked
+	default:
+		return err
+	}
+}
+
 type Cache struct {
-	rootDir string
+	cache *artifact.Cache
 }
 
 func New(rootDir string) (*Cache, error) {
-	if err := os.MkdirAll(rootDir, 0777); err != nil {
-		return nil, fmt.Errorf("error creating filecache: %w", err)
+	cache, err := artifact.NewCache(rootDir)
+	if err != nil {
+		return nil, err
 	}
 
-	c := &Cache{rootDir: rootDir}
+	c := &Cache{cache: cache}
 	return c, nil
 }
 
 func (c *Cache) Range(fileFn func(file build.ID) error) error {
-	panic("implement me")
+	return c.cache.Range(fileFn)
 }
 
 func (c *Cache) Remove(file build.ID) error {
-	panic("implement me")
+	return convertErr(c.cache.Remove(file))
 }
 
-func (c *Cache) Write(file build.ID) (w io.WriteCloser, abort func(), err error) {
-	panic("implement me")
+type fileWriter struct {
+	f      *os.File
+	commit func() error
+}
+
+func (f *fileWriter) Write(p []byte) (int, error) {
+	return f.f.Write(p)
+}
+
+func (f *fileWriter) Close() error {
+	closeErr := f.f.Close()
+	commitErr := f.commit()
+
+	if closeErr != nil {
+		return closeErr
+	}
+
+	return commitErr
+}
+
+func (c *Cache) Write(file build.ID) (w io.WriteCloser, abort func() error, err error) {
+	path, commit, abortDir, err := c.cache.Create(file)
+	if err != nil {
+		err = convertErr(err)
+		return
+	}
+
+	f, err := os.Create(filepath.Join(path, fileName))
+	if err != nil {
+		_ = abort()
+		return
+	}
+
+	w = &fileWriter{f: f, commit: commit}
+	abort = func() error {
+		closeErr := f.Close()
+		abortErr := abortDir()
+
+		if closeErr != nil {
+			return closeErr
+		}
+
+		return abortErr
+	}
+	return
 }
 
 func (c *Cache) Get(file build.ID) (path string, unlock func(), err error) {
-	panic("implement me")
+	root, unlock, err := c.cache.Get(file)
+	path = filepath.Join(root, fileName)
+	err = convertErr(err)
+	return
 }
 
 func NewHandler(c *Cache) http.Handler {

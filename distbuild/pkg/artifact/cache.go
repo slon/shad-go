@@ -14,9 +14,9 @@ import (
 )
 
 var (
-	ErrNotFound    = errors.New("file not found")
-	ErrWriteLocked = errors.New("file is locked for write")
-	ErrReadLocked  = errors.New("file is locked for read")
+	ErrNotFound    = errors.New("artifact not found")
+	ErrWriteLocked = errors.New("artifact is locked for write")
+	ErrReadLocked  = errors.New("artifact is locked for read")
 )
 
 type Cache struct {

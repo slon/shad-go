@@ -92,5 +92,5 @@ func (h *HeartbeatHandler) Register(mux *http.ServeMux) {
 }
 
 func (h *HeartbeatHandler) heartbeat(w http.ResponseWriter, r *http.Request) {
-
+	panic("implement me")
 }
