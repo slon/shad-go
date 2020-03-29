@@ -10,8 +10,8 @@ import (
 
 	"go.uber.org/zap"
 
+	"gitlab.com/slon/shad-go/distbuild/pkg/api"
 	"gitlab.com/slon/shad-go/distbuild/pkg/build"
-	"gitlab.com/slon/shad-go/distbuild/pkg/proto"
 )
 
 type Client struct {
@@ -28,7 +28,7 @@ type BuildListener interface {
 	OnJobFailed(jobID build.ID, code int, error string) error
 }
 
-func (c *Client) uploadSources(ctx context.Context, src proto.MissingSources) error {
+func (c *Client) uploadSources(ctx context.Context, src api.BuildStarted) error {
 	return nil
 }
 
@@ -60,7 +60,7 @@ func (c *Client) Build(ctx context.Context, graph build.Graph, lsn BuildListener
 
 	d := json.NewDecoder(rsp.Body)
 
-	var missing proto.MissingSources
+	var missing api.BuildStarted
 	if err := d.Decode(&missing); err != nil {
 		return fmt.Errorf("error receiving source list: %w", err)
 	}
@@ -70,7 +70,7 @@ func (c *Client) Build(ctx context.Context, graph build.Graph, lsn BuildListener
 	}
 
 	for {
-		var update proto.StatusUpdate
+		var update api.StatusUpdate
 		if err := d.Decode(&update); err != nil {
 			return fmt.Errorf("error receiving status update: %w", err)
 		}

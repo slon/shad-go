@@ -1,4 +1,4 @@
-package proto
+package api
 
 import (
 	"gitlab.com/slon/shad-go/distbuild/pkg/build"

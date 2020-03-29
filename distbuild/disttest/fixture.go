@@ -11,11 +11,11 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"gitlab.com/slon/shad-go/distbuild/pkg/api"
 	"gitlab.com/slon/shad-go/distbuild/pkg/artifact"
 	"gitlab.com/slon/shad-go/distbuild/pkg/client"
 	"gitlab.com/slon/shad-go/distbuild/pkg/dist"
 	"gitlab.com/slon/shad-go/distbuild/pkg/filecache"
-	"gitlab.com/slon/shad-go/distbuild/pkg/proto"
 	"gitlab.com/slon/shad-go/distbuild/pkg/worker"
 	"gitlab.com/slon/shad-go/tools/testtool"
 
@@ -97,7 +97,7 @@ func newEnv(t *testing.T) (e *env, cancel func()) {
 		require.NoError(t, err)
 
 		workerPrefix := fmt.Sprintf("/worker/%d", i)
-		workerID := proto.WorkerID("http://" + addr + workerPrefix)
+		workerID := api.WorkerID("http://" + addr + workerPrefix)
 
 		w := worker.New(
 			workerID,

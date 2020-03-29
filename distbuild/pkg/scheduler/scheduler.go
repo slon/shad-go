@@ -6,20 +6,20 @@ import (
 
 	"go.uber.org/zap"
 
+	"gitlab.com/slon/shad-go/distbuild/pkg/api"
 	"gitlab.com/slon/shad-go/distbuild/pkg/build"
-	"gitlab.com/slon/shad-go/distbuild/pkg/proto"
 )
 
 type PendingJob struct {
 	Job      *build.Job
-	Result   *proto.JobResult
+	Result   *api.JobResult
 	Finished chan struct{}
 
 	mu       sync.Mutex
 	pickedUp chan struct{}
 }
 
-func (p *PendingJob) finish(res *proto.JobResult) {
+func (p *PendingJob) finish(res *api.JobResult) {
 	p.Result = res
 	close(p.Finished)
 }
@@ -73,11 +73,11 @@ type Scheduler struct {
 
 	mu sync.Mutex
 
-	cachedJobs  map[build.ID]map[proto.WorkerID]struct{}
+	cachedJobs  map[build.ID]map[api.WorkerID]struct{}
 	pendingJobs map[build.ID]*PendingJob
 
-	cacheLocalQueue map[proto.WorkerID]*jobQueue
-	depLocalQueue   map[proto.WorkerID]*jobQueue
+	cacheLocalQueue map[api.WorkerID]*jobQueue
+	depLocalQueue   map[api.WorkerID]*jobQueue
 	globalQueue     chan *PendingJob
 }
 
@@ -86,16 +86,16 @@ func NewScheduler(l *zap.Logger, config Config) *Scheduler {
 		l:      l,
 		config: config,
 
-		cachedJobs:  make(map[build.ID]map[proto.WorkerID]struct{}),
+		cachedJobs:  make(map[build.ID]map[api.WorkerID]struct{}),
 		pendingJobs: make(map[build.ID]*PendingJob),
 
-		cacheLocalQueue: make(map[proto.WorkerID]*jobQueue),
-		depLocalQueue:   make(map[proto.WorkerID]*jobQueue),
+		cacheLocalQueue: make(map[api.WorkerID]*jobQueue),
+		depLocalQueue:   make(map[api.WorkerID]*jobQueue),
 		globalQueue:     make(chan *PendingJob),
 	}
 }
 
-func (c *Scheduler) RegisterWorker(workerID proto.WorkerID) {
+func (c *Scheduler) RegisterWorker(workerID api.WorkerID) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -108,7 +108,7 @@ func (c *Scheduler) RegisterWorker(workerID proto.WorkerID) {
 	c.depLocalQueue[workerID] = new(jobQueue)
 }
 
-func (c *Scheduler) OnJobComplete(workerID proto.WorkerID, jobID build.ID, res *proto.JobResult) bool {
+func (c *Scheduler) OnJobComplete(workerID api.WorkerID, jobID build.ID, res *api.JobResult) bool {
 	c.l.Debug("job completed", zap.String("worker_id", workerID.String()), zap.String("job_id", jobID.String()))
 
 	c.mu.Lock()
@@ -119,7 +119,7 @@ func (c *Scheduler) OnJobComplete(workerID proto.WorkerID, jobID build.ID, res *
 
 	job, ok := c.cachedJobs[jobID]
 	if !ok {
-		job = make(map[proto.WorkerID]struct{})
+		job = make(map[api.WorkerID]struct{})
 		c.cachedJobs[jobID] = job
 	}
 	job[workerID] = struct{}{}
@@ -135,8 +135,8 @@ func (c *Scheduler) OnJobComplete(workerID proto.WorkerID, jobID build.ID, res *
 	return true
 }
 
-func (c *Scheduler) findOptimalWorkers(jobID build.ID, deps []build.ID) (cacheLocal, depLocal []proto.WorkerID) {
-	depLocalSet := map[proto.WorkerID]struct{}{}
+func (c *Scheduler) findOptimalWorkers(jobID build.ID, deps []build.ID) (cacheLocal, depLocal []api.WorkerID) {
+	depLocalSet := map[api.WorkerID]struct{}{}
 
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -227,7 +227,7 @@ func (c *Scheduler) ScheduleJob(job *build.Job) *PendingJob {
 	return pendingJob
 }
 
-func (c *Scheduler) PickJob(workerID proto.WorkerID, canceled <-chan struct{}) *PendingJob {
+func (c *Scheduler) PickJob(workerID api.WorkerID, canceled <-chan struct{}) *PendingJob {
 	c.l.Debug("picking next job", zap.String("worker_id", workerID.String()))
 
 	var cacheLocal, depLocal *jobQueue

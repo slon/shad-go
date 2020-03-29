@@ -12,9 +12,9 @@ import (
 
 	"go.uber.org/zap"
 
+	"gitlab.com/slon/shad-go/distbuild/pkg/api"
 	"gitlab.com/slon/shad-go/distbuild/pkg/artifact"
 	"gitlab.com/slon/shad-go/distbuild/pkg/build"
-	"gitlab.com/slon/shad-go/distbuild/pkg/proto"
 )
 
 const (
@@ -25,14 +25,14 @@ const (
 	stderrFileName   = "stderr"
 )
 
-func (w *Worker) getJobFromCache(jobID build.ID) (*proto.JobResult, error) {
+func (w *Worker) getJobFromCache(jobID build.ID) (*api.JobResult, error) {
 	aRoot, unlock, err := w.artifacts.Get(jobID)
 	if err != nil {
 		return nil, err
 	}
 	defer unlock()
 
-	res := &proto.JobResult{
+	res := &api.JobResult{
 		ID: jobID,
 	}
 
@@ -157,7 +157,7 @@ func (w *Worker) lockDeps(deps []build.ID) (paths map[build.ID]string, unlockDep
 	return
 }
 
-func (w *Worker) runJob(ctx context.Context, spec *proto.JobSpec) (*proto.JobResult, error) {
+func (w *Worker) runJob(ctx context.Context, spec *api.JobSpec) (*api.JobResult, error) {
 	res, err := w.getJobFromCache(spec.Job.ID)
 	if err != nil && !errors.Is(err, artifact.ErrNotFound) {
 		return nil, err
@@ -227,7 +227,7 @@ func (w *Worker) runJob(ctx context.Context, spec *proto.JobSpec) (*proto.JobRes
 	unlock = append(unlock, unlockDeps)
 	jobContext.Deps = deps
 
-	res = &proto.JobResult{
+	res = &api.JobResult{
 		ID: spec.Job.ID,
 	}
 

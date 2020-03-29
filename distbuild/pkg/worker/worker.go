@@ -11,14 +11,14 @@ import (
 
 	"go.uber.org/zap"
 
+	"gitlab.com/slon/shad-go/distbuild/pkg/api"
 	"gitlab.com/slon/shad-go/distbuild/pkg/artifact"
 	"gitlab.com/slon/shad-go/distbuild/pkg/build"
 	"gitlab.com/slon/shad-go/distbuild/pkg/filecache"
-	"gitlab.com/slon/shad-go/distbuild/pkg/proto"
 )
 
 type Worker struct {
-	id                  proto.WorkerID
+	id                  api.WorkerID
 	coordinatorEndpoint string
 
 	log *zap.Logger
@@ -31,11 +31,11 @@ type Worker struct {
 	mu           sync.Mutex
 	newArtifacts []build.ID
 	newSources   []build.ID
-	finishedJobs []proto.JobResult
+	finishedJobs []api.JobResult
 }
 
 func New(
-	workerID proto.WorkerID,
+	workerID api.WorkerID,
 	coordinatorEndpoint string,
 	log *zap.Logger,
 	fileCache *filecache.Cache,
@@ -63,7 +63,7 @@ func (w *Worker) recover() error {
 	})
 }
 
-func (w *Worker) sendHeartbeat(ctx context.Context, req *proto.HeartbeatRequest) (*proto.HeartbeatResponse, error) {
+func (w *Worker) sendHeartbeat(ctx context.Context, req *api.HeartbeatRequest) (*api.HeartbeatResponse, error) {
 	reqJS, err := json.Marshal(req)
 	if err != nil {
 		return nil, err
@@ -84,7 +84,7 @@ func (w *Worker) sendHeartbeat(ctx context.Context, req *proto.HeartbeatRequest)
 		return nil, fmt.Errorf("heartbeat failed: %s", errorString)
 	}
 
-	var rsp proto.HeartbeatResponse
+	var rsp api.HeartbeatResponse
 	if err := json.NewDecoder(httpRsp.Body).Decode(&rsp); err != nil {
 		return nil, err
 	}
@@ -120,7 +120,7 @@ func (w *Worker) Run(ctx context.Context) error {
 				errStr := fmt.Sprintf("job %s failed: %v", spec.Job.ID, err)
 
 				w.log.Debug("job failed", zap.String("job_id", spec.Job.ID.String()), zap.Error(err))
-				w.jobFinished(&proto.JobResult{ID: spec.Job.ID, Error: &errStr})
+				w.jobFinished(&api.JobResult{ID: spec.Job.ID, Error: &errStr})
 				continue
 			}
 

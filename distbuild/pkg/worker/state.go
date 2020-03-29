@@ -1,14 +1,12 @@
 package worker
 
-import (
-	"gitlab.com/slon/shad-go/distbuild/pkg/proto"
-)
+import "gitlab.com/slon/shad-go/distbuild/pkg/api"
 
-func (w *Worker) buildHeartbeat() *proto.HeartbeatRequest {
+func (w *Worker) buildHeartbeat() *api.HeartbeatRequest {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 
-	req := &proto.HeartbeatRequest{
+	req := &api.HeartbeatRequest{
 		WorkerID:    w.id,
 		FinishedJob: w.finishedJobs,
 	}
@@ -17,7 +15,7 @@ func (w *Worker) buildHeartbeat() *proto.HeartbeatRequest {
 	return req
 }
 
-func (w *Worker) jobFinished(job *proto.JobResult) {
+func (w *Worker) jobFinished(job *api.JobResult) {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 

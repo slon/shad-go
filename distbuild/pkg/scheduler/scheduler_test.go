@@ -9,12 +9,12 @@ import (
 	"go.uber.org/goleak"
 	"go.uber.org/zap/zaptest"
 
+	"gitlab.com/slon/shad-go/distbuild/pkg/api"
 	"gitlab.com/slon/shad-go/distbuild/pkg/build"
-	"gitlab.com/slon/shad-go/distbuild/pkg/proto"
 )
 
 const (
-	workerID0 proto.WorkerID = "w0"
+	workerID0 api.WorkerID = "w0"
 )
 
 func TestScheduler(t *testing.T) {
@@ -40,7 +40,7 @@ func TestScheduler(t *testing.T) {
 
 		require.Equal(t, pendingJob0, pickerJob)
 
-		result := &proto.JobResult{ID: job0.ID, ExitCode: 0}
+		result := &api.JobResult{ID: job0.ID, ExitCode: 0}
 		s.OnJobComplete(workerID0, job0.ID, result)
 
 		select {
@@ -69,7 +69,7 @@ func TestScheduler(t *testing.T) {
 		job1 := &build.Job{ID: build.NewID()}
 
 		s.RegisterWorker(workerID0)
-		s.OnJobComplete(workerID0, job0.ID, &proto.JobResult{})
+		s.OnJobComplete(workerID0, job0.ID, &api.JobResult{})
 
 		pendingJob1 := s.ScheduleJob(job1)
 		pendingJob0 := s.ScheduleJob(job0)
@@ -94,7 +94,7 @@ func TestScheduler(t *testing.T) {
 		job2 := &build.Job{ID: build.NewID()}
 
 		s.RegisterWorker(workerID0)
-		s.OnJobComplete(workerID0, job0.ID, &proto.JobResult{})
+		s.OnJobComplete(workerID0, job0.ID, &api.JobResult{})
 
 		pendingJob2 := s.ScheduleJob(job2)
 		pendingJob1 := s.ScheduleJob(job1)

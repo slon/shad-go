@@ -10,9 +10,9 @@ import (
 
 	"go.uber.org/zap"
 
+	"gitlab.com/slon/shad-go/distbuild/pkg/api"
 	"gitlab.com/slon/shad-go/distbuild/pkg/build"
 	"gitlab.com/slon/shad-go/distbuild/pkg/filecache"
-	"gitlab.com/slon/shad-go/distbuild/pkg/proto"
 	"gitlab.com/slon/shad-go/distbuild/pkg/scheduler"
 )
 
@@ -67,7 +67,7 @@ func (c *Coordinator) doBuild(w http.ResponseWriter, r *http.Request) error {
 
 	w.WriteHeader(http.StatusOK)
 	enc := json.NewEncoder(w)
-	if err := enc.Encode(proto.MissingSources{}); err != nil {
+	if err := enc.Encode(api.BuildStarted{}); err != nil {
 		return err
 	}
 
@@ -84,13 +84,13 @@ func (c *Coordinator) doBuild(w http.ResponseWriter, r *http.Request) error {
 
 		c.log.Debug("job finished", zap.String("job_id", job.ID.String()))
 
-		update := proto.StatusUpdate{JobFinished: s.Result}
+		update := api.StatusUpdate{JobFinished: s.Result}
 		if err := enc.Encode(update); err != nil {
 			return err
 		}
 	}
 
-	update := proto.StatusUpdate{BuildFinished: &proto.BuildFinished{}}
+	update := api.StatusUpdate{BuildFinished: &api.BuildFinished{}}
 	return enc.Encode(update)
 }
 
@@ -110,14 +110,14 @@ func (c *Coordinator) Build(w http.ResponseWriter, r *http.Request) {
 	if err := c.doBuild(w, r); err != nil {
 		c.log.Error("build failed", zap.Error(err))
 
-		errorUpdate := proto.StatusUpdate{BuildFailed: &proto.BuildFailed{Error: err.Error()}}
+		errorUpdate := api.StatusUpdate{BuildFailed: &api.BuildFailed{Error: err.Error()}}
 		errorJS, _ := json.Marshal(errorUpdate)
 		_, _ = w.Write(errorJS)
 	}
 }
 
 func (c *Coordinator) doHeartbeat(w http.ResponseWriter, r *http.Request) error {
-	var req proto.HeartbeatRequest
+	var req api.HeartbeatRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		return fmt.Errorf("invalid request: %w", err)
 	}
@@ -130,13 +130,13 @@ func (c *Coordinator) doHeartbeat(w http.ResponseWriter, r *http.Request) error 
 		c.scheduler.OnJobComplete(req.WorkerID, job.ID, &job)
 	}
 
-	rsp := proto.HeartbeatResponse{
-		JobsToRun: map[build.ID]proto.JobSpec{},
+	rsp := api.HeartbeatResponse{
+		JobsToRun: map[build.ID]api.JobSpec{},
 	}
 
 	job := c.scheduler.PickJob(req.WorkerID, r.Context().Done())
 	if job != nil {
-		rsp.JobsToRun[job.Job.ID] = proto.JobSpec{Job: *job.Job}
+		rsp.JobsToRun[job.Job.ID] = api.JobSpec{Job: *job.Job}
 	}
 
 	if err := json.NewEncoder(w).Encode(rsp); err != nil {

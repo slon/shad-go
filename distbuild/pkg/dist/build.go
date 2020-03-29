@@ -3,8 +3,8 @@ package dist
 import (
 	"context"
 
+	"gitlab.com/slon/shad-go/distbuild/pkg/api"
 	"gitlab.com/slon/shad-go/distbuild/pkg/build"
-	"gitlab.com/slon/shad-go/distbuild/pkg/proto"
 )
 
 type Build struct {
@@ -27,7 +27,7 @@ func NewBuild(graph *build.Graph, coordinator *Coordinator) *Build {
 	}
 }
 
-func (b *Build) Run(ctx context.Context, onStatusUpdate func(update proto.StatusUpdate) error) error {
+func (b *Build) Run(ctx context.Context, onStatusUpdate func(update api.StatusUpdate) error) error {
 	panic("implement me")
 }
 
