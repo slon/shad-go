@@ -161,7 +161,7 @@ func BenchmarkCache_Set(b *testing.B) {
 			b.ResetTimer()
 			b.ReportAllocs()
 			for i := 0; i < b.N; i++ {
-				c.Set(i, i)
+				c.Set(i % tc.cap, i)
 			}
 		})
 	}
