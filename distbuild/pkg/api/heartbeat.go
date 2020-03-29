@@ -1,6 +1,11 @@
 package api
 
 import (
+	"context"
+	"net/http"
+
+	"go.uber.org/zap"
+
 	"gitlab.com/slon/shad-go/distbuild/pkg/build"
 )
 
@@ -32,13 +37,6 @@ type HeartbeatRequest struct {
 	// В наших тестов, идентификатор будет иметь вид "localhost:%d".
 	WorkerID WorkerID
 
-	// ProcessID задаёт эфемерный идентификатор текущего процесса воркера.
-	//
-	// Координатор запоминает ProcessID для каждого воркера.
-	//
-	// Измение ProcessID значит, что воркер перезапустился.
-	ProcessID string
-
 	// RunningJobs перечисляет список джобов, которые выполняются на этом воркере
 	// в данный момент.
 	RunningJobs []build.ID
@@ -68,22 +66,31 @@ type JobSpec struct {
 	Job build.Job
 }
 
-// ArtifactSpec описывает артефакт, который нужно скачать с другого воркера.
-type ArtifactSpec struct {
-}
-
-// SourceFileSpec описывает файл с исходным кодом, который нужно скачать с координатора.
-type SourceFileSpec struct {
-}
-
 type HeartbeatResponse struct {
 	JobsToRun map[build.ID]JobSpec
+}
 
-	ArtifactsToDownload map[build.ID]ArtifactSpec
+type HeartbeatService interface {
+	Heartbeat(ctx context.Context, req *HeartbeatRequest) (*HeartbeatResponse, error)
+}
 
-	ArtifactsToRemove []build.ID
+type HeartbeatClient struct {
+	Endpoint string
+}
 
-	SourceFilesToDownload map[build.ID]SourceFileSpec
+func (c *HeartbeatClient) Heartbeat(ctx context.Context, req *HeartbeatRequest) (*HeartbeatResponse, error) {
+	panic("implement me")
+}
 
-	SourceFilesToRemove []build.ID
+type HeartbeatHandler struct {
+	l *zap.Logger
+	s HeartbeatService
+}
+
+func (h *HeartbeatHandler) Register(mux *http.ServeMux) {
+	mux.HandleFunc("/heartbeat", h.heartbeat)
+}
+
+func (h *HeartbeatHandler) heartbeat(w http.ResponseWriter, r *http.Request) {
+
 }

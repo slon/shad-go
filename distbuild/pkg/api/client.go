@@ -103,7 +103,7 @@ func (c *Client) SignalBuild(ctx context.Context, buildID build.ID, signal *Sign
 	}
 
 	var signalRsp SignalResponse
-	if err := json.Unmarshal(rspBody, &rsp); err != nil {
+	if err = json.Unmarshal(rspBody, &rsp); err != nil {
 		return nil, err
 	}
 

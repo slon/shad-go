@@ -52,7 +52,7 @@ func (s *ServiceHandler) doBuild(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	var req BuildRequest
-	if err := json.Unmarshal(reqJSON, &req); err != nil {
+	if err = json.Unmarshal(reqJSON, &req); err != nil {
 		return err
 	}
 
@@ -95,7 +95,7 @@ func (s *ServiceHandler) doSignal(w http.ResponseWriter, r *http.Request) error 
 	}
 
 	var req SignalRequest
-	if err := json.Unmarshal(reqJSON, &req); err != nil {
+	if err = json.Unmarshal(reqJSON, &req); err != nil {
 		return err
 	}
 
