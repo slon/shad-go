@@ -1,9 +1,9 @@
 package dist
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"sync"
 	"time"
@@ -44,8 +44,9 @@ func NewCoordinator(
 		scheduler: scheduler.NewScheduler(log, defaultConfig),
 	}
 
-	c.mux.HandleFunc("/build", c.Build)
-	c.mux.HandleFunc("/signal", c.Signal)
+	apiHandler := api.NewServiceHandler(log, c)
+	apiHandler.Register(c.mux)
+
 	c.mux.HandleFunc("/heartbeat", c.Heartbeat)
 	return c
 }
@@ -54,66 +55,36 @@ func (c *Coordinator) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	c.mux.ServeHTTP(w, r)
 }
 
-func (c *Coordinator) doBuild(w http.ResponseWriter, r *http.Request) error {
-	graphJS, err := ioutil.ReadAll(r.Body)
-	if err != nil {
+func (c *Coordinator) StartBuild(ctx context.Context, req *api.BuildRequest, w api.StatusWriter) error {
+	if err := w.Started(&api.BuildStarted{}); err != nil {
 		return err
 	}
 
-	var g build.Graph
-	if err := json.Unmarshal(graphJS, &g); err != nil {
-		return err
-	}
-
-	w.WriteHeader(http.StatusOK)
-	enc := json.NewEncoder(w)
-	if err := enc.Encode(api.BuildStarted{}); err != nil {
-		return err
-	}
-
-	for _, job := range g.Jobs {
+	for _, job := range req.Graph.Jobs {
 		job := job
 
 		s := c.scheduler.ScheduleJob(&job)
 
 		select {
-		case <-r.Context().Done():
-			return r.Context().Err()
+		case <-ctx.Done():
+			return ctx.Err()
 		case <-s.Finished:
 		}
 
 		c.log.Debug("job finished", zap.String("job_id", job.ID.String()))
 
-		update := api.StatusUpdate{JobFinished: s.Result}
-		if err := enc.Encode(update); err != nil {
+		jobFinished := api.StatusUpdate{JobFinished: s.Result}
+		if err := w.Updated(&jobFinished); err != nil {
 			return err
 		}
 	}
 
-	update := api.StatusUpdate{BuildFinished: &api.BuildFinished{}}
-	return enc.Encode(update)
+	finished := api.StatusUpdate{BuildFinished: &api.BuildFinished{}}
+	return w.Updated(&finished)
 }
 
-func (c *Coordinator) Signal(w http.ResponseWriter, r *http.Request) {
-	c.log.Debug("build signal started")
-	if err := c.doHeartbeat(w, r); err != nil {
-		c.log.Error("build signal failed", zap.Error(err))
-
-		w.WriteHeader(http.StatusBadRequest)
-		_, _ = w.Write([]byte(err.Error()))
-		return
-	}
-	c.log.Debug("build signal finished")
-}
-
-func (c *Coordinator) Build(w http.ResponseWriter, r *http.Request) {
-	if err := c.doBuild(w, r); err != nil {
-		c.log.Error("build failed", zap.Error(err))
-
-		errorUpdate := api.StatusUpdate{BuildFailed: &api.BuildFailed{Error: err.Error()}}
-		errorJS, _ := json.Marshal(errorUpdate)
-		_, _ = w.Write(errorJS)
-	}
+func (c *Coordinator) SignalBuild(ctx context.Context, buildID build.ID, signal *api.SignalRequest) (*api.SignalResponse, error) {
+	panic("implement me")
 }
 
 func (c *Coordinator) doHeartbeat(w http.ResponseWriter, r *http.Request) error {

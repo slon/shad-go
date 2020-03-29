@@ -67,11 +67,10 @@ func newEnv(t *testing.T) (e *env, cancel func()) {
 	var cancelRootContext func()
 	env.Ctx, cancelRootContext = context.WithCancel(context.Background())
 
-	env.Client = &client.Client{
-		CoordinatorEndpoint: coordinatorEndpoint,
-		SourceDir:           filepath.Join(absCWD, "testdata/src"),
-		Log:                 env.Logger.Named("client"),
-	}
+	env.Client = client.NewClient(
+		env.Logger.Named("client"),
+		coordinatorEndpoint,
+		filepath.Join(absCWD, "testdata/src"))
 
 	coordinatorCache, err := filecache.New(filepath.Join(env.RootDir, "coordinator", "filecache"))
 	require.NoError(t, err)
