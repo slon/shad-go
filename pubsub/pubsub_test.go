@@ -43,7 +43,7 @@ func TestPubSub_nonBlockPublish(t *testing.T) {
 	wg.Add(11)
 
 	_, err := p.Subscribe("non-bock-topic", func(msg interface{}) {
-		time.Sleep(1 * time.Second)
+		time.Sleep(10 * time.Millisecond)
 		wg.Done()
 	})
 	require.NoError(t, err)
@@ -58,7 +58,7 @@ func TestPubSub_nonBlockPublish(t *testing.T) {
 	}()
 
 	select {
-	case <-time.After(1 * time.Second):
+	case <-time.After(10 * time.Second):
 		t.Fatal("publish method must not be blocked")
 	case <-done:
 		// ok
@@ -319,7 +319,7 @@ func TestPubSub_closeWaitsMessageDelivery(t *testing.T) {
 	wg := sync.WaitGroup{}
 
 	_, err := p.Subscribe("q", func(msg interface{}) {
-		time.Sleep(100*time.Millisecond)
+		time.Sleep(100 * time.Millisecond)
 		wg.Done()
 	})
 	require.NoError(t, err)
