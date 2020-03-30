@@ -20,7 +20,7 @@
 
 - group:    Goroutines
   start:    12-03-2020 18:00
-  deadline: 22-03-2020 23:59
+  deadline: 23-03-2020 23:59
   tasks:
     - task: retryupdate
       score: 100
