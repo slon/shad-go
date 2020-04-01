@@ -25,7 +25,7 @@ func TestEqual(t *testing.T) {
 		{name: "uint64", expected: uint64(1), actual: uint64(1)},
 		{name: "string", expected: "1", actual: "1"},
 		{name: "slice", expected: []int{1, 2, 3}, actual: []int{1, 2, 3}},
-		{name: "makeSlice", expected: []int{0, 0, 0}, actual: make([]int, 3, 5)},
+		{name: "sliceCap", expected: []int{0, 0, 0}, actual: make([]int, 3, 5)},
 		{name: "map", expected: map[string]string{"a": "b"}, actual: map[string]string{"a": "b"}},
 		{name: "bytes", expected: []byte(`abc`), actual: []byte(`abc`)},
 	} {
