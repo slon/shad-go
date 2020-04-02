@@ -10,11 +10,17 @@
 
 На все заблокированные запросы нужно отвечать статусом 403 и строкой `Forbidden`.
 
+Сервер должен принимать следующие агрументы:
+* `-service-addr` - адрес защищаемого сервиса
+* `-conf` - путь к .yaml конфигу с правилами
+* `-addr` - адрес, на котором будет развёрнут файрвол
+
 ## Примеры:
 В [http service](./cmd/service/main.go) находится примитивный сервис, который мы хотим защитить.
 ```
 go run ./firewall/cmd/service/main.go -port 8080
 ```
+Делаем запрос:
 ```
 curl -i http://localhost:8080/list -d '"loooooooooooooooooooooooooooooong-line"'
 HTTP/1.1 200 OK
