@@ -1,3 +1,10 @@
+- group:    HTTP and Context
+  start:    02-04-2020 18:00
+  deadline: 12-04-2020 23:59
+  tasks:
+    - task: firewall
+      score: 100
+
 - group:    Concurrency with shared memory
   start:    26-03-2020 18:00
   deadline: 05-04-2020 23:59
