@@ -36,7 +36,7 @@ Content-Type: text/plain; charset=utf-8
 ```
 go run ./firewall/cmd/firewall/main.go -service-addr http://localhost:8080 -addr localhost:8081 -conf ./firewall/configs/example.yaml
 ```
-Делем тот же запрос через него:
+Делаем тот же запрос через него:
 ```
 curl -i http://localhost:8081/list -d '"loooooooooooooooooooooooooooooong-line"'
 HTTP/1.1 403 Forbidden
