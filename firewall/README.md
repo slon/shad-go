@@ -18,7 +18,7 @@
 * `-addr` - адрес, на котором будет развёрнут файрвол
 
 ## Примеры:
-В [http service](./cmd/service/main.go) находится примитивный сервис, который мы хотим защитить.
+В [cmd/service](./cmd/service/main.go) находится примитивный сервис, который мы хотим защитить.
 ```
 go run ./firewall/cmd/service/main.go -port 8080
 ```
