@@ -1,0 +1,221 @@
+http и context
+Лекция 6
+
+Георгий Зуйков
+
+* Имеем из коробки
+
+- HTTP клиент (HTTP/1.x, HTTP/2)
+- HTTP сервер (с поддержкой TLS)
+- Тестирование
+
+* net/http
+
+* net/http
+
+Содержит в себе:
+- HTTP клиент и сервер
+- Константы статусов и мотодов HTTP
+- Sentinel ошибки
+- Вспомогательные функции для составления и разбора HTTP запросов
+
+* HTTP клиент
+
+* Делаем запрос
+
+.play simpleget/simpleget.go
+
+Доступные функции:
+
+  Get(url string) (*Response, error)
+  Post(url, contentType string, body io.Reader) (*Response, error)
+  Head(url string) (*Response, error)
+  PostForm(url string, form url.Values) (*Response, error)
+
+* Делаем более лучший запрос
+
+.play custompost/custompost.go
+
+`http.DefaultClient` - базовый глобальный клиент с настройками по-умолчанию.
+
+* http.Client
+
+  type Client struct {
+    // Определяет механизм выполнения каждого запроса
+    Transport RoundTripper
+
+    // Функция для кастомной проверки редиректов 
+    // По-умолчанию - максимум 10 редиректов
+    CheckRedirect func(req *Request, via []*Request) error
+
+    // Хранилище кук
+    Jar CookieJar
+
+    // Таймаут любого запроса от клиента
+    // Считается все время от соединения до конца вычитывания тела
+    // 0 - без таймаута
+    Timeout time.Duration
+  }
+
+* Тонкая настройка клиента
+
+.code customclient/customclient.go /func main/,/^}/
+
+* Keepalive
+
+.play keepalive/naive/naive.go /func main/,/^}/
+
+Как-то медленно
+
+* Keepalive
+
+.play keepalive/advanced/advanced.go /func main/,/^}/
+
+Что-то лыжи не едут
+
+* Keepalive
+
+.play keepalive/correct/correct.go /func main/,/^}/
+
+Вот теперь всё как надо!
+
+* HTTP сервер
+
+* Простой HTTP сервер
+
+.code simpleserver/simpleserver.go /func RunServer/,/^}/
+
+.code simpleserver/simpleserver.go /func RunTLSServer/,/^}/
+
+http.Handler - интерфейс, описывающий функцию для обработки HTTP запроса.
+
+  type Handler interface {
+    ServeHTTP(ResponseWriter, *Request)
+  }
+
+* Роутинг
+
+.code simpleserver/router.go /func RunServerWithRouting/,/OMIT/
+
+* Что нужно знать
+
+- Запуск сервера - блокирующая операция
+- Каждый входящий HTTP запрос обрабатывается в отдельной горутине (следите за дескрипторами) 
+- Паника внутри одного хэндлера не приводит к остановке всего сервера
+- Неотловленная паника закрывает HTTP соединение
+- Хедеры ответа нельзя менять после вызова `ResponseWriter.WriteHeader` или `ResponseWriter.Write`
+
+* Middleware
+
+.code simpleserver/middleware.go /func RunServerWithMiddleware/,/^}/
+
+* Middleware
+
+.code simpleserver/middleware.go /func UnifiedErrorMiddleware/,/^}/
+
+* Graceful shutdown
+
+.play gracefulshutdown/gracefulshutdown.go /func run()/,/^}/
+
+* context
+
+Контекст - инкапсулированное состояние определенной части приложения.
+Позволяет оповещать операции о необходимости завершения и/или передавать контекстозависимые значения между различными частями приложения.
+Контексты наследуемы, при отмене закрывается родительский и все дочерние контексты.
+
+  type Context interface {
+    // Возвращает время, когда операция будет оповещена о необходимости завершения
+    Deadline() (deadline time.Time, ok bool)
+
+    // Возвращает канал, который будет закрыт при необходимости завершить операцию
+    // Служит в качестве инструмента оповещения об отмене
+    Done() <-chan struct{}
+
+    // Если Done не закрыт - возвращает nil.
+    // Если Done закрыт, Err ошибку с объяснением причины:
+    // - Canceled - контекст был отменен
+    // - DeadlineExceeded - наступил дедлайн.
+    // После возврашения не nil ошибки Err всегда возвращает данную ошибку.
+    Err() error
+
+    // Позволяет получить произвольный объект из контекста
+    Value(key interface{}) interface{}
+  }
+
+Типы контекстов:
+- TODO
+- Background
+- Cancel
+- Deadline
+
+* Отменяем операции
+
+.code context/cancelation/cancelation.go /func SimpleCancelation()/,/OMIT/
+
+* context в библиотеках Go
+
+По соглашению `Context` всегда передается первым параметром в функции, обычно именуясь `ctx`.
+
+  database/sql.(*DB).QueryContext(ctx context.Context, query string, args ...interface{}) (*Rows, error)
+  database/sql.(*DB).ExecContext(ctx context.Context, query string, args ...interface{}) (Result, error)
+  net/http.NewRequestWithContext(ctx context.Context, method, url string, body io.Reader) (*Request, error)
+  golang.org/x/sync/errgroup.WithContext(ctx context.Context) (*Group, context.Context)
+  ...
+
+Быстрый пример:
+  
+  ctx, cancel := context.WithTimeout(context.Background(), 1 * time.Second)
+  defer cancel()
+
+  req, _ := http.NewRequestWithContext(ctx, "GET", "http://loremipsum.com", nil)
+  resp, err := http.DefaultClient.Do(req)
+  if err != nil {
+    // возможно тут будет DeadlineExceeded
+  }
+
+* Контекст в HTTP сервере
+
+.code context/httpserver/httpserver.go /type ReqTimeContextKey/,/^}/
+
+* Контекст в HTTP сервере
+
+.code context/httpserver/handler.go /type handler/,/^}/
+
+* httptest
+
+* httptest
+
+Содержит хелперы для удобного написания тестов для HTTP клиентов и серверов.
+
+  // стартует новый локальный HTTP сервер на слуйчаном свободном порту
+  httptest.NewServer(http.Handler)
+  // объект, реализующий интерфейс http.ResponseWriter и дающий доступ к результатам ответа
+  httptest.NewRecorder()
+  // возвращает объект, готовый к передаче прямо в http.Handler
+  httptest.NewRequest(method, target string, body io.Reader) *http.Request
+
+* Пример тестирования клиента
+
+.code httptest/code.go /^const \(/,/OMIT/
+
+* Пример тестирования клиента
+
+.code httptest/code_test.go /func TestGetReposCount/,/OMIT/
+
+* Пример тестирования сервера
+
+.code context/httpserver/handler_test.go /func TestHandlerServeHTTP/,/^}/
+
+* Полезные библиотеки и фреймворки
+
+Роутеры:
+
+.link https://github.com/go-chi/chi
+.link https://github.com/julienschmidt/httprouter
+.link https://github.com/gorilla/mux
+
+Фреймворки:
+
+.link https://github.com/labstack/echo
+.link https://github.com/gin-gonic/gin
+.link https://github.com/gofiber/fiber
