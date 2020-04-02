@@ -85,6 +85,8 @@ func TestPubSub_multipleSubjects(t *testing.T) {
 	require.NoError(t, err)
 
 	err = p.Publish("sub1", "blah-blah-1")
+	require.NoError(t, err)
+
 	err = p.Publish("sub2", "blah-blah-2")
 	require.NoError(t, err)
 
