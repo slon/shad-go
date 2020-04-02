@@ -10,13 +10,12 @@ import (
 
 func main() {
 	body := bytes.NewBufferString("All your base are belong to us")
-	req, err := http.NewRequest("POST", "https://myapi.com/create", body)
+	req, err := http.NewRequest(http.MethodPost, "https://myapi.com/create", body)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	req.Header.Set("X-Source", "Zero Wing")
-
 	repr, err := httputil.DumpRequestOut(req, true)
 	if err == nil {
 		fmt.Println(string(repr))
@@ -26,6 +25,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	defer resp.Body.Close()
 	fmt.Println(resp.StatusCode)
 }

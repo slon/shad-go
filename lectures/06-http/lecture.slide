@@ -1,7 +1,7 @@
 http и context
 Лекция 6
 
-Георгий Зуйков
+Фёдор Короткий
 
 * Имеем из коробки
 
@@ -34,7 +34,7 @@ http и context
 
 * Делаем более лучший запрос
 
-.play custompost/custompost.go
+.play custompost/custompost.go /func/,/^}/
 
 `http.DefaultClient` - базовый глобальный клиент с настройками по-умолчанию.
 
@@ -87,10 +87,18 @@ http и context
 
 .code simpleserver/simpleserver.go /func RunTLSServer/,/^}/
 
-http.Handler - интерфейс, описывающий функцию для обработки HTTP запроса.
+* Простой HTTP сервер
+
+`http.Handler` - интерфейс, описывающий функцию для обработки HTTP запроса.
 
   type Handler interface {
     ServeHTTP(ResponseWriter, *Request)
+  }
+
+  type ResponseWriter interface {
+    Header() Header
+    WriteStatus(int)
+    Write([]byte) (int, error)
   }
 
 * Роутинг
@@ -119,10 +127,6 @@ http.Handler - интерфейс, описывающий функцию для 
 
 * context
 
-Контекст - инкапсулированное состояние определенной части приложения.
-Позволяет оповещать операции о необходимости завершения и/или передавать контекстозависимые значения между различными частями приложения.
-Контексты наследуемы, при отмене закрывается родительский и все дочерние контексты.
-
   type Context interface {
     // Возвращает время, когда операция будет оповещена о необходимости завершения
     Deadline() (deadline time.Time, ok bool)
@@ -142,15 +146,37 @@ http.Handler - интерфейс, описывающий функцию для 
     Value(key interface{}) interface{}
   }
 
-Типы контекстов:
-- TODO
-- Background
-- Cancel
-- Deadline
+- Отмена таймауты
+- Передача request scoped значений
 
+* context
+
+Типы контекстов:
+
+  // root context
+  todo := context.TODO()
+  ctx := context.Background()
+
+  // manual cancel
+  ctx, cancel := context.WithCancel(ctx)
+  defer cancel()
+
+  // cancel by timeout
+  ctx, cancel := context.WithTimeout(ctx, 100*time.Millisecond)
+  defer cancel()
+
+  ctx, cancel := context.WithDeadline(ctx, time.Now().Add(time.Second))
+  defer cancel()
+  
 * Отменяем операции
 
 .code context/cancelation/cancelation.go /func SimpleCancelation()/,/OMIT/
+.code context/cancelation/cancelation.go /func doSlowJob/,/OMIT/
+
+* Отменяем операции
+
+.code context/cancelation/cancelation.go /func SimpleTimeout()/,/OMIT/
+.code context/cancelation/cancelation.go /func doSlowJob/,/OMIT/
 
 * context в библиотеках Go
 

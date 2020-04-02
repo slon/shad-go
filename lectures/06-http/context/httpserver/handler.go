@@ -22,7 +22,6 @@ func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	defer fd.Close()
 
 	scanner := bufio.NewScanner(fd)
-
 	for scanner.Scan() {
 		select {
 		case <-ctx.Done():

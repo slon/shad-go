@@ -8,7 +8,6 @@ import (
 func SimpleCancelation() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-
 	go func() {
 		time.Sleep(5 * time.Second)
 		cancel()
@@ -19,6 +18,8 @@ func SimpleCancelation() {
 	}
 }
 
+// OMIT
+
 func SimpleTimeout() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -27,6 +28,8 @@ func SimpleTimeout() {
 		panic(err)
 	}
 }
+
+// OMIT
 
 func doSlowJob(ctx context.Context) error {
 	for {

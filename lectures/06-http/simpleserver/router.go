@@ -15,7 +15,6 @@ func RunServerWithRouting() {
 			w.WriteHeader(404)
 		}
 	}
-
 	err := http.ListenAndServe(":8080", http.HandlerFunc(router))
 	if err != nil {
 		panic(err)
@@ -25,7 +24,6 @@ func RunServerWithRouting() {
 func pongHandler(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write([]byte("pong"))
 }
-
 func shmongHandler(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write([]byte("shmong"))
 }

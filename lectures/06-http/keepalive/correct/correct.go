@@ -11,14 +11,9 @@ import (
 func main() {
 	urls := []string{"https://golang.org/doc", "https://golang.org/pkg", "https://golang.org/help"}
 
-	client := &http.Client{
-		Transport: &http.Transport{
-			MaxConnsPerHost: 100,
-		},
-	}
+	client := &http.Client{Transport: &http.Transport{MaxConnsPerHost: 100}}
 
 	var wg sync.WaitGroup
-
 	for _, url := range urls {
 		wg.Add(1)
 
