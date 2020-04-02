@@ -44,5 +44,6 @@ Forbidden
 ## Resources
 
 * project layout: https://github.com/golang-standards/project-layout
+* reverse proxy: https://en.wikipedia.org/wiki/Reverse_proxy
 * yaml: https://gopkg.in/yaml.v2
 * regexp: https://golang.org/pkg/regexp/
