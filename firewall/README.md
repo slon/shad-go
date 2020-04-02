@@ -45,3 +45,4 @@ Forbidden
 
 * project layout: https://github.com/golang-standards/project-layout
 * yaml: https://gopkg.in/yaml.v2
+* regexp: https://golang.org/pkg/regexp/
