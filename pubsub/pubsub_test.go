@@ -65,6 +65,32 @@ func TestPubSub_nonBlockPublish(t *testing.T) {
 	}
 }
 
+func TestPubSub_multipleSubjects(t *testing.T) {
+	p := NewPubSub()
+	defer checkedClose(t, p)
+
+	wg := sync.WaitGroup{}
+	wg.Add(2)
+
+	_, err := p.Subscribe("sub1", func(msg interface{}) {
+		require.Equal(t, "blah-blah-1", msg)
+		wg.Done()
+	})
+	require.NoError(t, err)
+
+	_, err = p.Subscribe("sub2", func(msg interface{}) {
+		require.Equal(t, "blah-blah-2", msg)
+		wg.Done()
+	})
+	require.NoError(t, err)
+
+	err = p.Publish("sub1", "blah-blah-1")
+	err = p.Publish("sub2", "blah-blah-2")
+	require.NoError(t, err)
+
+	wg.Wait()
+}
+
 func TestPubSub_multipleSubscribers(t *testing.T) {
 	p := NewPubSub()
 	defer checkedClose(t, p)
