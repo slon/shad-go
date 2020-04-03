@@ -27,6 +27,18 @@ func TestSimple(t *testing.T) {
 	require.Equal(t, 2, value.Load())
 }
 
+func TestTwoParallelLoads(t *testing.T) {
+	defer goleak.VerifyNone(t)
+	var value slow.Value
+	b := NewBatcher(&value)
+
+	value.Store(1)
+	go func() {
+		require.Equal(t, 1, b.Load())
+	}()
+	require.Equal(t, 1, b.Load())
+}
+
 func TestStaleRead(t *testing.T) {
 	defer goleak.VerifyNone(t)
 
