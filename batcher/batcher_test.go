@@ -49,7 +49,7 @@ func TestStaleRead(t *testing.T) {
 		go func(i int) {
 			defer wg.Done()
 
-			time.Sleep(time.Millisecond * time.Duration(i/N))
+			time.Sleep(time.Duration(i) * time.Millisecond / time.Duration(N))
 			for j := 0; j < K; j++ {
 				counterValue := atomic.LoadInt32(&counter)
 				batcherValue := b.Load().(int32)
