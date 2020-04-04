@@ -4,6 +4,8 @@
   tasks:
     - task: firewall
       score: 100
+    - task: wscat
+      score: 100
 
 - group:    Concurrency with shared memory
   start:    26-03-2020 18:00
