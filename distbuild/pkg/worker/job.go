@@ -165,6 +165,10 @@ func (w *Worker) runJob(ctx context.Context, spec *api.JobSpec) (*api.JobResult,
 		return res, nil
 	}
 
+	if err := w.pullFiles(ctx, spec.SourceFiles); err != nil {
+		return nil, err
+	}
+
 	aRoot, commit, abort, err := w.artifacts.Create(spec.Job.ID)
 	if err != nil {
 		return nil, err

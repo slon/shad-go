@@ -64,7 +64,7 @@ type JobSpec struct {
 	// Artifacts задаёт воркеров, с которых можно скачать артефакты необходимые этом джобу.
 	Artifacts map[build.ID]WorkerID
 
-	Job build.Job
+	build.Job
 }
 
 type HeartbeatResponse struct {

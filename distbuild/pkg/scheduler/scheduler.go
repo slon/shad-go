@@ -11,7 +11,7 @@ import (
 )
 
 type PendingJob struct {
-	Job      *build.Job
+	Job      *api.JobSpec
 	Result   *api.JobResult
 	Finished chan struct{}
 
@@ -202,7 +202,7 @@ func (c *Scheduler) doScheduleJob(job *PendingJob) {
 	c.l.Debug("job picked", zap.String("job_id", job.Job.ID.String()))
 }
 
-func (c *Scheduler) ScheduleJob(job *build.Job) *PendingJob {
+func (c *Scheduler) ScheduleJob(job *api.JobSpec) *PendingJob {
 	c.mu.Lock()
 	pendingJob, running := c.pendingJobs[job.ID]
 	if !running {

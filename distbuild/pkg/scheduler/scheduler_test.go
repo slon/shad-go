@@ -32,7 +32,7 @@ func TestScheduler(t *testing.T) {
 	t.Run("SingleJob", func(t *testing.T) {
 		s := NewScheduler(zaptest.NewLogger(t), config)
 
-		job0 := &build.Job{ID: build.NewID()}
+		job0 := &api.JobSpec{Job: build.Job{ID: build.NewID()}}
 		pendingJob0 := s.ScheduleJob(job0)
 
 		s.RegisterWorker(workerID0)
@@ -65,8 +65,8 @@ func TestScheduler(t *testing.T) {
 	t.Run("CacheLocalScheduling", func(t *testing.T) {
 		s := NewScheduler(zaptest.NewLogger(t), config)
 
-		job0 := &build.Job{ID: build.NewID()}
-		job1 := &build.Job{ID: build.NewID()}
+		job0 := &api.JobSpec{Job: build.Job{ID: build.NewID()}}
+		job1 := &api.JobSpec{Job: build.Job{ID: build.NewID()}}
 
 		s.RegisterWorker(workerID0)
 		s.OnJobComplete(workerID0, job0.ID, &api.JobResult{})
@@ -89,9 +89,9 @@ func TestScheduler(t *testing.T) {
 	t.Run("DependencyLocalScheduling", func(t *testing.T) {
 		s := NewScheduler(zaptest.NewLogger(t), config)
 
-		job0 := &build.Job{ID: build.NewID()}
-		job1 := &build.Job{ID: build.NewID(), Deps: []build.ID{job0.ID}}
-		job2 := &build.Job{ID: build.NewID()}
+		job0 := &api.JobSpec{Job: build.Job{ID: build.NewID()}}
+		job1 := &api.JobSpec{Job: build.Job{ID: build.NewID(), Deps: []build.ID{job0.ID}}}
+		job2 := &api.JobSpec{Job: build.Job{ID: build.NewID()}}
 
 		s.RegisterWorker(workerID0)
 		s.OnJobComplete(workerID0, job0.ID, &api.JobResult{})

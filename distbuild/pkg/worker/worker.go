@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"go.uber.org/zap"
+	"golang.org/x/sync/singleflight"
 
 	"gitlab.com/slon/shad-go/distbuild/pkg/api"
 	"gitlab.com/slon/shad-go/distbuild/pkg/artifact"
@@ -20,13 +21,14 @@ type Worker struct {
 
 	log *zap.Logger
 
-	fileCache *filecache.Cache
+	fileCache  *filecache.Cache
+	fileClient *filecache.Client
+	fileOnce   singleflight.Group
+
 	artifacts *artifact.Cache
 
-	mux *http.ServeMux
-
-	fileClient *filecache.Client
-	heartbeat  *api.HeartbeatClient
+	mux       *http.ServeMux
+	heartbeat *api.HeartbeatClient
 
 	mu           sync.Mutex
 	newArtifacts []build.ID

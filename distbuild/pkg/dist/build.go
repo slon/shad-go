@@ -62,9 +62,12 @@ func (b *Build) Run(ctx context.Context, w api.StatusWriter) error {
 	b.l.Debug("file upload completed")
 
 	for _, job := range b.Graph.Jobs {
-		job := job
+		spec := api.JobSpec{Job: job, SourceFiles: make(map[build.ID]string)}
+		for _, file := range job.Inputs {
+			spec.SourceFiles[b.reverseFiles[file]] = file
+		}
 
-		s := b.c.scheduler.ScheduleJob(&job)
+		s := b.c.scheduler.ScheduleJob(&spec)
 
 		select {
 		case <-ctx.Done():
