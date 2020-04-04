@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"io"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -96,10 +95,7 @@ func TestWScat(t *testing.T) {
 	var received, sent [][]byte
 	h := func(w http.ResponseWriter, r *http.Request) {
 		c, err := upgrader.Upgrade(w, r, nil)
-		if err != nil {
-			log.Print("upgrade:", err)
-			return
-		}
+		require.NoError(t, err)
 		defer func() { _ = c.Close() }()
 
 		for {
