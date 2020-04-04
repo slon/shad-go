@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"os"
 	"path/filepath"
 	"sync"
@@ -181,8 +180,4 @@ func (c *Cache) Get(artifact build.ID) (path string, unlock func(), err error) {
 		c.readUnlock(artifact)
 	}
 	return
-}
-
-func NewHandler(c *Cache) http.Handler {
-	panic("implement me")
 }
