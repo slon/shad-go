@@ -175,6 +175,7 @@ rules:
     required_headers:
       - "Content-Type"
       - "Content-Length"
+      - "NoOneUsesThisHeader"
 `,
 			service: echoService,
 			makeRequest: func() *resty.Request {
@@ -213,7 +214,7 @@ rules:
 			conf: `
 rules:
   - endpoint: "/"
-    forbidden_response_codes: [20]
+    forbidden_response_codes: [200]
 `,
 			service: echoService,
 			makeRequest: func() *resty.Request {
@@ -226,7 +227,7 @@ rules:
 			conf: `
 rules:
   - endpoint: "/"
-    forbidden_response_codes: [20]
+    forbidden_response_codes: [200]
 `,
 			service: echoService,
 			makeRequest: func() *resty.Request {
