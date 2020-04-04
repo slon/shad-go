@@ -29,7 +29,7 @@ func (h *HeartbeatHandler) doHeartbeat(w http.ResponseWriter, r *http.Request) e
 	}
 
 	var req HeartbeatRequest
-	if err := json.Unmarshal(reqJSON, &req); err != nil {
+	if err = json.Unmarshal(reqJSON, &req); err != nil {
 		return err
 	}
 

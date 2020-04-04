@@ -16,7 +16,7 @@ func Download(ctx context.Context, endpoint string, c *Cache, artifactID build.I
 	if err != nil {
 		return err
 	}
-	defer abort()
+	defer func() { _ = abort() }()
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint+"/artifact?id="+artifactID.String(), nil)
 	if err != nil {

@@ -66,7 +66,7 @@ func (c *Client) Build(ctx context.Context, graph build.Graph, lsn BuildListener
 	}
 
 	c.l.Debug("build started", zap.String("build_id", started.ID.String()))
-	if err := c.uploadSources(ctx, &graph, started); err != nil {
+	if err = c.uploadSources(ctx, &graph, started); err != nil {
 		return err
 	}
 

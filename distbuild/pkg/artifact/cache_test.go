@@ -18,8 +18,8 @@ type testCache struct {
 	tmpDir string
 }
 
-func (c *testCache) cleanup() error {
-	return os.RemoveAll(c.tmpDir)
+func (c *testCache) cleanup() {
+	_ = os.RemoveAll(c.tmpDir)
 }
 
 func newTestCache(t *testing.T) *testCache {

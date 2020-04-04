@@ -59,7 +59,7 @@ func (h *Handler) doPut(w http.ResponseWriter, r *http.Request, id build.ID) err
 		} else if err != nil {
 			return nil, err
 		}
-		defer abort()
+		defer func() { _ = abort() }()
 
 		if _, err = io.Copy(w, r.Body); err != nil {
 			return nil, err

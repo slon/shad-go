@@ -31,7 +31,7 @@ func newEnv(t *testing.T) *env {
 	cache := newCache(t)
 	defer func() {
 		if cache != nil {
-			_ = cache.cleanup()
+			cache.cleanup()
 		}
 	}()
 
@@ -54,7 +54,7 @@ func newEnv(t *testing.T) *env {
 
 func (e *env) stop() {
 	e.server.Close()
-	_ = e.cache.cleanup()
+	e.cache.cleanup()
 }
 
 func TestFileUpload(t *testing.T) {
@@ -99,11 +99,11 @@ func TestFileUpload(t *testing.T) {
 			var wg sync.WaitGroup
 			wg.Add(G)
 
+			id := build.ID{0x03, byte(i)}
 			for j := 0; j < G; j++ {
 				go func() {
 					defer wg.Done()
 
-					id := build.ID{0x03, byte(j)}
 					assert.NoError(t, env.client.Upload(ctx, id, tmpFilePath))
 				}()
 			}
@@ -124,7 +124,7 @@ func TestFileDownload(t *testing.T) {
 
 	w, abort, err := env.cache.Write(id)
 	require.NoError(t, err)
-	defer abort()
+	defer func() { _ = abort() }()
 
 	_, err = w.Write([]byte("foobar"))
 	require.NoError(t, err)

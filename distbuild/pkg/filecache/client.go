@@ -56,7 +56,7 @@ func (c *Client) Download(ctx context.Context, localCache *Cache, id build.ID) e
 	if err != nil {
 		return err
 	}
-	defer abort()
+	defer func() { _ = abort() }()
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.endpoint+"/file?id="+id.String(), nil)
 	if err != nil {

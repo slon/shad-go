@@ -27,8 +27,8 @@ func newCache(t *testing.T) *testCache {
 	return &testCache{Cache: c, tmpDir: tmpDir}
 }
 
-func (c *testCache) cleanup() error {
-	return os.Remove(c.tmpDir)
+func (c *testCache) cleanup() {
+	_ = os.Remove(c.tmpDir)
 }
 
 func TestFileCache(t *testing.T) {
