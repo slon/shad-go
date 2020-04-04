@@ -24,7 +24,7 @@ func NewClient(
 ) *Client {
 	return &Client{
 		l:         l,
-		client:    &api.Client{Endpoint: apiEndpoint},
+		client:    &api.Client{endpoint: apiEndpoint},
 		sourceDir: sourceDir,
 	}
 }

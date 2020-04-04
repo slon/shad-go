@@ -2,9 +2,6 @@ package api
 
 import (
 	"context"
-	"net/http"
-
-	"go.uber.org/zap"
 
 	"gitlab.com/slon/shad-go/distbuild/pkg/build"
 )
@@ -72,25 +69,4 @@ type HeartbeatResponse struct {
 
 type HeartbeatService interface {
 	Heartbeat(ctx context.Context, req *HeartbeatRequest) (*HeartbeatResponse, error)
-}
-
-type HeartbeatClient struct {
-	Endpoint string
-}
-
-func (c *HeartbeatClient) Heartbeat(ctx context.Context, req *HeartbeatRequest) (*HeartbeatResponse, error) {
-	panic("implement me")
-}
-
-type HeartbeatHandler struct {
-	l *zap.Logger
-	s HeartbeatService
-}
-
-func (h *HeartbeatHandler) Register(mux *http.ServeMux) {
-	mux.HandleFunc("/heartbeat", h.heartbeat)
-}
-
-func (h *HeartbeatHandler) heartbeat(w http.ResponseWriter, r *http.Request) {
-	panic("implement me")
 }

@@ -9,11 +9,21 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"go.uber.org/zap"
+
 	"gitlab.com/slon/shad-go/distbuild/pkg/build"
 )
 
 type Client struct {
-	Endpoint string
+	l        *zap.Logger
+	endpoint string
+}
+
+func NewClient(l *zap.Logger, endpoint string) *Client {
+	return &Client{
+		l:        l,
+		endpoint: endpoint,
+	}
 }
 
 type statusReader struct {
@@ -39,7 +49,7 @@ func (c *Client) StartBuild(ctx context.Context, request *BuildRequest) (*BuildS
 		return nil, nil, err
 	}
 
-	req, err := http.NewRequest("POST", c.Endpoint+"/build", bytes.NewBuffer(reqJSON))
+	req, err := http.NewRequest("POST", c.endpoint+"/build", bytes.NewBuffer(reqJSON))
 	if err != nil {
 		return nil, nil, err
 	}
@@ -81,7 +91,7 @@ func (c *Client) SignalBuild(ctx context.Context, buildID build.ID, signal *Sign
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", c.Endpoint+"/signal?build_id="+buildID.String(), bytes.NewBuffer(signalJSON))
+	req, err := http.NewRequest("POST", c.endpoint+"/signal?build_id="+buildID.String(), bytes.NewBuffer(signalJSON))
 	if err != nil {
 		return nil, err
 	}

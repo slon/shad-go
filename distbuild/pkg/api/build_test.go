@@ -45,7 +45,7 @@ func newEnv(t *testing.T) (*env, func()) {
 
 	env.server = httptest.NewServer(mux)
 
-	env.client = &api.Client{Endpoint: env.server.URL}
+	env.client = api.NewClient(log, env.server.URL)
 
 	return env, env.stop
 }
