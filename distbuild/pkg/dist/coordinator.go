@@ -2,7 +2,6 @@ package dist
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"sync"
@@ -47,7 +46,9 @@ func NewCoordinator(
 	apiHandler := api.NewServiceHandler(log, c)
 	apiHandler.Register(c.mux)
 
-	c.mux.HandleFunc("/heartbeat", c.Heartbeat)
+	heartbeatHandler := api.NewHeartbeatHandler(log, c)
+	heartbeatHandler.Register(c.mux)
+
 	return c
 }
 
@@ -84,15 +85,10 @@ func (c *Coordinator) StartBuild(ctx context.Context, req *api.BuildRequest, w a
 }
 
 func (c *Coordinator) SignalBuild(ctx context.Context, buildID build.ID, signal *api.SignalRequest) (*api.SignalResponse, error) {
-	panic("implement me")
+	return nil, fmt.Errorf("signal build: not implemented")
 }
 
-func (c *Coordinator) doHeartbeat(w http.ResponseWriter, r *http.Request) error {
-	var req api.HeartbeatRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		return fmt.Errorf("invalid request: %w", err)
-	}
-
+func (c *Coordinator) Heartbeat(ctx context.Context, req *api.HeartbeatRequest) (*api.HeartbeatResponse, error) {
 	c.scheduler.RegisterWorker(req.WorkerID)
 
 	for _, job := range req.FinishedJob {
@@ -101,30 +97,14 @@ func (c *Coordinator) doHeartbeat(w http.ResponseWriter, r *http.Request) error 
 		c.scheduler.OnJobComplete(req.WorkerID, job.ID, &job)
 	}
 
-	rsp := api.HeartbeatResponse{
+	rsp := &api.HeartbeatResponse{
 		JobsToRun: map[build.ID]api.JobSpec{},
 	}
 
-	job := c.scheduler.PickJob(req.WorkerID, r.Context().Done())
+	job := c.scheduler.PickJob(req.WorkerID, ctx.Done())
 	if job != nil {
 		rsp.JobsToRun[job.Job.ID] = api.JobSpec{Job: *job.Job}
 	}
 
-	if err := json.NewEncoder(w).Encode(rsp); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (c *Coordinator) Heartbeat(w http.ResponseWriter, r *http.Request) {
-	c.log.Debug("heartbeat started")
-	if err := c.doHeartbeat(w, r); err != nil {
-		c.log.Error("heartbeat failed", zap.Error(err))
-
-		w.WriteHeader(http.StatusBadRequest)
-		_, _ = w.Write([]byte(err.Error()))
-		return
-	}
-	c.log.Debug("heartbeat finished")
+	return rsp, nil
 }

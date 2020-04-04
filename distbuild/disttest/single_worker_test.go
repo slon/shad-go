@@ -120,7 +120,7 @@ var artifactTransferGraph = build.Graph{
 	},
 }
 
-func TestArtifactTransfer(t *testing.T) {
+func TestArtifactTransferBetweenJobs(t *testing.T) {
 	env, cancel := newEnv(t)
 	defer cancel()
 

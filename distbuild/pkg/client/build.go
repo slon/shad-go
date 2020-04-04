@@ -9,11 +9,13 @@ import (
 
 	"gitlab.com/slon/shad-go/distbuild/pkg/api"
 	"gitlab.com/slon/shad-go/distbuild/pkg/build"
+	"gitlab.com/slon/shad-go/distbuild/pkg/filecache"
 )
 
 type Client struct {
 	l         *zap.Logger
 	client    *api.Client
+	cache     *filecache.Client
 	sourceDir string
 }
 
@@ -24,7 +26,8 @@ func NewClient(
 ) *Client {
 	return &Client{
 		l:         l,
-		client:    &api.Client{endpoint: apiEndpoint},
+		client:    api.NewClient(l, apiEndpoint),
+		cache:     filecache.NewClient(l, apiEndpoint),
 		sourceDir: sourceDir,
 	}
 }
@@ -37,7 +40,20 @@ type BuildListener interface {
 	OnJobFailed(jobID build.ID, code int, error string) error
 }
 
-func (c *Client) uploadSources(ctx context.Context, started *api.BuildStarted) error {
+func (c *Client) uploadSources(ctx context.Context, graph *build.Graph, started *api.BuildStarted) error {
+	for _, id := range started.MissingFiles {
+		c.l.Debug("uploading missing file to coordinator", zap.String("id", id.String()))
+
+		path, ok := graph.SourceFiles[id]
+		if !ok {
+			return fmt.Errorf("file is missing in build graph: id=%s", id)
+		}
+
+		if err := c.cache.Upload(ctx, id, path); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -48,7 +64,7 @@ func (c *Client) Build(ctx context.Context, graph build.Graph, lsn BuildListener
 	}
 
 	c.l.Debug("build started", zap.String("build_id", started.ID.String()))
-	if err := c.uploadSources(ctx, started); err != nil {
+	if err := c.uploadSources(ctx, &graph, started); err != nil {
 		return err
 	}
 

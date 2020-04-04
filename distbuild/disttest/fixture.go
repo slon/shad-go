@@ -35,7 +35,10 @@ type env struct {
 	HTTP *http.Server
 }
 
-const nWorkers = 1
+const (
+	logToStderr = true
+	nWorkers    = 1
+)
 
 func newEnv(t *testing.T) (e *env, cancel func()) {
 	cwd, err := os.Getwd()
@@ -53,6 +56,11 @@ func newEnv(t *testing.T) (e *env, cancel func()) {
 
 	cfg := zap.NewDevelopmentConfig()
 	cfg.OutputPaths = []string{filepath.Join(env.RootDir, "test.log")}
+
+	if logToStderr {
+		cfg.OutputPaths = append(cfg.OutputPaths, "stderr")
+	}
+
 	env.Logger, err = cfg.Build()
 	require.NoError(t, err)
 

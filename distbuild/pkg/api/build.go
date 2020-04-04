@@ -28,7 +28,10 @@ type BuildFailed struct {
 type BuildFinished struct {
 }
 
+type UploadDone struct{}
+
 type SignalRequest struct {
+	UploadDone *UploadDone
 }
 
 type SignalResponse struct {

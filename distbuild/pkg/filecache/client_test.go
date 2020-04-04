@@ -1,6 +1,7 @@
 package filecache_test
 
 import (
+	"bytes"
 	"context"
 	"io/ioutil"
 	"net/http"
@@ -60,8 +61,10 @@ func TestFileUpload(t *testing.T) {
 	env := newEnv(t)
 	defer env.stop()
 
+	content := bytes.Repeat([]byte("foobar"), 1024*1024)
+
 	tmpFilePath := filepath.Join(env.cache.tmpDir, "foo.txt")
-	require.NoError(t, ioutil.WriteFile(tmpFilePath, []byte("foobar"), 0666))
+	require.NoError(t, ioutil.WriteFile(tmpFilePath, content, 0666))
 
 	ctx := context.Background()
 
@@ -76,7 +79,7 @@ func TestFileUpload(t *testing.T) {
 
 		content, err := ioutil.ReadFile(path)
 		require.NoError(t, err)
-		require.Equal(t, []byte("foobar"), content)
+		require.Equal(t, content, content)
 	})
 
 	t.Run("RepeatedUpload", func(t *testing.T) {
@@ -88,8 +91,8 @@ func TestFileUpload(t *testing.T) {
 
 	t.Run("ConcurrentUpload", func(t *testing.T) {
 		const (
-			N = 100
-			G = 100
+			N = 10
+			G = 10
 		)
 
 		for i := 0; i < N; i++ {
