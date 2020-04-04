@@ -98,6 +98,7 @@ func TestFirewall(t *testing.T) {
 		conf        string
 		service     http.HandlerFunc
 		makeRequest func() *resty.Request
+		endpoint    string
 		expected    result
 	}{
 		{
@@ -138,6 +139,23 @@ rules:
 					})
 			},
 			expected: result{code: http.StatusOK, body: `{"user_id": 123, "path": "../../user"}`},
+		},
+		{
+			name: "unprotected-endpoint",
+			conf: `
+rules:
+  - endpoint: "/list"
+    forbidden_user_agents:
+      - 'python-requests.*'
+`,
+			service: echoService,
+			makeRequest: func() *resty.Request {
+				return c.R().
+					SetHeader("User-Agent", "python-requests/2.22.0").
+					SetBody(`{"user_id": 123}`)
+			},
+			endpoint: "/login",
+			expected: result{code: http.StatusOK, body: `{"user_id": 123}`},
 		},
 		{
 			name: "bad-user-agent",
@@ -258,7 +276,7 @@ rules:
 			port, cleanup := startServer(t, service.URL, tc.conf)
 			defer cleanup()
 
-			u := fmt.Sprintf("http://localhost:%s", port)
+			u := fmt.Sprintf("http://localhost:%s%s", port, tc.endpoint)
 
 			resp, err := tc.makeRequest().Post(u)
 			require.NoError(t, err)
