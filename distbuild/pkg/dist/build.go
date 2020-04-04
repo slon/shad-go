@@ -14,6 +14,8 @@ type Build struct {
 	ID    build.ID
 	Graph *build.Graph
 
+	reverseFiles map[string]build.ID
+
 	l          *zap.Logger
 	c          *Coordinator
 	uploadDone chan struct{}
@@ -26,6 +28,8 @@ func NewBuild(graph *build.Graph, c *Coordinator) *Build {
 		ID:    id,
 		Graph: graph,
 
+		reverseFiles: make(map[string]build.ID),
+
 		l:          c.log.With(zap.String("build_id", id.String())),
 		c:          c,
 		uploadDone: make(chan struct{}),
@@ -34,9 +38,12 @@ func NewBuild(graph *build.Graph, c *Coordinator) *Build {
 
 func (b *Build) missingFiles() []build.ID {
 	var files []build.ID
-	for id := range b.Graph.SourceFiles {
+
+	for id, path := range b.Graph.SourceFiles {
 		files = append(files, id)
+		b.reverseFiles[path] = id
 	}
+
 	return files
 }
 

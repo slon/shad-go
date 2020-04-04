@@ -1,11 +1,8 @@
 package worker
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"sync"
 
@@ -28,6 +25,9 @@ type Worker struct {
 
 	mux *http.ServeMux
 
+	fileClient *filecache.Client
+	heartbeat  *api.HeartbeatClient
+
 	mu           sync.Mutex
 	newArtifacts []build.ID
 	newSources   []build.ID
@@ -45,8 +45,12 @@ func New(
 		id:                  workerID,
 		coordinatorEndpoint: coordinatorEndpoint,
 		log:                 log,
-		fileCache:           fileCache,
-		artifacts:           artifacts,
+
+		fileCache: fileCache,
+		artifacts: artifacts,
+
+		fileClient: filecache.NewClient(log, coordinatorEndpoint),
+		heartbeat:  api.NewHeartbeatClient(log, coordinatorEndpoint),
 
 		mux: http.NewServeMux(),
 	}
@@ -63,35 +67,6 @@ func (w *Worker) recover() error {
 	})
 }
 
-func (w *Worker) sendHeartbeat(ctx context.Context, req *api.HeartbeatRequest) (*api.HeartbeatResponse, error) {
-	reqJS, err := json.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
-	httpReq, err := http.NewRequestWithContext(ctx, "POST", w.coordinatorEndpoint+"/heartbeat", bytes.NewBuffer(reqJS))
-	if err != nil {
-		return nil, err
-	}
-
-	httpRsp, err := http.DefaultClient.Do(httpReq)
-	if err != nil {
-		return nil, err
-	}
-
-	if httpRsp.StatusCode != http.StatusOK {
-		errorString, _ := ioutil.ReadAll(httpRsp.Body)
-		return nil, fmt.Errorf("heartbeat failed: %s", errorString)
-	}
-
-	var rsp api.HeartbeatResponse
-	if err := json.NewDecoder(httpRsp.Body).Decode(&rsp); err != nil {
-		return nil, err
-	}
-
-	return &rsp, nil
-}
-
 func (w *Worker) Run(ctx context.Context) error {
 	if err := w.recover(); err != nil {
 		return err
@@ -99,7 +74,7 @@ func (w *Worker) Run(ctx context.Context) error {
 
 	for {
 		w.log.Debug("sending heartbeat request")
-		rsp, err := w.sendHeartbeat(ctx, w.buildHeartbeat())
+		rsp, err := w.heartbeat.Heartbeat(ctx, w.buildHeartbeat())
 		if err != nil {
 			if ctx.Err() != nil {
 				return ctx.Err()
