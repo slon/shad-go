@@ -3,7 +3,6 @@ package filecache
 import (
 	"errors"
 	"io"
-	"net/http"
 	"os"
 	"path/filepath"
 
@@ -13,6 +12,7 @@ import (
 
 var (
 	ErrNotFound    = errors.New("file not found")
+	ErrExists      = errors.New("file exists")
 	ErrWriteLocked = errors.New("file is locked for write")
 	ErrReadLocked  = errors.New("file is locked for read")
 )
@@ -23,6 +23,8 @@ func convertErr(err error) error {
 	switch {
 	case errors.Is(err, artifact.ErrNotFound):
 		return ErrNotFound
+	case errors.Is(err, artifact.ErrExists):
+		return ErrExists
 	case errors.Is(err, artifact.ErrWriteLocked):
 		return ErrWriteLocked
 	case errors.Is(err, artifact.ErrReadLocked):
@@ -106,8 +108,4 @@ func (c *Cache) Get(file build.ID) (path string, unlock func(), err error) {
 	path = filepath.Join(root, fileName)
 	err = convertErr(err)
 	return
-}
-
-func NewHandler(c *Cache) http.Handler {
-	panic("implement me")
 }

@@ -14,6 +14,7 @@ import (
 
 var (
 	ErrNotFound    = errors.New("artifact not found")
+	ErrExists      = errors.New("artifact exists")
 	ErrWriteLocked = errors.New("artifact is locked for write")
 	ErrReadLocked  = errors.New("artifact is locked for read")
 )
@@ -79,9 +80,16 @@ func (c *Cache) readUnlock(id build.ID) {
 	}
 }
 
-func (c *Cache) writeLock(id build.ID) error {
+func (c *Cache) writeLock(id build.ID, remove bool) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
+
+	_, err := os.Stat(filepath.Join(c.cacheDir, id.Path()))
+	if !os.IsNotExist(err) && err != nil {
+		return err
+	} else if err == nil && !remove {
+		return ErrExists
+	}
 
 	if _, ok := c.writeLocked[id]; ok {
 		return ErrWriteLocked
@@ -129,7 +137,7 @@ func (c *Cache) Range(artifactFn func(artifact build.ID) error) error {
 }
 
 func (c *Cache) Remove(artifact build.ID) error {
-	if err := c.writeLock(artifact); err != nil {
+	if err := c.writeLock(artifact, true); err != nil {
 		return err
 	}
 	defer c.writeUnlock(artifact)
@@ -138,7 +146,7 @@ func (c *Cache) Remove(artifact build.ID) error {
 }
 
 func (c *Cache) Create(artifact build.ID) (path string, commit, abort func() error, err error) {
-	if err = c.writeLock(artifact); err != nil {
+	if err = c.writeLock(artifact, false); err != nil {
 		return
 	}
 

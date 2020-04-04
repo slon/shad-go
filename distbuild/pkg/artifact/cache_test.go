@@ -84,3 +84,17 @@ func TestAbortWrite(t *testing.T) {
 	_, _, err = c.Get(idA)
 	require.Truef(t, errors.Is(err, artifact.ErrNotFound), "%v", err)
 }
+
+func TestArtifactExists(t *testing.T) {
+	c := newTestCache(t)
+	defer c.cleanup()
+
+	idA := build.ID{'a'}
+
+	_, commit, _, err := c.Create(idA)
+	require.NoError(t, err)
+	require.NoError(t, commit())
+
+	_, _, _, err = c.Create(idA)
+	require.Truef(t, errors.Is(err, artifact.ErrExists), "%v", err)
+}
