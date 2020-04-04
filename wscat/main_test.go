@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"gitlab.com/slon/shad-go/tools/testtool"
@@ -62,7 +63,7 @@ func startCommand(t *testing.T, addr string) (conn *Conn, stop func()) {
 
 	done := make(chan struct{})
 	go func() {
-		_ = cmd.Wait()
+		assert.NoError(t, cmd.Wait())
 		close(done)
 	}()
 
@@ -85,7 +86,6 @@ func startCommand(t *testing.T, addr string) (conn *Conn, stop func()) {
 		}
 	}
 
-	require.NoError(t, err)
 	return
 }
 
