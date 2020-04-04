@@ -236,7 +236,7 @@ rules:
 			expected: result{code: http.StatusForbidden, body: "Forbidden"},
 		},
 		{
-			name: "bad-response",
+			name: "bad-request",
 			conf: `
 rules:
   - endpoint: "/"
