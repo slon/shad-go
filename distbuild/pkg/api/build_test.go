@@ -23,7 +23,7 @@ type env struct {
 	ctrl   *gomock.Controller
 	mock   *mock.MockService
 	server *httptest.Server
-	client *api.Client
+	client *api.BuildClient
 }
 
 func (e *env) stop() {
@@ -40,12 +40,12 @@ func newEnv(t *testing.T) (*env, func()) {
 
 	mux := http.NewServeMux()
 
-	handler := api.NewServiceHandler(log, env.mock)
+	handler := api.NewBuildService(log, env.mock)
 	handler.Register(mux)
 
 	env.server = httptest.NewServer(mux)
 
-	env.client = api.NewClient(log, env.server.URL)
+	env.client = api.NewBuildClient(log, env.server.URL)
 
 	return env, env.stop
 }
@@ -127,4 +127,35 @@ func TestBuildRunning(t *testing.T) {
 
 	_, err = r.Next()
 	require.Equal(t, err, io.EOF)
+}
+
+func TestBuildResultsStreaming(t *testing.T) {
+	// Test is hanging?
+	// See https://golang.org/pkg/net/http/#Flusher
+
+	env, stop := newEnv(t)
+	defer stop()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	buildID := build.ID{02}
+
+	req := &api.BuildRequest{}
+
+	started := &api.BuildStarted{ID: buildID}
+
+	env.mock.EXPECT().StartBuild(gomock.Any(), gomock.Any(), gomock.Any()).
+		DoAndReturn(func(ctx context.Context, req *api.BuildRequest, w api.StatusWriter) error {
+			if err := w.Started(started); err != nil {
+				return err
+			}
+
+			<-ctx.Done()
+			return ctx.Err()
+		})
+
+	rsp, _, err := env.client.StartBuild(ctx, req)
+	require.NoError(t, err)
+	require.Equal(t, started, rsp)
 }

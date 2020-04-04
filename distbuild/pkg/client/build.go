@@ -14,7 +14,7 @@ import (
 
 type Client struct {
 	l         *zap.Logger
-	client    *api.Client
+	client    *api.BuildClient
 	cache     *filecache.Client
 	sourceDir string
 }
@@ -26,7 +26,7 @@ func NewClient(
 ) *Client {
 	return &Client{
 		l:         l,
-		client:    api.NewClient(l, apiEndpoint),
+		client:    api.NewBuildClient(l, apiEndpoint),
 		cache:     filecache.NewClient(l, apiEndpoint),
 		sourceDir: sourceDir,
 	}
@@ -65,6 +65,12 @@ func (c *Client) Build(ctx context.Context, graph build.Graph, lsn BuildListener
 
 	c.l.Debug("build started", zap.String("build_id", started.ID.String()))
 	if err := c.uploadSources(ctx, &graph, started); err != nil {
+		return err
+	}
+
+	uploadDone := &api.SignalRequest{UploadDone: &api.UploadDone{}}
+	_, err = c.client.SignalBuild(ctx, started.ID, uploadDone)
+	if err != nil {
 		return err
 	}
 

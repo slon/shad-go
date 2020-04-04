@@ -63,9 +63,11 @@ func TestJobCaching(t *testing.T) {
 	// Second build must get results from cache.
 	require.NoError(t, env.Client.Build(env.Ctx, graph, NewRecorder()))
 
+	require.NoError(t, ioutil.WriteFile(tmpFile.Name(), []byte("NOTOK\n"), 0666))
+
 	output, err := ioutil.ReadAll(tmpFile)
 	require.NoError(t, err)
-	require.Equal(t, []byte("OK\n"), output)
+	require.Equal(t, []byte("NOTOK\n"), output)
 }
 
 var sourceFilesGraph = build.Graph{

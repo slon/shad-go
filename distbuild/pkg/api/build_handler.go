@@ -11,41 +11,53 @@ import (
 	"gitlab.com/slon/shad-go/distbuild/pkg/build"
 )
 
-func NewServiceHandler(l *zap.Logger, s Service) *ServiceHandler {
-	return &ServiceHandler{
+func NewBuildService(l *zap.Logger, s Service) *BuildHandler {
+	return &BuildHandler{
 		l: l,
 		s: s,
 	}
 }
 
-type ServiceHandler struct {
+type BuildHandler struct {
 	l *zap.Logger
 	s Service
 }
 
-func (s *ServiceHandler) Register(mux *http.ServeMux) {
-	mux.HandleFunc("/build", s.build)
-	mux.HandleFunc("/signal", s.signal)
+func (h *BuildHandler) Register(mux *http.ServeMux) {
+	mux.HandleFunc("/build", h.build)
+	mux.HandleFunc("/signal", h.signal)
 }
 
 type statusWriter struct {
+	id      build.ID
+	h       *BuildHandler
 	written bool
 	w       http.ResponseWriter
+	flush   http.Flusher
 	enc     *json.Encoder
 }
 
 func (w *statusWriter) Started(rsp *BuildStarted) error {
+	w.id = rsp.ID
 	w.written = true
+
+	w.h.l.Debug("build started", zap.String("build_id", w.id.String()), zap.Any("started", rsp))
+
 	w.w.Header().Set("content-type", "application/json")
 	w.w.WriteHeader(http.StatusOK)
+
+	defer w.flush.Flush()
 	return w.enc.Encode(rsp)
 }
 
 func (w *statusWriter) Updated(update *StatusUpdate) error {
+	w.h.l.Debug("build updated", zap.String("build_id", w.id.String()), zap.Any("update", update))
+
+	defer w.flush.Flush()
 	return w.enc.Encode(update)
 }
 
-func (s *ServiceHandler) doBuild(w http.ResponseWriter, r *http.Request) error {
+func (h *BuildHandler) doBuild(w http.ResponseWriter, r *http.Request) error {
 	reqJSON, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		return err
@@ -56,8 +68,13 @@ func (s *ServiceHandler) doBuild(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	sw := &statusWriter{w: w, enc: json.NewEncoder(w)}
-	err = s.s.StartBuild(r.Context(), &req, sw)
+	flush, ok := w.(http.Flusher)
+	if !ok {
+		return fmt.Errorf("response writer does not implement http.Flusher")
+	}
+
+	sw := &statusWriter{h: h, w: w, enc: json.NewEncoder(w), flush: flush}
+	err = h.s.StartBuild(r.Context(), &req, sw)
 
 	if err != nil {
 		if sw.written {
@@ -71,14 +88,14 @@ func (s *ServiceHandler) doBuild(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-func (s *ServiceHandler) build(w http.ResponseWriter, r *http.Request) {
-	if err := s.doBuild(w, r); err != nil {
+func (h *BuildHandler) build(w http.ResponseWriter, r *http.Request) {
+	if err := h.doBuild(w, r); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		_, _ = fmt.Fprintf(w, "%v", err)
 	}
 }
 
-func (s *ServiceHandler) doSignal(w http.ResponseWriter, r *http.Request) error {
+func (h *BuildHandler) doSignal(w http.ResponseWriter, r *http.Request) error {
 	buildIDParam := r.URL.Query().Get("build_id")
 	if buildIDParam == "" {
 		return fmt.Errorf(`"build_id" parameter is missing`)
@@ -99,7 +116,7 @@ func (s *ServiceHandler) doSignal(w http.ResponseWriter, r *http.Request) error 
 		return err
 	}
 
-	rsp, err := s.s.SignalBuild(r.Context(), buildID, &req)
+	rsp, err := h.s.SignalBuild(r.Context(), buildID, &req)
 	if err != nil {
 		return err
 	}
@@ -115,8 +132,10 @@ func (s *ServiceHandler) doSignal(w http.ResponseWriter, r *http.Request) error 
 	return nil
 }
 
-func (s *ServiceHandler) signal(w http.ResponseWriter, r *http.Request) {
-	if err := s.doSignal(w, r); err != nil {
+func (h *BuildHandler) signal(w http.ResponseWriter, r *http.Request) {
+	if err := h.doSignal(w, r); err != nil {
+		h.l.Warn("build signal failed", zap.Error(err))
+
 		w.WriteHeader(http.StatusBadRequest)
 		_, _ = fmt.Fprintf(w, "%v", err)
 	}

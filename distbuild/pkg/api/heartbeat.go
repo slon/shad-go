@@ -58,7 +58,11 @@ type HeartbeatRequest struct {
 
 // JobSpec описывает джоб, который нужно запустить.
 type JobSpec struct {
+	// SourceFiles задаёт список файлов, который должны присутсововать в директории с исходным кодом при запуске этого джоба.
 	SourceFiles map[build.ID]string
+
+	// Artifacts задаёт воркеров, с которых можно скачать артефакты необходимые этом джобу.
+	Artifacts map[build.ID]WorkerID
 
 	Job build.Job
 }

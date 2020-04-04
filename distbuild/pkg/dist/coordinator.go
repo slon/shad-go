@@ -43,11 +43,14 @@ func NewCoordinator(
 		scheduler: scheduler.NewScheduler(log, defaultConfig),
 	}
 
-	apiHandler := api.NewServiceHandler(log, c)
+	apiHandler := api.NewBuildService(log, c)
 	apiHandler.Register(c.mux)
 
 	heartbeatHandler := api.NewHeartbeatHandler(log, c)
 	heartbeatHandler.Register(c.mux)
+
+	fileHandler := filecache.NewHandler(log, c.fileCache)
+	fileHandler.Register(c.mux)
 
 	return c
 }
@@ -56,36 +59,43 @@ func (c *Coordinator) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	c.mux.ServeHTTP(w, r)
 }
 
+func (c *Coordinator) addBuild(b *Build) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	c.builds[b.ID] = b
+}
+
+func (c *Coordinator) removeBuild(b *Build) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	delete(c.builds, b.ID)
+}
+
+func (c *Coordinator) getBuild(id build.ID) *Build {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	return c.builds[id]
+}
+
 func (c *Coordinator) StartBuild(ctx context.Context, req *api.BuildRequest, w api.StatusWriter) error {
-	if err := w.Started(&api.BuildStarted{}); err != nil {
-		return err
-	}
+	b := NewBuild(&req.Graph, c)
 
-	for _, job := range req.Graph.Jobs {
-		job := job
+	c.addBuild(b)
+	defer c.removeBuild(b)
 
-		s := c.scheduler.ScheduleJob(&job)
-
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		case <-s.Finished:
-		}
-
-		c.log.Debug("job finished", zap.String("job_id", job.ID.String()))
-
-		jobFinished := api.StatusUpdate{JobFinished: s.Result}
-		if err := w.Updated(&jobFinished); err != nil {
-			return err
-		}
-	}
-
-	finished := api.StatusUpdate{BuildFinished: &api.BuildFinished{}}
-	return w.Updated(&finished)
+	return b.Run(ctx, w)
 }
 
 func (c *Coordinator) SignalBuild(ctx context.Context, buildID build.ID, signal *api.SignalRequest) (*api.SignalResponse, error) {
-	return nil, fmt.Errorf("signal build: not implemented")
+	b := c.getBuild(buildID)
+	if b == nil {
+		return nil, fmt.Errorf("build %q not found", buildID)
+	}
+
+	return b.Signal(ctx, signal)
 }
 
 func (c *Coordinator) Heartbeat(ctx context.Context, req *api.HeartbeatRequest) (*api.HeartbeatResponse, error) {

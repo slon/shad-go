@@ -14,13 +14,13 @@ import (
 	"gitlab.com/slon/shad-go/distbuild/pkg/build"
 )
 
-type Client struct {
+type BuildClient struct {
 	l        *zap.Logger
 	endpoint string
 }
 
-func NewClient(l *zap.Logger, endpoint string) *Client {
-	return &Client{
+func NewBuildClient(l *zap.Logger, endpoint string) *BuildClient {
+	return &BuildClient{
 		l:        l,
 		endpoint: endpoint,
 	}
@@ -43,7 +43,7 @@ func (r *statusReader) Next() (*StatusUpdate, error) {
 	return &u, nil
 }
 
-func (c *Client) StartBuild(ctx context.Context, request *BuildRequest) (*BuildStarted, StatusReader, error) {
+func (c *BuildClient) StartBuild(ctx context.Context, request *BuildRequest) (*BuildStarted, StatusReader, error) {
 	reqJSON, err := json.Marshal(request)
 	if err != nil {
 		return nil, nil, err
@@ -85,7 +85,7 @@ func (c *Client) StartBuild(ctx context.Context, request *BuildRequest) (*BuildS
 	return &started, r, nil
 }
 
-func (c *Client) SignalBuild(ctx context.Context, buildID build.ID, signal *SignalRequest) (*SignalResponse, error) {
+func (c *BuildClient) SignalBuild(ctx context.Context, buildID build.ID, signal *SignalRequest) (*SignalResponse, error) {
 	signalJSON, err := json.Marshal(signal)
 	if err != nil {
 		return nil, err
