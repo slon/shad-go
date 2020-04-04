@@ -140,9 +140,7 @@ func TestBuildResultsStreaming(t *testing.T) {
 	defer cancel()
 
 	buildID := build.ID{02}
-
 	req := &api.BuildRequest{}
-
 	started := &api.BuildStarted{ID: buildID}
 
 	env.mock.EXPECT().StartBuild(gomock.Any(), gomock.Any(), gomock.Any()).

@@ -46,6 +46,8 @@ func (h *Handler) doGet(w http.ResponseWriter, r *http.Request, id build.ID) err
 	if _, err = io.Copy(w, f); err != nil {
 		h.l.Warn("error streaming file", zap.Error(err))
 	}
+
+	h.l.Debug("file download complete", zap.String("id", id.String()))
 	return nil
 }
 
@@ -70,6 +72,7 @@ func (h *Handler) doPut(w http.ResponseWriter, r *http.Request, id build.ID) err
 	}
 
 	w.WriteHeader(http.StatusOK)
+	h.l.Debug("file upload complete", zap.String("id", id.String()))
 	return nil
 }
 

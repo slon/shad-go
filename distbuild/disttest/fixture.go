@@ -78,7 +78,7 @@ func newEnv(t *testing.T) (e *env, cancel func()) {
 	env.Client = client.NewClient(
 		env.Logger.Named("client"),
 		coordinatorEndpoint,
-		filepath.Join(absCWD, "testdata/src"))
+		filepath.Join(absCWD, "testdata", t.Name()))
 
 	coordinatorCache, err := filecache.New(filepath.Join(env.RootDir, "coordinator", "filecache"))
 	require.NoError(t, err)

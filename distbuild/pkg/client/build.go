@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"path/filepath"
 
 	"go.uber.org/zap"
 
@@ -49,7 +50,8 @@ func (c *Client) uploadSources(ctx context.Context, graph *build.Graph, started 
 			return fmt.Errorf("file is missing in build graph: id=%s", id)
 		}
 
-		if err := c.cache.Upload(ctx, id, path); err != nil {
+		absPath := filepath.Join(c.sourceDir, path)
+		if err := c.cache.Upload(ctx, id, absPath); err != nil {
 			return err
 		}
 	}

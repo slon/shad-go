@@ -32,8 +32,16 @@ func NewBuild(graph *build.Graph, c *Coordinator) *Build {
 	}
 }
 
+func (b *Build) missingFiles() []build.ID {
+	var files []build.ID
+	for id := range b.Graph.SourceFiles {
+		files = append(files, id)
+	}
+	return files
+}
+
 func (b *Build) Run(ctx context.Context, w api.StatusWriter) error {
-	if err := w.Started(&api.BuildStarted{ID: b.ID}); err != nil {
+	if err := w.Started(&api.BuildStarted{ID: b.ID, MissingFiles: b.missingFiles()}); err != nil {
 		return err
 	}
 
