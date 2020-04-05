@@ -100,9 +100,39 @@ type Job struct {
 Код тестов в этом задании менять нельзя. Это значит, что вы не можете менять интерфейсы в тех местах, где
 код покрыт тестами.
 
+<details>
+  <summary markdown="span">Сколько кода нужно написать?</summary>
+  
+  ```
+prime@bee ~/C/shad-go> find distbuild -iname '*.go' | grep -v test | grep -v mock | grep -v pkg/build | xargs wc -l
+   23 distbuild/pkg/worker/state.go
+  111 distbuild/pkg/worker/worker.go
+   45 distbuild/pkg/worker/download.go
+  281 distbuild/pkg/worker/job.go
+   69 distbuild/pkg/api/heartbeat.go
+  121 distbuild/pkg/api/build_client.go
+   53 distbuild/pkg/api/build.go
+   60 distbuild/pkg/api/heartbeat_handler.go
+  142 distbuild/pkg/api/build_handler.go
+   56 distbuild/pkg/api/heartbeat_client.go
+  288 distbuild/pkg/scheduler/scheduler.go
+  119 distbuild/pkg/dist/build.go
+  120 distbuild/pkg/dist/coordinator.go
+   98 distbuild/pkg/tarstream/stream.go
+   42 distbuild/pkg/artifact/client.go
+  191 distbuild/pkg/artifact/cache.go
+   54 distbuild/pkg/artifact/handler.go
+  124 distbuild/pkg/client/build.go
+   83 distbuild/pkg/filecache/client.go
+   99 distbuild/pkg/filecache/handler.go
+  111 distbuild/pkg/filecache/filecache.go
+ 2290 total
+  ```
+</details>
+
 # Критерии оценки
 
 Решение должно проходить все тесты, так же как в обычной задаче. После успешной попытки, в таблице gdoc
 будет стоять 0. После этого, проверяющие должны будут просмотреть решение и заменить оценку в таблице на 1.
 Это будет значить, что задача засчитана. Code Review не будет, проверка нужна только чтобы удостовериться что
-посылка честно проходит все тесты.
+посылка честно проходит все тесты. Отдельный Merge Request создавать не нужно.
