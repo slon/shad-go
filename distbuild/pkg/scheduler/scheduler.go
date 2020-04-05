@@ -84,6 +84,17 @@ func NewScheduler(l *zap.Logger, config Config) *Scheduler {
 	}
 }
 
+func (c *Scheduler) LocateArtifact(id build.ID) (api.WorkerID, bool) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	for id := range c.cachedJobs[id] {
+		return id, true
+	}
+
+	return "", false
+}
+
 func (c *Scheduler) RegisterWorker(workerID api.WorkerID) {
 	c.mu.Lock()
 	defer c.mu.Unlock()

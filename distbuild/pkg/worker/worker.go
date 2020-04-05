@@ -43,7 +43,7 @@ func New(
 	fileCache *filecache.Cache,
 	artifacts *artifact.Cache,
 ) *Worker {
-	return &Worker{
+	w := &Worker{
 		id:                  workerID,
 		coordinatorEndpoint: coordinatorEndpoint,
 		log:                 log,
@@ -56,6 +56,9 @@ func New(
 
 		mux: http.NewServeMux(),
 	}
+
+	artifact.NewHandler(w.log, w.artifacts).Register(w.mux)
+	return w
 }
 
 func (w *Worker) ServeHTTP(rw http.ResponseWriter, r *http.Request) {

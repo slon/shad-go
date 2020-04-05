@@ -62,9 +62,23 @@ func (b *Build) Run(ctx context.Context, w api.StatusWriter) error {
 	b.l.Debug("file upload completed")
 
 	for _, job := range b.Graph.Jobs {
-		spec := api.JobSpec{Job: job, SourceFiles: make(map[build.ID]string)}
+		spec := api.JobSpec{
+			Job:         job,
+			SourceFiles: make(map[build.ID]string),
+			Artifacts:   make(map[build.ID]api.WorkerID),
+		}
+
 		for _, file := range job.Inputs {
 			spec.SourceFiles[b.reverseFiles[file]] = file
+		}
+
+		for _, id := range job.Deps {
+			workerID, ok := b.c.scheduler.LocateArtifact(id)
+			if !ok {
+				return fmt.Errorf("artifact %q is missing in cache", id)
+			}
+
+			spec.Artifacts[id] = workerID
 		}
 
 		s := b.c.scheduler.ScheduleJob(&spec)

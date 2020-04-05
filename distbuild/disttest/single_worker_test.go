@@ -11,6 +11,8 @@ import (
 	"gitlab.com/slon/shad-go/distbuild/pkg/build"
 )
 
+var singleWorkerConfig = &Config{WorkerCount: 1}
+
 var echoGraph = build.Graph{
 	Jobs: []build.Job{
 		{
@@ -24,7 +26,7 @@ var echoGraph = build.Graph{
 }
 
 func TestSingleCommand(t *testing.T) {
-	env, cancel := newEnv(t)
+	env, cancel := newEnv(t, singleWorkerConfig)
 	defer cancel()
 
 	recorder := NewRecorder()
@@ -35,7 +37,7 @@ func TestSingleCommand(t *testing.T) {
 }
 
 func TestJobCaching(t *testing.T) {
-	env, cancel := newEnv(t)
+	env, cancel := newEnv(t, singleWorkerConfig)
 	defer cancel()
 
 	tmpFile, err := ioutil.TempFile("", "")
@@ -92,7 +94,7 @@ var sourceFilesGraph = build.Graph{
 }
 
 func TestSourceFiles(t *testing.T) {
-	env, cancel := newEnv(t)
+	env, cancel := newEnv(t, singleWorkerConfig)
 	defer cancel()
 
 	recorder := NewRecorder()
@@ -123,7 +125,7 @@ var artifactTransferGraph = build.Graph{
 }
 
 func TestArtifactTransferBetweenJobs(t *testing.T) {
-	env, cancel := newEnv(t)
+	env, cancel := newEnv(t, singleWorkerConfig)
 	defer cancel()
 
 	recorder := NewRecorder()

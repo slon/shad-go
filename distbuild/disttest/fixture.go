@@ -37,10 +37,13 @@ type env struct {
 
 const (
 	logToStderr = true
-	nWorkers    = 1
 )
 
-func newEnv(t *testing.T) (e *env, cancel func()) {
+type Config struct {
+	WorkerCount int
+}
+
+func newEnv(t *testing.T, config *Config) (e *env, cancel func()) {
 	cwd, err := os.Getwd()
 	require.NoError(t, err)
 
@@ -91,7 +94,7 @@ func newEnv(t *testing.T) (e *env, cancel func()) {
 	router := http.NewServeMux()
 	router.Handle("/coordinator/", http.StripPrefix("/coordinator", env.Coordinator))
 
-	for i := 0; i < nWorkers; i++ {
+	for i := 0; i < config.WorkerCount; i++ {
 		workerName := fmt.Sprintf("worker%d", i)
 		workerDir := filepath.Join(env.RootDir, workerName)
 
