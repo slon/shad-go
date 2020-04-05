@@ -11,6 +11,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"go.uber.org/goleak"
+
 	"gitlab.com/slon/shad-go/distbuild/pkg/api"
 	"gitlab.com/slon/shad-go/distbuild/pkg/artifact"
 	"gitlab.com/slon/shad-go/distbuild/pkg/client"
@@ -152,5 +154,7 @@ func newEnv(t *testing.T, config *Config) (e *env, cancel func()) {
 		cancelRootContext()
 		_ = env.HTTP.Shutdown(context.Background())
 		_ = env.Logger.Sync()
+
+		goleak.VerifyNone(t)
 	}
 }

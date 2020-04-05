@@ -60,5 +60,5 @@ func TestArtifactTransferBetweenWorkers(t *testing.T) {
 	wg.Wait()
 
 	testDuration := time.Since(startTime)
-	assert.True(t, testDuration < time.Second*2, "test duration should be less than 2 seconds")
+	assert.True(t, testDuration < time.Second*5/2, "test duration should be less than 2.5 seconds")
 }
