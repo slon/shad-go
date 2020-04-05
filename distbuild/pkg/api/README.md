@@ -7,7 +7,7 @@
 
 ## Worker <-> Coordinator
 
-- Worker и Сoordinator общаются через один запрос `POST /heartbeat`.
+- Worker и Coordinator общаются через один запрос `POST /heartbeat`.
 - Worker посылает `HeartbeatRequest` и получает в ответ `HeartbeatResponse`.
 - Запрос и ответ передаются в формате json.
 - Ошибка обработки heartbeat передаётся как текстовая строка.

@@ -37,7 +37,7 @@ type Job struct {
 	//
 	// ID вычисляется как хеш от всех входных файлов, команд запуска и хешей зависимых джобов.
 	//
-	// Выход джоба целиком опеределяется его ID. Это важное свойство позволяет кешировать
+	// Выход джоба целиком определяется его ID. Это важное свойство позволяет кешировать
 	// результаты сборки.
 	ID ID
 
@@ -91,7 +91,7 @@ type Job struct {
 - [`distbuild/pkg/api`](./distbuild/pkg/api) - протокол общения между компонентами.
 - [`distbuild/pkg/artifact`](./distbuild/pkg/artifact) - кеш артефактов и протокол передачи артефактов между воркерами.
 - [`distbuild/pkg/filecache`](./distbuild/pkg/filecache) - кеш файлов и протокол передачи файлов между компонентами.
-- [`distbuild/pkg/scheduler`](./distbuild/pkg/filecache) - планировщик с экристикой локальности.
+- [`distbuild/pkg/scheduler`](./distbuild/pkg/filecache) - планировщик с эвристикой локальности.
 
 После того, как все кубики будут готовы, нужно будет соединить их вместе, реализовав `distbuild/pkg/worker`,
 `distbuild/pkg/client` и `distbuild/pkg/coordinator`. Код в этих пакетах нужно отлаживать на
