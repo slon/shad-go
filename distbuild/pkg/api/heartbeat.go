@@ -38,10 +38,6 @@ type HeartbeatRequest struct {
 	// в данный момент.
 	RunningJobs []build.ID
 
-	DownloadingSources []build.ID
-
-	DownloadingArtifacts []build.ID
-
 	// FreeSlots сообщаяет, сколько еще процессов можно запустить на этом воркере.
 	FreeSlots int
 
@@ -51,9 +47,6 @@ type HeartbeatRequest struct {
 
 	// AddedArtifacts говорит, какие артефакты появились в кеше на этой итерации цикла.
 	AddedArtifacts []build.ID
-
-	// AddedSourceFiles говорит, какие файлы появились в кеше на этой итерации цикла.
-	AddedSourceFiles []build.ID
 }
 
 // JobSpec описывает джоб, который нужно запустить.

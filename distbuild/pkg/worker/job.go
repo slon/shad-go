@@ -165,7 +165,11 @@ func (w *Worker) runJob(ctx context.Context, spec *api.JobSpec) (*api.JobResult,
 		return res, nil
 	}
 
-	if err = w.pullFiles(ctx, spec.SourceFiles); err != nil {
+	if err = w.downloadFiles(ctx, spec.SourceFiles); err != nil {
+		return nil, err
+	}
+
+	if err := w.downloadArtifacts(ctx, spec.Artifacts); err != nil {
 		return nil, err
 	}
 

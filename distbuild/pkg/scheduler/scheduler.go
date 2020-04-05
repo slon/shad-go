@@ -1,6 +1,7 @@
 package scheduler
 
 import (
+	"context"
 	"sync"
 	"time"
 
@@ -12,8 +13,8 @@ import (
 
 type PendingJob struct {
 	Job      *api.JobSpec
-	Result   *api.JobResult
 	Finished chan struct{}
+	Result   *api.JobResult
 
 	mu       sync.Mutex
 	pickedUp chan struct{}
@@ -37,29 +38,16 @@ func (p *PendingJob) pickUp() bool {
 	}
 }
 
-type jobQueue struct {
-	mu   sync.Mutex
-	jobs []*PendingJob
-}
-
-func (q *jobQueue) put(job *PendingJob) {
-	q.mu.Lock()
-	defer q.mu.Unlock()
-
-	q.jobs = append(q.jobs, job)
-}
-
-func (q *jobQueue) pop() *PendingJob {
-	q.mu.Lock()
-	defer q.mu.Unlock()
-
-	if len(q.jobs) == 0 {
-		return nil
+func (p *PendingJob) enqueue(q chan *PendingJob) {
+	select {
+	case q <- p:
+	case <-p.pickedUp:
 	}
+}
 
-	job := q.jobs[0]
-	q.jobs = q.jobs[1:]
-	return job
+type workerQueue struct {
+	cacheQueue chan *PendingJob
+	depQueue   chan *PendingJob
 }
 
 type Config struct {
@@ -73,12 +61,13 @@ type Scheduler struct {
 
 	mu sync.Mutex
 
-	cachedJobs  map[build.ID]map[api.WorkerID]struct{}
-	pendingJobs map[build.ID]*PendingJob
+	cachedJobs map[build.ID]map[api.WorkerID]struct{}
 
-	cacheLocalQueue map[api.WorkerID]*jobQueue
-	depLocalQueue   map[api.WorkerID]*jobQueue
-	globalQueue     chan *PendingJob
+	pendingJobs    map[build.ID]*PendingJob
+	pendingJobDeps map[build.ID]map[*PendingJob]struct{}
+
+	workerQueue map[api.WorkerID]*workerQueue
+	globalQueue chan *PendingJob
 }
 
 func NewScheduler(l *zap.Logger, config Config) *Scheduler {
@@ -86,12 +75,12 @@ func NewScheduler(l *zap.Logger, config Config) *Scheduler {
 		l:      l,
 		config: config,
 
-		cachedJobs:  make(map[build.ID]map[api.WorkerID]struct{}),
-		pendingJobs: make(map[build.ID]*PendingJob),
+		cachedJobs:     make(map[build.ID]map[api.WorkerID]struct{}),
+		pendingJobs:    make(map[build.ID]*PendingJob),
+		pendingJobDeps: make(map[build.ID]map[*PendingJob]struct{}),
 
-		cacheLocalQueue: make(map[api.WorkerID]*jobQueue),
-		depLocalQueue:   make(map[api.WorkerID]*jobQueue),
-		globalQueue:     make(chan *PendingJob),
+		workerQueue: make(map[api.WorkerID]*workerQueue),
+		globalQueue: make(chan *PendingJob),
 	}
 }
 
@@ -99,13 +88,15 @@ func (c *Scheduler) RegisterWorker(workerID api.WorkerID) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	_, ok := c.cacheLocalQueue[workerID]
+	_, ok := c.workerQueue[workerID]
 	if ok {
 		return
 	}
 
-	c.cacheLocalQueue[workerID] = new(jobQueue)
-	c.depLocalQueue[workerID] = new(jobQueue)
+	c.workerQueue[workerID] = &workerQueue{
+		cacheQueue: make(chan *PendingJob),
+		depQueue:   make(chan *PendingJob),
+	}
 }
 
 func (c *Scheduler) OnJobComplete(workerID api.WorkerID, jobID build.ID, res *api.JobResult) bool {
@@ -124,6 +115,11 @@ func (c *Scheduler) OnJobComplete(workerID api.WorkerID, jobID build.ID, res *ap
 	}
 	job[workerID] = struct{}{}
 
+	workerQueue := c.workerQueue[workerID]
+	for waiter := range c.pendingJobDeps[jobID] {
+		go waiter.enqueue(workerQueue.depQueue)
+	}
+
 	c.mu.Unlock()
 
 	if !pendingFound {
@@ -135,41 +131,38 @@ func (c *Scheduler) OnJobComplete(workerID api.WorkerID, jobID build.ID, res *ap
 	return true
 }
 
-func (c *Scheduler) findOptimalWorkers(jobID build.ID, deps []build.ID) (cacheLocal, depLocal []api.WorkerID) {
-	depLocalSet := map[api.WorkerID]struct{}{}
+func (c *Scheduler) enqueueCacheLocal(job *PendingJob) bool {
+	cached := false
 
-	c.mu.Lock()
-	defer c.mu.Unlock()
-
-	for workerID := range c.cachedJobs[jobID] {
-		cacheLocal = append(cacheLocal, workerID)
+	for workerID := range c.cachedJobs[job.Job.ID] {
+		cached = true
+		go job.enqueue(c.workerQueue[workerID].cacheQueue)
 	}
 
-	for _, dep := range deps {
-		for workerID := range c.cachedJobs[dep] {
-			if _, ok := depLocalSet[workerID]; !ok {
-				depLocal = append(depLocal, workerID)
-				depLocalSet[workerID] = struct{}{}
-			}
-		}
-	}
-
-	return
+	return cached
 }
 
 var timeAfter = time.After
 
-func (c *Scheduler) doScheduleJob(job *PendingJob) {
-	cacheLocal, depLocal := c.findOptimalWorkers(job.Job.ID, job.Job.Deps)
+func (c *Scheduler) putDepQueue(job *PendingJob, dep build.ID) {
+	depJobs, ok := c.pendingJobDeps[dep]
+	if !ok {
+		depJobs = make(map[*PendingJob]struct{})
+		c.pendingJobDeps[dep] = depJobs
+	}
+	depJobs[job] = struct{}{}
+}
 
-	if len(cacheLocal) != 0 {
-		c.mu.Lock()
-		for _, workerID := range cacheLocal {
-			c.cacheLocalQueue[workerID].put(job)
-		}
-		c.mu.Unlock()
+func (c *Scheduler) deleteDepQueue(job *PendingJob, dep build.ID) {
+	depJobs := c.pendingJobDeps[dep]
+	delete(depJobs, job)
+	if len(depJobs) == 0 {
+		delete(c.pendingJobDeps, dep)
+	}
+}
 
-		c.l.Debug("job is put into cache-local queues", zap.String("job_id", job.Job.ID.String()))
+func (c *Scheduler) doScheduleJob(job *PendingJob, cached bool) {
+	if cached {
 		select {
 		case <-job.pickedUp:
 			c.l.Debug("job picked", zap.String("job_id", job.Job.ID.String()))
@@ -178,31 +171,51 @@ func (c *Scheduler) doScheduleJob(job *PendingJob) {
 		}
 	}
 
-	if len(depLocal) != 0 {
+	c.mu.Lock()
+	workers := make(map[api.WorkerID]struct{})
+
+	for _, dep := range job.Job.Deps {
+		c.putDepQueue(job, dep)
+
+		for workerID := range c.cachedJobs[dep] {
+			if _, ok := workers[workerID]; ok {
+				return
+			}
+
+			go job.enqueue(c.workerQueue[workerID].depQueue)
+			workers[workerID] = struct{}{}
+		}
+	}
+	c.mu.Unlock()
+
+	defer func() {
 		c.mu.Lock()
-		for _, workerID := range depLocal {
-			c.depLocalQueue[workerID].put(job)
-		}
-		c.mu.Unlock()
+		defer c.mu.Unlock()
 
-		c.l.Debug("job is put into dep-local queues", zap.String("job_id", job.Job.ID.String()))
-		select {
-		case <-job.pickedUp:
-			c.l.Debug("job picked", zap.String("job_id", job.Job.ID.String()))
-			return
-		case <-timeAfter(c.config.DepsTimeout):
+		for _, dep := range job.Job.Deps {
+			c.deleteDepQueue(job, dep)
 		}
-	}
+	}()
 
-	c.l.Debug("job is put into global queue", zap.String("job_id", job.Job.ID.String()))
+	c.l.Debug("job is put into dep-local queues", zap.String("job_id", job.Job.ID.String()))
+
 	select {
-	case c.globalQueue <- job:
 	case <-job.pickedUp:
+		c.l.Debug("job picked", zap.String("job_id", job.Job.ID.String()))
+		return
+	case <-timeAfter(c.config.DepsTimeout):
 	}
+
+	go job.enqueue(c.globalQueue)
+	c.l.Debug("job is put into global queue", zap.String("job_id", job.Job.ID.String()))
+
+	<-job.pickedUp
 	c.l.Debug("job picked", zap.String("job_id", job.Job.ID.String()))
 }
 
 func (c *Scheduler) ScheduleJob(job *api.JobSpec) *PendingJob {
+	var cached bool
+
 	c.mu.Lock()
 	pendingJob, running := c.pendingJobs[job.ID]
 	if !running {
@@ -214,12 +227,13 @@ func (c *Scheduler) ScheduleJob(job *api.JobSpec) *PendingJob {
 		}
 
 		c.pendingJobs[job.ID] = pendingJob
+		cached = c.enqueueCacheLocal(pendingJob)
 	}
 	c.mu.Unlock()
 
 	if !running {
 		c.l.Debug("job is scheduled", zap.String("job_id", job.ID.String()))
-		go c.doScheduleJob(pendingJob)
+		go c.doScheduleJob(pendingJob, cached)
 	} else {
 		c.l.Debug("job is pending", zap.String("job_id", job.ID.String()))
 	}
@@ -227,50 +241,37 @@ func (c *Scheduler) ScheduleJob(job *api.JobSpec) *PendingJob {
 	return pendingJob
 }
 
-func (c *Scheduler) PickJob(workerID api.WorkerID, canceled <-chan struct{}) *PendingJob {
+func (c *Scheduler) PickJob(ctx context.Context, workerID api.WorkerID) *PendingJob {
 	c.l.Debug("picking next job", zap.String("worker_id", workerID.String()))
 
-	var cacheLocal, depLocal *jobQueue
-
 	c.mu.Lock()
-	cacheLocal = c.cacheLocalQueue[workerID]
-	depLocal = c.depLocalQueue[workerID]
+	local := c.workerQueue[workerID]
 	c.mu.Unlock()
 
-	for {
-		job := cacheLocal.pop()
-		if job == nil {
-			break
-		}
-
-		if job.pickUp() {
-			c.l.Debug("picked job from cache-local queue", zap.String("worker_id", workerID.String()), zap.String("job_id", job.Job.ID.String()))
-			return job
-		}
-	}
-
-	for {
-		job := depLocal.pop()
-		if job == nil {
-			break
-		}
-
-		if job.pickUp() {
-			c.l.Debug("picked job from dep-local queue", zap.String("worker_id", workerID.String()), zap.String("job_id", job.Job.ID.String()))
-			return job
-		}
-	}
+	var pg *PendingJob
+	var queue string
 
 	for {
 		select {
-		case job := <-c.globalQueue:
-			if job.pickUp() {
-				c.l.Debug("picked job from global queue", zap.String("worker_id", workerID.String()), zap.String("job_id", job.Job.ID.String()))
-				return job
-			}
-
-		case <-canceled:
+		case pg = <-c.globalQueue:
+			queue = "global"
+		case pg = <-local.depQueue:
+			queue = "dep"
+		case pg = <-local.cacheQueue:
+			queue = "cache"
+		case <-ctx.Done():
 			return nil
 		}
+
+		if pg.pickUp() {
+			break
+		}
 	}
+
+	c.l.Debug("picked job",
+		zap.String("worker_id", workerID.String()),
+		zap.String("job_id", pg.Job.ID.String()),
+		zap.String("queue", queue))
+
+	return pg
 }

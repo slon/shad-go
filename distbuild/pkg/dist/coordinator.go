@@ -111,7 +111,7 @@ func (c *Coordinator) Heartbeat(ctx context.Context, req *api.HeartbeatRequest) 
 		JobsToRun: map[build.ID]api.JobSpec{},
 	}
 
-	job := c.scheduler.PickJob(req.WorkerID, ctx.Done())
+	job := c.scheduler.PickJob(ctx, req.WorkerID)
 	if job != nil {
 		rsp.JobsToRun[job.Job.ID] = *job.Job
 	}
