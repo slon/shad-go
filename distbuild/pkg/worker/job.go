@@ -169,7 +169,7 @@ func (w *Worker) runJob(ctx context.Context, spec *api.JobSpec) (*api.JobResult,
 		return nil, err
 	}
 
-	if err := w.downloadArtifacts(ctx, spec.Artifacts); err != nil {
+	if err = w.downloadArtifacts(ctx, spec.Artifacts); err != nil {
 		return nil, err
 	}
 
