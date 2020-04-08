@@ -1,0 +1,170 @@
+database/sql
+Лекция 7
+
+Синельников Илья
+
+* Способы работы с базами данных
+
+- database/sql - любые SQL базы данных
+- всё остальное
+
+* database/sql
+
+- абстракция для работы с SQL базами данных
+- набор интерфейсов для написания драйверов
+- многие драйверы имеют "расширенный" функционал
+
+.code sql/driver.go /^type Driver/,/^}/
+.code sql/driver.go /^type QueryerContext/,/^}/
+
+* Подключение
+
+- через database/sql
+.code open/sql.go
+
+- драйвером на прямую
+.code open/pgx.go
+
+* Основные сущности
+
+- DB - connection pool к базе
+- Rows - результаты запроса
+- Row - одна строка из результата запроса
+- Null* - типы для работы с Null значениями
+- Tx - транзакция
+- Stmt - подготовленый запрос
+- Conn - одно подключение к базе
+
+* Проверка доступности
+
+.code alive/ping.go
+
+* Запрос с получением результатов
+
+.code query/query.go
+
+* Запрос с получением одного результата
+
+.code query/queryrow.go
+
+* Запрос без результатов
+
+.code exec/exec.go
+
+Возвращаемый тип
+.code exec/result.go
+
+* Nulls
+
+.code nulls/nulls.go
+
+* Null в аргументах
+
+Передаём null
+.code nulls/insert_null.go
+Передаём значение
+.code nulls/insert_value.go
+
+* Null в результатах
+.code nulls/rows.go
+
+* Именованые аргументы
+- реализуются на уровне драйвера
+
+.code named/named.go
+
+
+* Именованые аргументы - использование
+.code named/insert.go
+
+* Prepared Statements
+
+Плюсы:
+- решают проблему sql-injection
+- производительность
+
+Минусы:
+- удобство
+- производительность
+
+* Prepare
+
+.code prepare/prepare.go
+
+* Одно подключение
+
+.code conn/conn.go
+
+* Транзакции
+
+.code tx/tx.go
+
+* Типовые ошибки и подводные камни
+
+* Deadlock
+
+- ПРИМЕР много SQL вызовов подряд без вычитки данных
+
+* Исчерпание ресурсов
+
+- ПРИМЕР незакрытие транзакций
+- ПРИМЕР незакрытие rows
+- ПРИМЕР неотдача коннектов
+
+* Рефлексия
+
+ПРИМЕР ColumnType
+
+* Удобства и расширения
+
+* github.com/jmoiron/sqlx
+
+- drop-in replacement для database/sql
+- добавляет множество вспомогательных методов
+- реализует именованые аргументы
+
+* sqlx - подключение
+
+.code sqlx/open.go
+
+* sqlx - обобщенный интерфейс
+
+.code sqlx/ext.go
+
+* sqlx - StructScan
+
+.code sqlx/structscan.go
+
+* sqlx - StructScan на практике
+
+.code sqlx/example.go
+
+* GORM
+
+- ORM которая умеет всё
+- ORM которая не умеет ничего
+
+* Моки
+
+Здесь будет пара слайдов о github.com/DATA-DOG/go-sqlmock
+
+* Нетипичные драйверы
+
+- драйвер к кликхаусу использует транзакции как батчинг (ЗДЕСЬ БУДЕТ ПРИМЕР)
+
+* Пример не-sql драйвера
+
+ПРИМЕР go-redis
+
+* Популярные базы данных и их драйверы
+
+Совместимые с database/sql:
+
+.link https://github.com/jackc/pgx - PostgreSQL
+.link https://github.com/go-sql-driver/mysql - MySQL
+.link https://github.com/ClickHouse/clickhouse-go - ClickHouse
+
+Разное:
+
+.link https://github.com/go-redis/redis - Redis
+.link https://github.com/mongodb/mongo-go-driver - MongoDB
