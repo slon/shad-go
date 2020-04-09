@@ -1,10 +1,16 @@
+package sqlx
+
 import (
-    "github.com/jmoiron/sqlx"
-    _ "github.com/jackc/pgx/v4/stdlib"
+	"log"
+
+	_ "github.com/jackc/pgx/v4/stdlib"
+	"github.com/jmoiron/sqlx"
 )
 
-db, err := sqlx.Open("pgx", "postgres://pgx_md5:secret@localhost:5432/pgx_test")
-if err != nil {
-    return err
+func Open() {
+	db, err := sqlx.Open("pgx", "postgres://pgx_md5:secret@localhost:5432/pgx_test")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
 }
-defer db.Close()
