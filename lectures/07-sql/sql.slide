@@ -17,13 +17,13 @@ database/sql
 .code sql/driver.go /^type Driver/,/^}/
 .code sql/driver.go /^type QueryerContext/,/^}/
 
-* Подключение
+* Подключение - database/sql
 
-- через database/sql
-.code open/sql.go /^func SQLOpen/,/^}/
+.code open/sql.go
 
-- драйвером на прямую
-.code open/pgx.go /^func PGXOpen/,/^}/
+* Подключение - на прямую
+
+.code open/pgx.go
 
 * Основные сущности
 
