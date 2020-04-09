@@ -10,9 +10,11 @@ require (
 	github.com/gorilla/handlers v1.4.2
 	github.com/gorilla/mux v1.7.4
 	github.com/gorilla/websocket v1.4.2
+	github.com/jonboulle/clockwork v0.1.0
 	github.com/spf13/cobra v0.0.5
 	github.com/stretchr/testify v1.4.0
 	go.uber.org/goleak v1.0.0
+	go.uber.org/zap v1.14.0
 	golang.org/x/net v0.0.0-20190628185345-da137c7871d7
 	golang.org/x/perf v0.0.0-20191209155426-36b577b0eb03
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58

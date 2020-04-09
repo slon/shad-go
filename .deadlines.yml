@@ -1,3 +1,17 @@
+- group:    "[HW] Distbuild"
+  start:    09-04-2020 18:00
+  deadline: 30-04-2020 23:59
+  tasks:
+    - task: disttest
+      score: 0
+
+- group:    Distbuild blocks
+  start:    09-04-2020 18:00
+  deadline: 23-04-2020 23:59
+  tasks:
+    - task: distbuild
+      score: 300
+
 - group:    HTTP and Context
   start:    02-04-2020 18:00
   deadline: 12-04-2020 23:59
