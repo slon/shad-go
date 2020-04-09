@@ -47,9 +47,7 @@ func QueryDeadlockFixOne(ctx context.Context, db *sql.DB) {
 
 	for _, v := range values {
 		_ = db.QueryRowContext(
-			ctx,
-			"SELECT address FROM addresses WHERE user_id = $1",
-			v.ID,
+			ctx, "SELECT address FROM addresses WHERE user_id = $1", v.ID,
 		).Scan(&v.Addr)
 		log.Println(v)
 	}
