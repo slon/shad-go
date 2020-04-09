@@ -1,4 +1,6 @@
+package named
+
 type NamedArg struct {
-    Name string
-    Value interface{}
+	Name  string
+	Value interface{}
 }

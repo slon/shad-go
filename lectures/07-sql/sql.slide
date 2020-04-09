@@ -20,10 +20,10 @@ database/sql
 * Подключение
 
 - через database/sql
-.code open/sql.go
+.code open/sql.go /^func SQLOpen/,/^}/
 
 - драйвером на прямую
-.code open/pgx.go
+.code open/pgx.go /^func PGXOpen/,/^}/
 
 * Основные сущности
 
@@ -37,45 +37,45 @@ database/sql
 
 * Проверка доступности
 
-.code alive/ping.go
+.code alive/ping.go /^func IsItAliveQuestionMark/,/^}/
 
 * Запрос с получением результатов
 
-.code query/query.go
+.code query/query.go /^func Query/,/^}/
 
 * Запрос с получением одного результата
 
-.code query/queryrow.go
+.code query/queryrow.go /^func QueryRow/,/^}/
 
 * Запрос без результатов
 
-.code exec/exec.go
+.code exec/exec.go /^func Exec/,/^}/
 
 Возвращаемый тип
-.code exec/result.go
-
-* Nulls
-
-.code nulls/nulls.go
-
-* Null в аргументах
-
-Передаём null
-.code nulls/insert_null.go
-Передаём значение
-.code nulls/insert_value.go
-
-* Null в результатах
-.code nulls/rows.go
+.code exec/result.go /^type Result/,/^}/
 
 * Именованые аргументы
 - реализуются на уровне драйвера
 
-.code named/named.go
-
+.code named/named.go /^type NamedArg/,/^}/
 
 * Именованые аргументы - использование
-.code named/insert.go
+
+.code named/insert.go /^func Insert/,/^}/
+
+* Nulls
+
+.code nulls/nulls.go /^type NullString/,/^}/
+
+* Null в аргументах
+
+.code nulls/insert.go /^func Insert/,/^}/
+
+Передаём значения
+.code nulls/insert.go /^func DoStuff/,/^}/
+
+* Null в результатах
+.code nulls/rows.go /^func Results/,/^}/
 
 * Prepared Statements
 
@@ -89,15 +89,15 @@ database/sql
 
 * Prepare
 
-.code prepare/prepare.go
+.code prepare/prepare.go /^func Prepare/,/^}/
 
 * Одно подключение
 
-.code conn/conn.go
+.code conn/conn.go /^func Conn/,/^}/
 
 * Транзакции
 
-.code tx/tx.go
+.code tx/tx.go /^func Begin/,/^}/
 
 * Типовые ошибки и подводные камни
 
@@ -129,15 +129,36 @@ database/sql
 
 * sqlx - обобщенный интерфейс
 
-.code sqlx/ext.go
+.code sqlx/ext.go /^type QueryerContext/,/^}/
+.code sqlx/ext.go /^type ExecerContext/,/^}/
+.code sqlx/ext.go /^type ExtContext/,/^}/
 
 * sqlx - StructScan
 
-.code sqlx/structscan.go
+  func (r *Rows) StructScan(dest interface{}) error
+
+  func (r *Row) StructScan(dest interface{}) error
+
+  func StructScan(rows rowsi, dest interface{}) error
+
+  type rowsi interface {
+      Close() error
+      Columns() ([]string, error)
+      Err() error
+      Next() bool
+      Scan(...interface{}) error
+  }
 
 * sqlx - StructScan на практике
 
-.code sqlx/example.go
+.code sqlx/structscan.go /^func Example/,/^}/
+
+* sqlx - именованые аргументы
+
+- работают для любого драйвера
+- тоже защищают от SQL-injection
+
+.code sqlx/named.go /^func Insert/,/^}/
 
 * GORM
 

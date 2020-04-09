@@ -1,11 +1,16 @@
-import (
-    "database/sql"
+package open
 
-    _ "github.com/jackc/pgx/v4/stdlib"
+import (
+	"database/sql"
+	"log"
+
+	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
-db, err := sql.Open("pgx", "postgres://pgx_md5:secret@localhost:5432/pgx_test")
-if err != nil {
-    return err
+func SQLOpen() {
+	db, err := sql.Open("pgx", "postgres://pgx_md5:secret@localhost:5432/pgx_test")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
 }
-defer db.Close()

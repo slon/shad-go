@@ -1,19 +1,24 @@
-stmt, err := db.PrepareContext(ctx, "SELECT name FROM users WHERE id = $1")
-if err != nil {
-    log.Fatal(err)
-}
-defer stmt.Close()
+package prepare
 
-for i := 1; ; i++ {
-    row, err := stmt.QueryRowContext(ctx, i)
-    if err != nil {
-        log.Fatal(err)
-    }
+import (
+	"context"
+	"database/sql"
+	"log"
+)
 
-    var name string
-    if err = row.Scan(&name); err != nil {
-        log.Fatal(err)
-    }
+func Prepare(ctx context.Context, db *sql.DB) {
+	stmt, err := db.PrepareContext(ctx, "SELECT name FROM users WHERE id = $1")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer stmt.Close()
 
-    log.Println(name)
+	for i := 1; ; i++ {
+		var name string
+		if err = stmt.QueryRowContext(ctx, i).Scan(&name); err != nil {
+			log.Fatal(err)
+		}
+
+		log.Println(name)
+	}
 }

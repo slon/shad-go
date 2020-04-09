@@ -1,4 +1,6 @@
+package nulls
+
 type NullString struct {
-    String string
-    Valid  bool
+	String string
+	Valid  bool
 }

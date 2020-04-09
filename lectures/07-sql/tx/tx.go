@@ -1,13 +1,23 @@
-tx, err := db.BeginTx(ctx, nil)
-if err != nil {
-    log.Fatal(err)
-}
-defer tx.Rollback()
+package tx
 
-if _, err = tx.ExecContext(ctx, ...); err != nil {
-    log.Fatal(err)
-}
+import (
+	"context"
+	"database/sql"
+	"log"
+)
 
-if err = tx.Commit(); err != nil {
-    log.Fatal(err)
+func Begin(ctx context.Context, db *sql.DB) {
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer tx.Rollback()
+
+	if _, err = tx.ExecContext(ctx, `UPDATE users SET name = "Tyador Borlú" WHERE id = 1`); err != nil {
+		log.Fatal(err)
+	}
+
+	if err = tx.Commit(); err != nil {
+		log.Fatal(err)
+	}
 }
