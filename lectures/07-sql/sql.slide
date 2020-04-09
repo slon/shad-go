@@ -179,7 +179,7 @@ database/sql
 
 * Нетипичные драйверы - github.com/DATA-DOG/go-sqlmock
 
-.play sqlmock/sqlmock_test.go /^func TestSelect/,/^}/
+.play -edit sqlmock/sqlmock_test.go /^func TestSelect/,/^}/
 
 * Нетипичные драйверы - github.com/ClickHouse/clickhouse-go
 
