@@ -1,4 +1,4 @@
-package query
+package resources
 
 import (
 	"context"
@@ -6,14 +6,13 @@ import (
 	"log"
 )
 
-func Query(ctx context.Context, db *sql.DB) {
+func RowsExhaust(ctx context.Context, db *sql.DB) {
 	rows, err := db.QueryContext(ctx, "SELECT id, name FROM users")
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer rows.Close()
 
-	for rows.Next() {
+	if rows.Next() {
 		var id int
 		var name string
 		if err := rows.Scan(&id, &name); err != nil {
@@ -21,9 +20,5 @@ func Query(ctx context.Context, db *sql.DB) {
 		}
 
 		log.Println(id, name)
-	}
-
-	if err = rows.Err(); err != nil {
-		log.Fatal(err)
 	}
 }

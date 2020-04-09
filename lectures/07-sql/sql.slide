@@ -101,19 +101,33 @@ database/sql
 
 * Типовые ошибки и подводные камни
 
-* Deadlock
+* Запросы - deadlock
 
-- ПРИМЕР много SQL вызовов подряд без вычитки данных
+.code resources/queries.go /^func QueryDeadlock/,/^}/
 
-* Исчерпание ресурсов
+* Запросы - deadlock - fix 1
 
-- ПРИМЕР незакрытие транзакций
-- ПРИМЕР незакрытие rows
-- ПРИМЕР неотдача коннектов
+.code resources/queries.go /^func QueryDeadlockFixOne/,/^}/
 
-* Рефлексия
+* Запросы - deadlock - fix 2
 
-ПРИМЕР ColumnType
+.code resources/queries.go /^func QueryDeadlockFixTwo/,/^}/
+
+* Запросы - исчерпание ресурсов
+
+.code resources/rows.go /^func RowsExhaust/,/^}/
+
+* Транзакции - исчерпание ресурсов
+
+.code resources/tx.go /^func TxExhaust/,/^}/
+
+* Транзакции - deadlock
+
+.code resources/tx.go /^func TxDeadlock/,/^}/
+
+* Коннекты - исчерпание ресурсов
+
+.code resources/conn.go /^func ConnExhaust/,/^}/
 
 * Удобства и расширения
 
@@ -160,22 +174,24 @@ database/sql
 
 .code sqlx/named.go /^func Insert/,/^}/
 
-* GORM
-
-- ORM которая умеет всё
-- ORM которая не умеет ничего
-
-* Моки
-
-Здесь будет пара слайдов о github.com/DATA-DOG/go-sqlmock
-
 * Нетипичные драйверы
 
-- драйвер к кликхаусу использует транзакции как батчинг (ЗДЕСЬ БУДЕТ ПРИМЕР)
+* Нетипичные драйверы - github.com/DATA-DOG/go-sqlmock
 
-* Пример не-sql драйвера
+.play sqlmock/sqlmock_test.go /^func TestSelect/,/^}/
 
-ПРИМЕР go-redis
+* Нетипичные драйверы - github.com/ClickHouse/clickhouse-go
+
+.code clickhouse/clickhouse.go /^func Example/,/^}/
+
+* Не-SQL драйверы - Redis
+
+.code redis/redis.go /^func Example/,/^}/
+
+* ORM
+
+- github.com/jinzhu/gorm
+- github.com/go-pg/pg
 
 * Популярные базы данных и их драйверы
 

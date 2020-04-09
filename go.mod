@@ -3,6 +3,9 @@ module gitlab.com/slon/shad-go
 go 1.13
 
 require (
+	github.com/ClickHouse/clickhouse-go v1.4.0 // indirect
+	github.com/DATA-DOG/go-sqlmock v1.4.1
+	github.com/go-redis/redis v6.15.7+incompatible // indirect
 	github.com/go-resty/resty/v2 v2.1.0
 	github.com/gofrs/uuid v3.2.0+incompatible
 	github.com/golang/mock v1.4.1
