@@ -158,6 +158,20 @@ rules:
 			expected: result{code: http.StatusOK, body: `{"user_id": 123}`},
 		},
 		{
+			name: "empty-rule",
+			conf: `
+rules:
+  - endpoint: "/list"
+`,
+			service: echoService,
+			makeRequest: func() *resty.Request {
+				return c.R().
+					SetBody(`{"user_id": 123}`)
+			},
+			endpoint: "/list",
+			expected: result{code: http.StatusOK, body: `{"user_id": 123}`},
+		},
+		{
 			name: "bad-user-agent",
 			conf: `
 rules:
