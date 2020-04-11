@@ -23,6 +23,7 @@ require (
 	golang.org/x/net v0.0.0-20190813141303-74dc4d7220e7
 	golang.org/x/perf v0.0.0-20191209155426-36b577b0eb03
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
+	golang.org/x/sys v0.0.0-20200409092240-59c9f1ba88fa
 	golang.org/x/tools v0.0.0-20200125223703-d33eef8e6825
 	gopkg.in/yaml.v2 v2.2.8
 )

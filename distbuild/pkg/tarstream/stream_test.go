@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"golang.org/x/sys/unix"
 )
 
 func TestTarStream(t *testing.T) {
@@ -57,4 +58,8 @@ func TestTarStream(t *testing.T) {
 
 	checkFile(filepath.Join(from, "a", "x.bin"), []byte("xxx"), 0755)
 	checkFile(filepath.Join(from, "b", "c", "y.txt"), []byte("yyy"), 0644)
+}
+
+func init() {
+	unix.Umask(0022)
 }
