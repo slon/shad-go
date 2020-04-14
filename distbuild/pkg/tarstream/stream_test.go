@@ -56,8 +56,8 @@ func TestTarStream(t *testing.T) {
 		require.Equal(t, content, b)
 	}
 
-	checkFile(filepath.Join(from, "a", "x.bin"), []byte("xxx"), 0755)
-	checkFile(filepath.Join(from, "b", "c", "y.txt"), []byte("yyy"), 0644)
+	checkFile(filepath.Join(to, "a", "x.bin"), []byte("xxx"), 0755)
+	checkFile(filepath.Join(to, "b", "c", "y.txt"), []byte("yyy"), 0644)
 }
 
 func init() {
