@@ -41,21 +41,23 @@
    Advanced concurrency patterns. Async cache. Graceful server shutdown. context.WithTimeout.
    Batching and cancellation.
 
-8. Reflection. reflect.Type and reflect.Value. struct tags. net/rpc. encoding/gob.
+8. database/sql, sqlx, работа с базами данных, redis.
+
+9. Reflection. reflect.Type and reflect.Value. struct tags. net/rpc. encoding/gob.
    sync.Map. reflect.DeepEqual.
 
-9. Low-level programming. unsafe. Package binary. bytes.Buffer. cgo,
+10. Low-level programming. unsafe. Package binary. bytes.Buffer. cgo,
    syscall.
 
-10. Архитектура GC. Write barrier. Stack growth. GC pause. GOGC. sync.Pool. Шедулер
+11. Архитектура GC. Write barrier. Stack growth. GC pause. GOGC. sync.Pool. Шедулер
     горутин. GOMACPROCS. Утечка тредов.
 
-11. Go tooling. pprof. CPU and Memory profiling. Кросс-компиляция. GOOS, GOARCH. CGO_ENABLED=0.
+12. Go tooling. pprof. CPU and Memory profiling. Кросс-компиляция. GOOS, GOARCH. CGO_ENABLED=0.
     Build tags. go modules. godoc. x/analysis. Code generation.
 
-12. Полезные библиотеки. CLI applications with cobra. Protobuf and
+13. Полезные библиотеки. CLI applications with cobra. Protobuf and
     GRPC. zap logging.
 
-13. Запасная леция #1. Работа с crypto/* и x/crypto.
+14. Запасная леция #1. Работа с crypto/* и x/crypto.
 
-14. Запасная леция #2.
+15. Запасная леция #2.
