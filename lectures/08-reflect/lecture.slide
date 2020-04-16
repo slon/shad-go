@@ -1,0 +1,276 @@
+reflect
+Лекция 7
+
+Короткий Фёдор
+
+* Reflection
+
+- Механизм для чтения и изменения значений, не зная их реальный тип момент компиляции.
+- Пример использования `reflect`: `fmt`, `encoding/json`.
+- Эти пакеты используют `reflect` в реализации, но *не*светят* reflect в интерфейсе.
+
+* Why Reflection?
+
+Иногда нам нужно API, которое работает со значениями, которые не
+объединены общим интерфейсом.
+
+  func Sprint(x interface{}) string {
+      type stringer interface {
+          String() string
+      }
+
+      switch x := x.(type) {
+      case stringer:
+          return x.String()
+      case string:
+          return x
+      case int:
+          return strconv.Itoa(x)
+      // ...similar cases for int16, uint32, and so on...
+      default:
+          // array, chan, func, map, pointer, slice, struct
+          return "???"
+      }
+  }
+
+* reflect.Type and reflect.Value
+
+- Пакет `reflect` определяет два основных типа: `reflect.Type` и `reflect.Value`.
+- Единственная реализация `reflect.Type` - _type_descriptor_.
+
+  func TypeOf(interface{}) Type
+
+- Пример:
+
+  t := reflect.TypeOf(3)  // a reflect.Type
+  fmt.Println(t.String()) // "int"
+  fmt.Println(t)          // "int"
+
+- `reflect.TypeOf` всегда возвращает конкретный тип.
+
+  var w io.Writer = os.Stdout
+  fmt.Println(reflect.TypeOf(w)) // "*os.File"
+
+- `Sprintf` формат `%T` использует `TypeOf` внутри.
+
+  fmt.Printf("%T\n", 3) // "int"
+
+* reflect.Type and reflect.Value
+
+- `reflect.Value` хранит значение любого типа.
+
+  v := reflect.ValueOf(3)
+  fmt.Println(v)          // "3"
+  fmt.Printf("%v\n", v)   // "3"
+  fmt.Println(v.String()) // NOTE: "<int Value>"
+
+- Метод `.Type()` возвращает тип значения, хранящегося внутри `Value`.
+
+  t := v.Type()           // a reflect.Type
+  fmt.Println(t.String()) // "int"
+
+- Метод `.Interface()` - обратная операция к `reflect.ValueOf`.
+
+  v := reflect.ValueOf(3) // a reflect.Value
+  x := v.Interface()      // an interface{}
+  i := x.(int)            // an int
+  fmt.Printf("%d\n", i)   // "3"
+
+* Разница между reflect.Value и interface{}
+
+- Оба хранят любое значение.
+- `interface{}` - хранит значение, но не даёт доступа к нему. Можно достать конкретный тип, через _type_assertion_.
+- `reflect.Value` - предоставляет доступ к значению внутри, вне зависимости от типа этого значения.
+
+* format.Any
+
+.code format/format.go /func Any/,/OMIT/
+
+* format.Any
+
+  var x int64 = 1
+  var d time.Duration = 1 * time.Nanosecond
+  fmt.Println(format.Any(x))                  // "1"
+  fmt.Println(format.Any(d))                  // "1"
+  fmt.Println(format.Any([]int64{x}))         // "[]int64 0x8202b87b0"
+  fmt.Println(format.Any([]time.Duration{d})) // "[]time.Duration 0x8202b87e0"
+
+* Debug Display
+
+  type Movie struct {
+      Title, Subtitle string
+      Year            int
+      Color           bool
+      Actor           map[string]string
+      Oscars          []string
+      Sequel          *string
+  }
+
+  strangelove := Movie{
+      Title:    "Dr. Strangelove",
+      Subtitle: "How I Learned to Stop Worrying and Love the Bomb",
+      Year:     1964,
+      Color:    false,
+      Actor: map[string]string{
+          "Dr. Strangelove":            "Peter Sellers",
+          "Grp. Capt. Lionel Mandrake": "Peter Sellers",
+          "Pres. Merkin Muffley":       "Peter Sellers",
+          "Gen. Buck Turgidson":        "George C. Scott",
+          // ...
+      },
+      // ...
+  }
+
+* Debug Display
+
+  Display("strangelove", strangelove)
+
+Вывод:
+
+  Display strangelove (display.Movie):
+  strangelove.Title = "Dr. Strangelove"
+  strangelove.Subtitle = "How I Learned to Stop Worrying and Love the Bomb"
+  strangelove.Year = 1964
+  strangelove.Color = false
+  strangelove.Actor["Gen. Buck Turgidson"] = "George C. Scott"
+  strangelove.Actor["Brig. Gen. Jack D. Ripper"] = "Sterling Hayden"
+  strangelove.Actor["Maj. T.J. \"King\" Kong"] = "Slim Pickens"
+  strangelove.Actor["Dr. Strangelove"] = "Peter Sellers"
+  strangelove.Actor["Grp. Capt. Lionel Mandrake"] = "Peter Sellers"
+  strangelove.Actor["Pres. Merkin Muffley"] = "Peter Sellers"
+  strangelove.Oscars[0] = "Best Actor (Nomin.)"
+  strangelove.Oscars[1] = "Best Adapted Screenplay (Nomin.)"
+  strangelove.Oscars[2] = "Best Director (Nomin.)"
+  strangelove.Oscars[3] = "Best Picture (Nomin.)"
+  strangelove.Sequel = nil
+
+* Debug Display
+
+  Display("os.Stderr", os.Stderr)
+  // Output:
+  // Display os.Stderr (*os.File):
+  // (*(*os.Stderr).file).fd = 2
+  // (*(*os.Stderr).file).name = "/dev/stderr"
+  // (*(*os.Stderr).file).nepipe = 0
+
+* Debug Display
+
+.code display/display.go /func Display/,/OMIT/
+
+* Debug Display
+
+.code display/display.go /func display/,/OMIT/
+
+* Debug Display
+
+.code display/display.go /case reflect.Ptr/,/OMIT/
+
+* Setting Variables
+
+- Некоторые выражения являются переменными: `x`, `x.f[1]`, `*p`.
+- Некоторые выражения не являются переменными: `x`+`1`, `f(2)`.
+- Переменные имеют _адрес_. Значение переменной можно изменить.
+
+  x := 2                   // value    type   variable?
+  a := reflect.ValueOf(2)  // 2        int    no
+  b := reflect.ValueOf(x)  // 2        int    no
+  c := reflect.ValueOf(&x) // &x       *int   no
+  d := c.Elem()            // 2        int    yes
+
+- `CanAddr`
+
+  fmt.Println(a.CanAddr()) // "false"
+  fmt.Println(b.CanAddr()) // "false"
+  fmt.Println(c.CanAddr()) // "false"
+  fmt.Println(d.CanAddr()) // "true"
+
+* Setting Variables
+
+  x := 2
+  d := reflect.ValueOf(&x).Elem()   // d refers to the variable x
+  px := d.Addr().Interface().(*int) // px := &x
+  *px = 3                           // x = 3
+  fmt.Println(x)                    // "3"
+
+- Или напрямую
+
+  d.Set(reflect.ValueOf(4))
+  fmt.Println(x) // "4"
+
+- Или через специальный метод
+
+  d := reflect.ValueOf(&x).Elem()
+  d.SetInt(3)
+  fmt.Println(x) // "3"
+
+- Нельзя менять _не_адресуемое_ значение.
+
+  x := 2
+  b := reflect.ValueOf(x)
+  b.Set(reflect.ValueOf(3)) // panic: Set using unaddressable value
+
+* Setting Variables
+
+Приватные поля можно читать, но нельзя менять.
+
+  stdout := reflect.ValueOf(os.Stdout).Elem() // *os.Stdout, an os.File var
+  fmt.Println(stdout.Type())                  // "os.File"
+  fd := stdout.FieldByName("fd")
+  fmt.Println(fd.Int()) // "1"
+  fd.SetInt(2)          // panic: unexported field
+
+  fmt.Println(fd.CanAddr(), fd.CanSet()) // "true false"
+
+* Struct Tags
+
+.code search/main.go /func search/,/^}/
+
+* Struct Tags
+
+.code params/params.go /func Unpack/,/OMIT/
+
+.code params/params.go /Build map of/,/OMIT/
+
+* Struct Tags
+
+.code params/params.go /Update/,/^}/
+
+* Struct Tags
+
+.code params/params.go /func populate/,/^}/
+
+* Method Set
+
+.code methods/methods.go /func Print/,/^}/
+
+  methods.Print(time.Hour)
+  // Output:
+  // type time.Duration
+  // func (time.Duration) Hours() float64
+  // func (time.Duration) Minutes() float64
+  // func (time.Duration) Nanoseconds() int64
+  // func (time.Duration) Seconds() float64
+  // func (time.Duration) String() string
+
+* Interface
+
+- Результат `ValueOf` - всегда конкретный тип.
+
+  var w io.Writer
+  t := reflect.TypeOf(w) // t == ???
+
+  var v interface{} = w  // v == nil 
+  t = reflect.TypeOf(v)  // t == ???
+
+- Чтобы получить `reflect.Type` равный интерфейсу, нужно использовать промежуточный указатель.
+
+  var w io.Writer
+  ptrT := reflect.TypeOf(&w) // ptrT == *io.Writer
+  t    := ptrT.Elem()        // t == io.Writer
+
+* Заключение
+
+- `reflect` создаёт хрупкий код. Там, где была бы ошибка компилятора, возникает `panic` во время исполнения.
+- Поведение `reflect` кода нужно документировать отдельно, и оно не ясно из типов аргументов.
+- `reflect` работает медленнее, чем специализация под конкретный тип.
+
