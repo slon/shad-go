@@ -5,6 +5,17 @@
     - task: disttest
       score: 0
 
+- group:    Reflect
+  start:    16-04-2020 18:00
+  deadline: 26-04-2020 23:59
+  tasks:
+    - task: reversemap
+      score: 100
+    - task: jsonlist
+      score: 100
+    - task: jsonrpc
+      score: 100
+
 - group:    Distbuild blocks
   start:    09-04-2020 18:00
   deadline: 23-04-2020 23:59
