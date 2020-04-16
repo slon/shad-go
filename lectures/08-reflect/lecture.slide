@@ -95,3 +95,182 @@ reflect
   fmt.Println(format.Any([]int64{x}))         // "[]int64 0x8202b87b0"
   fmt.Println(format.Any([]time.Duration{d})) // "[]time.Duration 0x8202b87e0"
 
+* Debug Display
+
+  type Movie struct {
+      Title, Subtitle string
+      Year            int
+      Color           bool
+      Actor           map[string]string
+      Oscars          []string
+      Sequel          *string
+  }
+
+  strangelove := Movie{
+      Title:    "Dr. Strangelove",
+      Subtitle: "How I Learned to Stop Worrying and Love the Bomb",
+      Year:     1964,
+      Color:    false,
+      Actor: map[string]string{
+          "Dr. Strangelove":            "Peter Sellers",
+          "Grp. Capt. Lionel Mandrake": "Peter Sellers",
+          "Pres. Merkin Muffley":       "Peter Sellers",
+          "Gen. Buck Turgidson":        "George C. Scott",
+          // ...
+      },
+      // ...
+  }
+
+* Debug Display
+
+  Display("strangelove", strangelove)
+
+Вывод:
+
+  Display strangelove (display.Movie):
+  strangelove.Title = "Dr. Strangelove"
+  strangelove.Subtitle = "How I Learned to Stop Worrying and Love the Bomb"
+  strangelove.Year = 1964
+  strangelove.Color = false
+  strangelove.Actor["Gen. Buck Turgidson"] = "George C. Scott"
+  strangelove.Actor["Brig. Gen. Jack D. Ripper"] = "Sterling Hayden"
+  strangelove.Actor["Maj. T.J. \"King\" Kong"] = "Slim Pickens"
+  strangelove.Actor["Dr. Strangelove"] = "Peter Sellers"
+  strangelove.Actor["Grp. Capt. Lionel Mandrake"] = "Peter Sellers"
+  strangelove.Actor["Pres. Merkin Muffley"] = "Peter Sellers"
+  strangelove.Oscars[0] = "Best Actor (Nomin.)"
+  strangelove.Oscars[1] = "Best Adapted Screenplay (Nomin.)"
+  strangelove.Oscars[2] = "Best Director (Nomin.)"
+  strangelove.Oscars[3] = "Best Picture (Nomin.)"
+  strangelove.Sequel = nil
+
+* Debug Display
+
+  Display("os.Stderr", os.Stderr)
+  // Output:
+  // Display os.Stderr (*os.File):
+  // (*(*os.Stderr).file).fd = 2
+  // (*(*os.Stderr).file).name = "/dev/stderr"
+  // (*(*os.Stderr).file).nepipe = 0
+
+* Debug Display
+
+.code display/display.go /func Display/,/OMIT/
+
+* Debug Display
+
+.code display/display.go /func display/,/OMIT/
+
+* Debug Display
+
+.code display/display.go /case reflect.Ptr/,/OMIT/
+
+* Setting Variables
+
+- Некоторые выражения являются переменными: `x`, `x.f[1]`, `*p`.
+- Некоторые выражения не являются переменными: `x`+`1`, `f(2)`.
+- Переменные имеют _адрес_. Значение переменной можно изменить.
+
+  x := 2                   // value    type   variable?
+  a := reflect.ValueOf(2)  // 2        int    no
+  b := reflect.ValueOf(x)  // 2        int    no
+  c := reflect.ValueOf(&x) // &x       *int   no
+  d := c.Elem()            // 2        int    yes
+
+- `CanAddr`
+
+  fmt.Println(a.CanAddr()) // "false"
+  fmt.Println(b.CanAddr()) // "false"
+  fmt.Println(c.CanAddr()) // "false"
+  fmt.Println(d.CanAddr()) // "true"
+
+* Setting Variables
+
+  x := 2
+  d := reflect.ValueOf(&x).Elem()   // d refers to the variable x
+  px := d.Addr().Interface().(*int) // px := &x
+  *px = 3                           // x = 3
+  fmt.Println(x)                    // "3"
+
+- Или напрямую
+
+  d.Set(reflect.ValueOf(4))
+  fmt.Println(x) // "4"
+
+- Или через специальный метод
+
+  d := reflect.ValueOf(&x).Elem()
+  d.SetInt(3)
+  fmt.Println(x) // "3"
+
+- Нельзя менять _не_адресуемое_ значение.
+
+  x := 2
+  b := reflect.ValueOf(x)
+  b.Set(reflect.ValueOf(3)) // panic: Set using unaddressable value
+
+* Setting Variables
+
+Приватные поля можно читать, но нельзя менять.
+
+  stdout := reflect.ValueOf(os.Stdout).Elem() // *os.Stdout, an os.File var
+  fmt.Println(stdout.Type())                  // "os.File"
+  fd := stdout.FieldByName("fd")
+  fmt.Println(fd.Int()) // "1"
+  fd.SetInt(2)          // panic: unexported field
+
+  fmt.Println(fd.CanAddr(), fd.CanSet()) // "true false"
+
+* Struct Tags
+
+.code search/main.go /func search/,/^}/
+
+* Struct Tags
+
+.code params/params.go /func Unpack/,/OMIT/
+
+.code params/params.go /Build map of/,/OMIT/
+
+* Struct Tags
+
+.code params/params.go /Update/,/^}/
+
+* Struct Tags
+
+.code params/params.go /func populate/,/^}/
+
+* Method Set
+
+.code methods/methods.go /func Print/,/^}/
+
+  methods.Print(time.Hour)
+  // Output:
+  // type time.Duration
+  // func (time.Duration) Hours() float64
+  // func (time.Duration) Minutes() float64
+  // func (time.Duration) Nanoseconds() int64
+  // func (time.Duration) Seconds() float64
+  // func (time.Duration) String() string
+
+* Interface
+
+- Результат `ValueOf` - всегда конкретный тип.
+
+  var w io.Writer
+  t := reflect.TypeOf(w) // t == ???
+
+  var v interface{} = w  // v == nil 
+  t = reflect.TypeOf(v)  // t == ???
+
+- Чтобы получить `reflect.Type` равный интерфейсу, нужно использовать промежуточный указатель.
+
+  var w io.Writer
+  ptrT := reflect.TypeOf(&w) // ptrT == *io.Writer
+  t    := ptrT.Elem()        // t == io.Writer
+
+* Заключение
+
+- `reflect` создаёт хрупкий код. Там, где была бы ошибка компилятора, возникает `panic` во время исполнения.
+- Поведение `reflect` кода нужно документировать отдельно, и оно не ясно из типов аргументов.
+- `reflect` работает медленнее, чем специализация под конкретный тип.
+
