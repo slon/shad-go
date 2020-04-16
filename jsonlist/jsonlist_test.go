@@ -2,6 +2,7 @@ package jsonlist
 
 import (
 	"bytes"
+	"encoding/json"
 	"reflect"
 	"testing"
 
@@ -47,8 +48,15 @@ func TestJsonList(t *testing.T) {
 
 			emptySlice = reflect.New(reflect.TypeOf(test.value))
 
-			require.NoError(t, Unmarshal(bytes.NewBufferString(test.js), emptySlice.Interface()))
+			require.NoError(t, Unmarshal(&buf, emptySlice.Interface()))
 			require.Equal(t, test.value, emptySlice.Elem().Interface())
 		})
 	}
+}
+
+func TestErrors(t *testing.T) {
+	var buf bytes.Buffer
+
+	require.Equal(t, &json.UnsupportedTypeError{Type: reflect.TypeOf([]int{})}, Unmarshal(&buf, []int{}))
+	require.Equal(t, &json.UnsupportedTypeError{Type: reflect.TypeOf(1)}, Marshal(&buf, 1))
 }
