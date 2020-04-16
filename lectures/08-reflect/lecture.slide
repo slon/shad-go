@@ -1,0 +1,97 @@
+reflect
+Лекция 7
+
+Короткий Фёдор
+
+* Reflection
+
+- Механизм для чтения и изменения значений, не зная их реальный тип момент компиляции.
+- Пример использования `reflect`: `fmt`, `encoding/json`.
+- Эти пакеты используют `reflect` в реализации, но *не*светят* reflect в интерфейсе.
+
+* Why Reflection?
+
+Иногда нам нужно API, которое работает со значениями, которые не
+объединены общим интерфейсом.
+
+  func Sprint(x interface{}) string {
+      type stringer interface {
+          String() string
+      }
+
+      switch x := x.(type) {
+      case stringer:
+          return x.String()
+      case string:
+          return x
+      case int:
+          return strconv.Itoa(x)
+      // ...similar cases for int16, uint32, and so on...
+      default:
+          // array, chan, func, map, pointer, slice, struct
+          return "???"
+      }
+  }
+
+* reflect.Type and reflect.Value
+
+- Пакет `reflect` определяет два основных типа: `reflect.Type` и `reflect.Value`.
+- Единственная реализация `reflect.Type` - _type_descriptor_.
+
+  func TypeOf(interface{}) Type
+
+- Пример:
+
+  t := reflect.TypeOf(3)  // a reflect.Type
+  fmt.Println(t.String()) // "int"
+  fmt.Println(t)          // "int"
+
+- `reflect.TypeOf` всегда возвращает конкретный тип.
+
+  var w io.Writer = os.Stdout
+  fmt.Println(reflect.TypeOf(w)) // "*os.File"
+
+- `Sprintf` формат `%T` использует `TypeOf` внутри.
+
+  fmt.Printf("%T\n", 3) // "int"
+
+* reflect.Type and reflect.Value
+
+- `reflect.Value` хранит значение любого типа.
+
+  v := reflect.ValueOf(3)
+  fmt.Println(v)          // "3"
+  fmt.Printf("%v\n", v)   // "3"
+  fmt.Println(v.String()) // NOTE: "<int Value>"
+
+- Метод `.Type()` возвращает тип значения, хранящегося внутри `Value`.
+
+  t := v.Type()           // a reflect.Type
+  fmt.Println(t.String()) // "int"
+
+- Метод `.Interface()` - обратная операция к `reflect.ValueOf`.
+
+  v := reflect.ValueOf(3) // a reflect.Value
+  x := v.Interface()      // an interface{}
+  i := x.(int)            // an int
+  fmt.Printf("%d\n", i)   // "3"
+
+* Разница между reflect.Value и interface{}
+
+- Оба хранят любое значение.
+- `interface{}` - хранит значение, но не даёт доступа к нему. Можно достать конкретный тип, через _type_assertion_.
+- `reflect.Value` - предоставляет доступ к значению внутри, вне зависимости от типа этого значения.
+
+* format.Any
+
+.code format/format.go /func Any/,/OMIT/
+
+* format.Any
+
+  var x int64 = 1
+  var d time.Duration = 1 * time.Nanosecond
+  fmt.Println(format.Any(x))                  // "1"
+  fmt.Println(format.Any(d))                  // "1"
+  fmt.Println(format.Any([]int64{x}))         // "[]int64 0x8202b87b0"
+  fmt.Println(format.Any([]time.Duration{d})) // "[]time.Duration 0x8202b87e0"
+
