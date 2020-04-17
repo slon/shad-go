@@ -114,6 +114,7 @@ func TestBuildRunning(t *testing.T) {
 
 	rsp, r, err := env.client.StartBuild(ctx, req)
 	require.NoError(t, err)
+	defer r.Close()
 
 	require.Equal(t, started, rsp)
 
@@ -153,7 +154,8 @@ func TestBuildResultsStreaming(t *testing.T) {
 			return ctx.Err()
 		})
 
-	rsp, _, err := env.client.StartBuild(ctx, req)
+	rsp, r, err := env.client.StartBuild(ctx, req)
 	require.NoError(t, err)
+	defer r.Close()
 	require.Equal(t, started, rsp)
 }
