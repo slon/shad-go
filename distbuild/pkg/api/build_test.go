@@ -81,6 +81,7 @@ func TestBuildStartError(t *testing.T) {
 	env.mock.EXPECT().StartBuild(gomock.Any(), gomock.Any(), gomock.Any()).Return(fmt.Errorf("foo bar error"))
 
 	_, _, err := env.client.StartBuild(ctx, &api.BuildRequest{})
+	require.Error(t, err)
 	require.Contains(t, err.Error(), "foo bar error")
 }
 
