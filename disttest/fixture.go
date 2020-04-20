@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"net"
 	"net/http"
 	"os"
@@ -52,12 +53,21 @@ func newEnv(t *testing.T, config *Config) (e *env, cancel func()) {
 	absCWD, err := filepath.Abs(cwd)
 	require.NoError(t, err)
 
-	env := &env{
-		RootDir: filepath.Join(absCWD, "workdir", t.Name()),
+	rootDir := filepath.Join(absCWD, "workdir", t.Name())
+	require.NoError(t, os.RemoveAll(rootDir))
+
+	if err = os.MkdirAll(rootDir, 0777); err != nil {
+		if errors.Is(err, os.ErrPermission) {
+			rootDir, err = ioutil.TempDir("", "")
+			require.NoError(t, err)
+		} else {
+			require.NoError(t, err)
+		}
 	}
 
-	require.NoError(t, os.RemoveAll(env.RootDir))
-	require.NoError(t, os.MkdirAll(env.RootDir, 0777))
+	env := &env{
+		RootDir: rootDir,
+	}
 
 	cfg := zap.NewDevelopmentConfig()
 	cfg.OutputPaths = []string{filepath.Join(env.RootDir, "test.log")}
