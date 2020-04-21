@@ -283,7 +283,10 @@ func runTests(testDir, privateRepo, problem string) error {
 			}
 
 			cmd.Dir = filepath.Join(testDir, relPath)
-			cmd.Env = []string{testtool.BinariesEnv + "=" + string(binariesJSON)}
+			cmd.Env = []string{
+				testtool.BinariesEnv + "=" + string(binariesJSON),
+				"PATH=" + os.Getenv("PATH"),
+			}
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 
@@ -303,7 +306,10 @@ func runTests(testDir, privateRepo, problem string) error {
 			var buf bytes.Buffer
 
 			benchCmd.Dir = filepath.Join(testDir, relPath)
-			benchCmd.Env = []string{testtool.BinariesEnv + "=" + string(binariesJSON)}
+			benchCmd.Env = []string{
+				testtool.BinariesEnv + "=" + string(binariesJSON),
+				"PATH=" + os.Getenv("PATH"),
+			}
 			benchCmd.Stdout = &buf
 			benchCmd.Stderr = os.Stderr
 
