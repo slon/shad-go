@@ -77,9 +77,9 @@ func TestFileUpload(t *testing.T) {
 		require.NoError(t, err)
 		defer unlock()
 
-		content, err := ioutil.ReadFile(path)
+		actualContent, err := ioutil.ReadFile(path)
 		require.NoError(t, err)
-		require.Equal(t, content, content)
+		require.Equal(t, content, actualContent)
 	})
 
 	t.Run("RepeatedUpload", func(t *testing.T) {
