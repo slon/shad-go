@@ -82,3 +82,8 @@ low-level
 * cgo
 
 .code bzip/bzip2.go /func .* Write/,/^}/
+
+* syscall
+
+- syscall заморожен
+- x/sys/unix содержит актуальные реализации системных вызовов
