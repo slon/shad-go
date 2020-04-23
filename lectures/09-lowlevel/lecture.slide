@@ -1,0 +1,84 @@
+low-level
+Лекция 8
+
+Короткий Фёдор
+
+* Low Level Programming
+
+* package unsafe
+
+  import "unsafe"
+
+  fmt.Println(unsafe.Sizeof(float64(0))) // "8"
+
+- `unsafe` выглядит как обычный пакет
+- Но реализован в компиляторе
+
+* package unsafe
+
+  type Pointer *ArbitraryType
+
+- Два преобразования
+
+  *T -> unsafe.Pointer
+  unsafe.Pointer -> *T
+
+- `unsafe.Pointer` - это _настоящий_ `void*`
+
+  func Float64bits(f float64) uint64 {
+      return *(*uint64)(unsafe.Pointer(&f))
+  }
+
+* unsafe.Pointer
+
+.code unsafeptr/main.go /var/,/42/
+
+Действия с указателями дожны выполняться *атомарно*.
+
+.code unsafeptr/main.go /\+wrong/,/\-wrong/
+
+Иначе сборщик мусора освободит память используемого объекта.
+
+  pT := uintptr(unsafe.Pointer(new(T))) // NOTE: wrong!
+
+* unsafe tricks
+
+  // A Builder is used to efficiently build a string using Write methods.
+  // It minimizes memory copying. The zero value is ready to use.
+  // Do not copy a non-zero Builder.
+  type Builder struct {
+      buf  []byte
+  }
+
+  // String returns the accumulated string.
+  func (b *Builder) String() string {
+      return *(*string)(unsafe.Pointer(&b.buf))
+  }
+
+  // *-----*-----*-----*
+  // * ptr * len * cap * // []byte
+  // *-----*-----*-----*
+  //
+  // *-----*-----*
+  // * ptr * len *       // string
+  // *-----*-----*
+
+* cgo
+
+.code bzip/bzip2.c /include/,/^}/
+
+* cgo
+
+.code bzip/bzip2.go /package/,/import/
+
+.code bzip/bzip2.go /type writer/,/^}/
+
+* cgo
+
+.code bzip/bzip2.go /type writer/,/^}/
+
+.code bzip/bzip2.go /func NewWriter/,/^}/
+
+* cgo
+
+.code bzip/bzip2.go /func .* Write/,/^}/
