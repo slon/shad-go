@@ -1,0 +1,298 @@
+io
+Лекция 9
+
+Someone Someone
+
+* io.Reader & io.Writer
+
+  type Reader interface {
+      Read(p []byte) (n int, err error)
+  }
+
+  type Writer interface {
+      Write(p []byte) (n int, err error)
+  }
+
+*Conceptually:*
+
+- *Reader* has data, and you read it out and make use of that data.
+- You have data and you want to shove it into a *Writer* where something happens to that data.
+
+* io.Reader
+
+  Read(p []byte) (n int, err error)
+
+- Reads up to len(p) bytes into p.
+- Returns the number of bytes read (0 <= n <= len(p)) and any error encountered.
+- If some data is available but not len(p) bytes, Read conventionally returns what is available instead of waiting for more.
+
+* io.Reader
+
+  Read(p []byte) (n int, err error)
+
+- Non-zero number of bytes at the end may result in either err == EOF or err == nil. The next Read should return 0, EOF.
+- Even if Read returns n < len(p), it may use all of p as scratch space during the call (e.g. decompression).
+- Process the n > 0 bytes returned before considering the error err.
+- Implementations must not retain p.
+
+* Reader Variants
+
+  type ReadWriter interface { Reader; Writer }
+  type ReadCloser interface { Reader; Closer }
+  type ReadSeeker interface { Reader; Seeker }
+  type ReadWriteCloser interface { Reader; Writer; Closer }
+  type ReadWriteSeeker interface { Reader; Writer; Seeker }
+
+  type ByteReader interface { ReadByte() (byte, error) }                 // reads single byte
+  type RuneReader interface { ReadRune() (r rune, size int, err error) } // reads single rune
+
+  type LimitedReader struct // limited to N bytes
+  type PipeReader struct    // read half of a pipe
+  type SectionReader struct // read interior section
+
+* SectionReader
+
+.play -edit sectionreader/main.go /^func main/,/^}/
+
+* Reader Composition
+  // LimitReader returns a Reader that reads from r but stops with EOF after n bytes.
+  func LimitReader(r Reader, n int64) Reader
+
+  // MultiReader returns a Reader that's the logical concatenation of the provided input readers.
+  func MultiReader(readers ...Reader) Reader
+
+  // TeeReader returns a Reader that writes to w what it reads from r.
+  func TeeReader(r Reader, w Writer) Reader
+
+* LimitReader
+
+.play -edit limitreader/main.go /^func main/,/^}/
+
+* MultiReader
+
+.play -edit multireader/main.go /^func main/,/^}/
+
+* TeeReader
+
+.play -edit teereader/main.go /^func main/,/^}/
+
+* ioutil
+
+Package *io/ioutil* implements some I/O utility functions.
+
+  var Discard io.Writer = devNull(0)
+
+  func NopCloser(r io.Reader) io.ReadCloser
+  func ReadAll(r io.Reader) ([]byte, error)
+  func ReadDir(dirname string) ([]os.FileInfo, error)
+  func ReadFile(filename string) ([]byte, error)
+  func TempDir(dir, pattern string) (name string, err error)
+  func TempFile(dir, pattern string) (f *os.File, err error)
+  func WriteFile(filename string, data []byte, perm os.FileMode) error
+
+* ReadAll
+
+Convenience method for Reader → []byte conversion.
+
+.play -edit readall/main.go /^func main/,/^}/
+
+* ReadAll misuse
+  ReaderAll(Reader) → []byte → Writer
+
+Consider *io.Copy* instead
+
+  io.Copy(dst Writer, src Reader)
+
+* io.Copy
+
+  func Copy(dst Writer, src Reader) (written int64, err error)
+
+- Allocates a 32KB buffer to read from src and then write to dst.
+
+  func CopyBuffer(dst Writer, src Reader, buf []byte) (written int64, err error)
+
+- Reuse your own buffer by with CopyBuffer()
+
+Can we avoid using an intermediate buffer entirely?
+
+  type ReaderFrom interface {
+      ReadFrom(r Reader) (n int64, err error)
+  }
+
+  type WriterTo interface {
+      WriteTo(w Writer) (n int64, err error)
+  }
+
+* Example: sendfile
+
+.code -edit sendfile/main.go /^func readFileHandler/,/^}/
+
+* Example: sendfile
+
+  ✗ strace ./sendfile
+  fstat(6, {st_mode=S_IFREG|0644, st_size=1338, ...}) = 0
+  read(6, "{\"id\":\"hello\",\"type"..., 1850) = 1338
+  read(6, "", 512)                        = 0
+  close(6)                                = 0
+  write(4, "HTTP/1.1 200 OK\r\nContent-Disposi"..., 1515) = 1515
+
+* Example: sendfile
+
+.code -edit sendfile/main.go /^func copyHandler/,/^}/
+
+* Example: sendfile
+
+  ✗ strace ./sendfile
+  read(6, "{\"id\":\"hello\",\"type"..., 512) = 512
+  fstat(6, {st_mode=S_IFREG|0644, st_size=1338, ...}) = 0
+  lseek(6, 0, SEEK_SET)                   = 0
+  fstat(6, {st_mode=S_IFREG|0644, st_size=1338, ...}) = 0
+  write(4, "HTTP/1.1 200 OK\r\nContent-Disposi"..., 177) = 177
+  sendfile(4, 6, NULL, 4194304)           = 1338
+  sendfile(4, 6, NULL, 4194304)           = 0
+  close(6)                                = 0
+
+* Example: sendfile
+
+- http.ResponseWriter's is a io.ReaderFrom that uses the implementation of underlying tcp conn.
+
+  // ReadFrom is here to optimize copying from an *os.File regular file
+  // to a *net.TCPConn with sendfile.
+  func (w *response) ReadFrom(src io.Reader) (n int64, err error) {
+
+- net.TCPConn also implements io.ReaderFrom that uses *sendfile* system call.
+
+  // ReadFrom implements the io.ReaderFrom ReadFrom method.
+  func (c *TCPConn) ReadFrom(r io.Reader) (int64, error) {
+
+* ioutil.Discard
+
+  // Discard is an io.Writer on which all Write calls succeed
+  // without doing anything.
+  var Discard io.Writer = devNull(0)
+
+- Implements io.ReaderFrom!
+
+.play -edit discard/main.go
+
+* Reader implementations
+
+Readers are all over the standard library:
+
+- bufio iotest bytes strings crypto debug packet
+- archive/...
+- image/...
+- compress/...
+- encoding/...
+- text/...
+- // and many more...
+
+* io.Writer
+
+  Write(p []byte) (n int, err error)
+
+- Write must return a non-nil error if it returns n < len(p)
+- Write must not modify the slice data, even temporarily
+- Implementations must not retain p
+
+* Writer Variants
+
+  type ReadWriter interface { Reader; Writer }
+  type StringWriter interface { WriteString(s string) (n int, err error) }
+  type ByteWriter interface { WriteByte(c byte) error }
+  type PipeWriter struct // the write half of a pipe
+
+*Composition*
+
+  // MultiWriter creates a writer that duplicates its writes to all the provided writers, similar to the Unix tee(1) command.
+  func MultiWriter(writers ...Writer) Writer
+
+* Writer implementations
+
+- iotest/...
+- archive/...
+- compress/...
+- text/...
+- nex/http/ResponseWriter
+- // and many more
+
+* io.Pipe
+
+.play -edit pipe/main.go /^func main/,/^}/
+
+- synchronous
+- in-memory
+- no internal buffering
+
+* iotest
+
+Package iotest implements Readers and Writers useful mainly for testing.
+
+  // DataErrReader creates a reader that returns (n > 0, EOF) at the end.
+  func DataErrReader(r io.Reader) io.Reader
+
+  // HalfReader returns a Reader that implements Read
+  // by reading half as many requested bytes from r.
+  func HalfReader(r io.Reader) io.Reader
+
+  // OneByteReader returns a Reader that
+  // implements each non-empty Read by reading one byte from r.
+  func OneByteReader(r io.Reader) io.Reader
+
+  // TimeoutReader returns ErrTimeout on the second read with no data.
+  // Subsequent calls to read succeed.
+  func TimeoutReader(r io.Reader) io.Reader
+
+  // TruncateWriter returns a Writer that writes to w but stops silently after n bytes.
+  func TruncateWriter(w io.Writer, n int64) io.Writer
+
+* bufio
+
+Package bufio implements buffered I/O. It wraps an io.Reader or io.Writer objects.
+
+  type Reader
+      func NewReader(rd io.Reader) *Reader
+      func (b *Reader) Discard(n int) (discarded int, err error)
+      func (b *Reader) Peek(n int) ([]byte, error)
+      func (b *Reader) Read(p []byte) (n int, err error)
+      func (b *Reader) ReadByte() (byte, error)
+      func (b *Reader) ReadBytes(delim byte) ([]byte, error)
+      func (b *Reader) ReadLine() (line []byte, isPrefix bool, err error)
+      func (b *Reader) ReadRune() (r rune, size int, err error)
+      func (b *Reader) ReadSlice(delim byte) (line []byte, err error)
+      func (b *Reader) ReadString(delim byte) (string, error)
+
+  type Writer
+      func NewWriter(w io.Writer) *Writer
+      func (b *Writer) Flush() error
+      func (b *Writer) ReadFrom(r io.Reader) (n int64, err error)
+      func (b *Writer) Write(p []byte) (nn int, err error)
+      func (b *Writer) WriteByte(c byte) error
+      func (b *Writer) WriteRune(r rune) (size int, err error)
+      func (b *Writer) WriteString(s string) (int, error)
+
+* bufio.Scanner
+
+Utility type to efficiently read independent lines of text from an io.Reader.
+
+.code -edit scanner/main.go
+
+* bytes.Buffer
+
+A handy wrapper around byte slice implementing `io.Reader` and `io.Writer`.
+
+Useful when you want to use code that takes an io.Writer, and store the results in memory for the later use.
+
+.play -edit bytesbuffer/main.go
+
+* *os.File
+
+- portable
+- implements io.Reader, and io.Writer which stream bytes to or from a file on disk
+- useful if you don't want to read the whole file into memory
+
+*ioutil.ReadFile* reads an entire file into memory (as a []byte) in a single call
+
+- allocates a byte slice of the correct size (no need to Read + append in a loop)
+- closes the file
+- returns the first error that prevented it from working
