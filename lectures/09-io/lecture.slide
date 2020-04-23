@@ -1,7 +1,7 @@
 io
 Лекция 9
 
-Someone Someone
+Арсений Балобанов
 
 * io.Reader & io.Writer
 
@@ -76,6 +76,52 @@ Someone Someone
 
 .play -edit teereader/main.go /^func main/,/^}/
 
+* Example: http chunking
+
+Chunked transfer encoding is a streaming data transfer mechanism.
+
+  4\r\n
+  Wiki\r\n
+  5\r\n
+  pedia\r\n
+  E\r\n
+   in\r\n
+  \r\n
+  chunks.\r\n
+  0\r\n
+  Date: Sun, 06 Nov 1994 08:49:37 GMT\r\n
+  Content-MD5: 1B2M2Y8AsgTpgAmY7PhCfg==\r\n
+  \r\n
+
+Actual body
+
+  Wikipedia in
+
+  chunks.
+
+* Example: http chunking
+
+* Example: http chunking
+
+Problem: proxy a chunked HTTP in a stream.
+
+  func transfer(clientWriter io.Writer, responseBody io.Reader)
+
+- send chunks as is
+- validate MD5
+
+* Example: http chunking
+
+.play -edit httpchunking/solution1/main.go
+
+* Example: http chunking
+
+.play -edit httpchunking/solution2/main.go  /^func transfer/,/^}/
+
+* Example: http chunking
+
+.play -edit httpchunking/solution3/main.go  /^func transfer/,/^}/
+
 * ioutil
 
 Package *io/ioutil* implements some I/O utility functions.
@@ -111,7 +157,7 @@ Consider *io.Copy* instead
 
   func CopyBuffer(dst Writer, src Reader, buf []byte) (written int64, err error)
 
-- Reuse your own buffer by with CopyBuffer()
+- Reuse your own buffer with CopyBuffer()
 
 Can we avoid using an intermediate buffer entirely?
 
@@ -122,6 +168,8 @@ Can we avoid using an intermediate buffer entirely?
   type WriterTo interface {
       WriteTo(w Writer) (n int64, err error)
   }
+
+* Example: sendfile
 
 * Example: sendfile
 
@@ -154,7 +202,7 @@ Can we avoid using an intermediate buffer entirely?
 
 * Example: sendfile
 
-- http.ResponseWriter's is a io.ReaderFrom that uses the implementation of underlying tcp conn.
+- http.ResponseWriter's is an io.ReaderFrom that uses the implementation of underlying tcp conn.
 
   // ReadFrom is here to optimize copying from an *os.File regular file
   // to a *net.TCPConn with sendfile.
@@ -162,7 +210,6 @@ Can we avoid using an intermediate buffer entirely?
 
 - net.TCPConn also implements io.ReaderFrom that uses *sendfile* system call.
 
-  // ReadFrom implements the io.ReaderFrom ReadFrom method.
   func (c *TCPConn) ReadFrom(r io.Reader) (int64, error) {
 
 * ioutil.Discard
@@ -277,6 +324,23 @@ Utility type to efficiently read independent lines of text from an io.Reader.
 
 .code -edit scanner/main.go
 
+* bufio read line
+
+There are multiple options to read single line. Which one to use
+*ReadBytes('\n')* or *ReadString('\n')* or *ReadLine* or *Scanner*?
+
+- *ReadBytes* returns the slice together with delimiter
+- *ReadLine* doesn’t handle lines longer than internal buffer (default size 4096)
+- *Scanner* has limited max size of the token (64 * 1024)
+- *ReadLine* needs to be called for the second time to retrieve rest of the stream
+- *ReadBytes* doesn’t have any limit
+- *Scanner* has the simplest API and provides nicest abstraction for common cases
+
+* bufio
+
+- The net/http package already buffers data (using bufio itself) so you don't need this package for that
+- If you are reading a file in one or a few large steps, you probably don't need buffering
+
 * bytes.Buffer
 
 A handy wrapper around byte slice implementing `io.Reader` and `io.Writer`.
@@ -285,14 +349,97 @@ Useful when you want to use code that takes an io.Writer, and store the results 
 
 .play -edit bytesbuffer/main.go
 
+* bytes.Buffer vs strings.Builder
+
+  bytes.Buffer
+      func NewBufferString(s string) *Buffer
+      func (b *Buffer) Bytes() []byte
+      func (b *Buffer) Grow(n int)
+      func (b *Buffer) Read(p []byte) (n int, err error)
+      func (b *Buffer) ReadByte() (byte, error)
+      // other read methods
+      func (b *Buffer) Reset()
+      func (b *Buffer) String() string
+      func (b *Buffer) Write(p []byte) (n int, err error)
+      func (b *Buffer) WriteByte(c byte) error
+      func (b *Buffer) WriteRune(r rune) (n int, err error)
+      func (b *Buffer) WriteString(s string) (n int, err error)
+
+  strings.Builder
+      func (b *Builder) Grow(n int)
+      func (b *Builder) Reset()
+      func (b *Builder) String() string
+      func (b *Builder) Write(p []byte) (int, error)
+      func (b *Builder) WriteByte(c byte) error
+      func (b *Builder) WriteRune(r rune) (int, error)
+      func (b *Builder) WriteString(s string) (int, error)
+
+* bytes.Buffer vs strings.Builder
+
+- *strings.Builder* is immutable and can only grow or reset
+- *bytes.Buffer*'s internal byte slice can escape: (*Buffer).Bytes().
+- strings.Builder.String() does not allocate/copy
+
+  // String returns the accumulated string.
+  func (b *Builder) String() string {
+      return *(*string)(unsafe.Pointer(&b.buf))
+  }
+
+- bytes.Buffer.String() does
+
+  func (b *Buffer) String() string {
+      if b == nil {
+          // Special case, useful in debugging.
+          return "<nil>"
+      }
+      return string(b.buf[b.off:])
+  }
+
+* strings.Builder vs strings.Builder
+
+.play -edit stringsbuilder/main.go
+
+* bytes.Buffer vs strings.Builder
+
+- *strings.Builder* has a copy check
+
+  var b1 strings.Builder
+  b1.WriteString("ABC")
+  b2 := b1
+  b2.WriteString("DEF")
+  // illegal use of non-zero Builder copied by value
+
+- Use pointer to share.
+
 * *os.File
 
 - portable
 - implements io.Reader, and io.Writer which stream bytes to or from a file on disk
 - useful if you don't want to read the whole file into memory
+- has no internal buffers
 
 *ioutil.ReadFile* reads an entire file into memory (as a []byte) in a single call
 
 - allocates a byte slice of the correct size (no need to Read + append in a loop)
 - closes the file
 - returns the first error that prevented it from working
+
+There are also
+
+  func WriteFile(filename string, data []byte, perm os.FileMode) error
+  func TempFile(dir, pattern string) (f *os.File, err error)
+
+* Summary
+
+- *io* defines interfaces that handle streams of bytes (Reader, Writer, etc...) as well as functions that work generically with types implement these interfaces (e.g. io.Copy)
+- *io/ioutil* provides helper functions for some non-trivial file and io tasks
+- *testing/iotest* implements Readers and Writers useful mainly for testing
+- *bufio* provides buffering wrapper for io.Reader and io.Writer that can improve efficiency
+- *bytes* provides helper functions and types for interacting with byte slices
+- ***os.File* implements both io.Reader and io.Writer (among others)
+
+* Links
+
+.link https://medium.com/go-walkthrough/go-walkthrough-io-package-8ac5e95a9fbd io walkthrough
+.link https://medium.com/golangspec/introduction-to-bufio-package-in-golang-ad7d1877f762 bufio walkthrough
+.link https://www.youtube.com/watch?v=kTAsciVuZLQ advanced patterns with io.ReadWriter

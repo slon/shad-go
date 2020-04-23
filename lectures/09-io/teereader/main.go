@@ -25,5 +25,4 @@ func main() {
 
 	printall(tee)
 	printall(&buf)
-
 }
