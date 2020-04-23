@@ -46,8 +46,8 @@
 9. Reflection. reflect.Type and reflect.Value. struct tags. net/rpc. encoding/gob.
    sync.Map. reflect.DeepEqual.
 
-10. Low-level programming. unsafe. Package binary. bytes.Buffer. cgo,
-   syscall.
+10. Пакет io, реализации Reader и Writer из стандартной библиотеки.
+    Low-level programming. unsafe. Package binary. bytes.Buffer. cgo, syscall.
 
 11. Архитектура GC. Write barrier. Stack growth. GC pause. GOGC. sync.Pool. Шедулер
     горутин. GOMACPROCS. Утечка тредов.
