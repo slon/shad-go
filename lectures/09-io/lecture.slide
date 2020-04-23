@@ -78,6 +78,8 @@ io
 
 * Example: http chunking
 
+* Example: http chunking
+
 Chunked transfer encoding is a streaming data transfer mechanism.
 
   4\r\n
@@ -98,8 +100,6 @@ Actual body
   Wikipedia in
 
   chunks.
-
-* Example: http chunking
 
 * Example: http chunking
 
