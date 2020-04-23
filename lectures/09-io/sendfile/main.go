@@ -40,8 +40,8 @@ func copyHandler(w http.ResponseWriter, r *http.Request) {
 	defer func() { _ = f.Close() }()
 
 	// Infer the Content-Type of the file.
-	filePrefix := make([]byte, 512)
-	_, _ = f.Read(filePrefix)
+	filePrefix := make([]byte, 1024)
+	_, _ = io.ReadAtLeast(f, filePrefix, 512)
 	contentType := http.DetectContentType(filePrefix)
 
 	// Get the file size.
