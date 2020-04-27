@@ -62,10 +62,10 @@ func TestJobCaching(t *testing.T) {
 	assert.Len(t, recorder.Jobs, 1)
 	assert.Equal(t, &JobResult{Stdout: "OK\n", Code: new(int)}, recorder.Jobs[build.ID{'a'}])
 
+	require.NoError(t, ioutil.WriteFile(tmpFile.Name(), []byte("NOTOK\n"), 0666))
+
 	// Second build must get results from cache.
 	require.NoError(t, env.Client.Build(env.Ctx, graph, NewRecorder()))
-
-	require.NoError(t, ioutil.WriteFile(tmpFile.Name(), []byte("NOTOK\n"), 0666))
 
 	output, err := ioutil.ReadAll(tmpFile)
 	require.NoError(t, err)
