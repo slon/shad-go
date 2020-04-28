@@ -7,8 +7,10 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -70,7 +72,14 @@ func newEnv(t *testing.T, config *Config) (e *env, cancel func()) {
 	}
 
 	cfg := zap.NewDevelopmentConfig()
-	cfg.OutputPaths = []string{filepath.Join(env.RootDir, "test.log")}
+	
+	if runtime.GOOS == "windows" {
+		cfg.OutputPaths = []string{filepath.Join("winfile://", env.RootDir, "test.log")}
+		err = zap.RegisterSink("winfile", newWinFileSink)
+		require.NoError(t, err)
+	} else {
+		cfg.OutputPaths = []string{filepath.Join(env.RootDir, "test.log")}
+	}
 
 	if logToStderr {
 		cfg.OutputPaths = append(cfg.OutputPaths, "stderr")
@@ -168,3 +177,13 @@ func newEnv(t *testing.T, config *Config) (e *env, cancel func()) {
 		goleak.VerifyNone(t)
 	}
 }
+
+func newWinFileSink(u *url.URL) (zap.Sink, error) {
+	if len(u.Opaque) > 0 {
+		// Remove leading slash left by url.Parse()
+		return os.OpenFile(u.Opaque[1:], os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
+	}
+	// if url.URL is empty, don't panic slice index error
+	return os.OpenFile(u.Opaque, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
+}
+
