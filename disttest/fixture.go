@@ -72,7 +72,7 @@ func newEnv(t *testing.T, config *Config) (e *env, cancel func()) {
 	}
 
 	cfg := zap.NewDevelopmentConfig()
-	
+
 	if runtime.GOOS == "windows" {
 		cfg.OutputPaths = []string{filepath.Join("winfile://", env.RootDir, "test.log")}
 		err = zap.RegisterSink("winfile", newWinFileSink)
@@ -186,4 +186,3 @@ func newWinFileSink(u *url.URL) (zap.Sink, error) {
 	// if url.URL is empty, don't panic slice index error
 	return os.OpenFile(u.Opaque, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
 }
-
