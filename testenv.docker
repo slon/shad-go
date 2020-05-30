@@ -2,6 +2,8 @@ FROM eu.gcr.io/shad-ts/grader/go-build:latest
 
 COPY . /opt/shad
 
+RUN cd /opt/shad && go mod download
+
 COPY .gitlab-ci.yml /opt/shad/.grader-ci.yml
 
 RUN cd /opt/shad && go install gitlab.com/slon/shad-go/tools/testtool/cmd/testtool
