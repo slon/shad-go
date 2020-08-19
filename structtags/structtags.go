@@ -17,6 +17,14 @@ func NewUnpacker() *Unpacker {
 	return &Unpacker{}
 }
 
+// Функция Unpack присваивает значения параметров из url query в поля переданной структуры.
+
+// Для этого сначала в первом создается map,
+// где ключи -- названия параметров из url query,
+// а значения -- "ссылки" на соответствующие поля структуры.
+
+// В следующем цикле поля структуры заполняются соответствующими
+// значениями из url query.
 func (u *Unpacker) Unpack(req *http.Request, ptr interface{}) error {
 	if err := req.ParseForm(); err != nil {
 		return err
