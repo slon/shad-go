@@ -10,13 +10,6 @@ import (
 	"strings"
 )
 
-type Unpacker struct {
-}
-
-func NewUnpacker() *Unpacker {
-	return &Unpacker{}
-}
-
 // Функция Unpack присваивает значения параметров из url query в поля переданной структуры.
 
 // Для этого сначала в первом создается map,
@@ -25,7 +18,7 @@ func NewUnpacker() *Unpacker {
 
 // В следующем цикле поля структуры заполняются соответствующими
 // значениями из url query.
-func (u *Unpacker) Unpack(req *http.Request, ptr interface{}) error {
+func Unpack(req *http.Request, ptr interface{}) error {
 	if err := req.ParseForm(); err != nil {
 		return err
 	}
@@ -48,12 +41,12 @@ func (u *Unpacker) Unpack(req *http.Request, ptr interface{}) error {
 		for _, value := range values {
 			if f.Kind() == reflect.Slice {
 				elem := reflect.New(f.Type().Elem()).Elem()
-				if err := u.populate(elem, value); err != nil {
+				if err := populate(elem, value); err != nil {
 					return fmt.Errorf("%s: %v", name, err)
 				}
 				f.Set(reflect.Append(f, elem))
 			} else {
-				if err := u.populate(f, value); err != nil {
+				if err := populate(f, value); err != nil {
 					return fmt.Errorf("%s: %v", name, err)
 				}
 			}
@@ -62,7 +55,7 @@ func (u *Unpacker) Unpack(req *http.Request, ptr interface{}) error {
 	return nil
 }
 
-func (u *Unpacker) populate(v reflect.Value, value string) error {
+func populate(v reflect.Value, value string) error {
 	switch v.Kind() {
 	case reflect.String:
 		v.SetString(value)

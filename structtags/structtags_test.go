@@ -75,8 +75,7 @@ type Order struct {
 func TestUnpack_User(t *testing.T) {
 	r, _ := http.NewRequest("GET", userURL, nil)
 	user := &User{}
-	u := NewUnpacker()
-	err := u.Unpack(r, user)
+	err := Unpack(r, user)
 	require.NoError(t, err)
 	require.Equal(t, expectedUser.ID, user.ID)
 	require.Equal(t, expectedUser.Name, user.Name)
@@ -88,8 +87,7 @@ func TestUnpack_User(t *testing.T) {
 func TestUnpack_Good(t *testing.T) {
 	r, _ := http.NewRequest("GET", goodURL, nil)
 	good := &Good{}
-	u := NewUnpacker()
-	err := u.Unpack(r, good)
+	err := Unpack(r, good)
 	require.NoError(t, err)
 	require.Equal(t, expectedGood.ID, good.ID)
 	require.Equal(t, expectedGood.Name, good.Name)
@@ -98,9 +96,7 @@ func TestUnpack_Good(t *testing.T) {
 func TestUnpack_Order(t *testing.T) {
 	r, _ := http.NewRequest("GET", orderURL, nil)
 	order := &Order{}
-	u := NewUnpacker()
-	err := u.Unpack(r, order)
-	fmt.Println(orderURL)
+	err := Unpack(r, order)
 	require.NoError(t, err)
 	require.Equal(t, expectedOrder.ID, order.ID)
 	require.Equal(t, expectedOrder.UserID, order.UserID)
@@ -111,8 +107,7 @@ func TestUnpack_Order(t *testing.T) {
 func TestUnpack_ParseFormError(t *testing.T) {
 	r, _ := http.NewRequest("POST", "localhost", nil)
 	user := &User{}
-	u := NewUnpacker()
-	err := u.Unpack(r, user)
+	err := Unpack(r, user)
 	require.Error(t, err)
 }
 
@@ -120,8 +115,7 @@ func TestUnpack_IncorrectBoolData(t *testing.T) {
 	url := "localhost/user?id=1&has_subscription=7"
 	r, _ := http.NewRequest("GET", url, nil)
 	user := &User{}
-	u := NewUnpacker()
-	err := u.Unpack(r, user)
+	err := Unpack(r, user)
 	require.Error(t, err)
 }
 
@@ -129,8 +123,7 @@ func TestUnpack_IncorrectIntData(t *testing.T) {
 	url := "localhost/user?id=abc"
 	r, _ := http.NewRequest("GET", url, nil)
 	user := &User{}
-	u := NewUnpacker()
-	err := u.Unpack(r, user)
+	err := Unpack(r, user)
 	require.Error(t, err)
 }
 
@@ -145,21 +138,19 @@ func BenchmarkUnpacker(b *testing.B) {
 	order := &Order{}
 
 	b.Run("user", func(b *testing.B) {
-		u := NewUnpacker()
 		for i := 0; i < b.N; i++ {
 			for j := 0; j < 1000; j++ {
-				_ = u.Unpack(userRequest, user)
+				_ = Unpack(userRequest, user)
 			}
 		}
 	})
 
 	b.Run("user+good+order", func(b *testing.B) {
-		u := NewUnpacker()
 		for i := 0; i < b.N; i++ {
 			for j := 0; j < 1000; j++ {
-				_ = u.Unpack(userRequest, user)
-				_ = u.Unpack(goodRequest, good)
-				_ = u.Unpack(orderRequest, order)
+				_ = Unpack(userRequest, user)
+				_ = Unpack(goodRequest, good)
+				_ = Unpack(orderRequest, order)
 			}
 		}
 	})
