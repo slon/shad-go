@@ -58,6 +58,6 @@
 13. Полезные библиотеки. CLI applications with cobra. Protobuf and
     GRPC. zap logging.
 
-14. Запасная леция #1. Работа с crypto/* и x/crypto.
+14. Запасная лекция #1. Работа с crypto/* и x/crypto.
 
-15. Запасная леция #2.
+15. Запасная лекция #2.
