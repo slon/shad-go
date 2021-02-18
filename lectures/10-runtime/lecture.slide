@@ -1,0 +1,34 @@
+low-level
+Лекция 9
+
+Короткий Фёдор
+
+* Go runtime
+
+- Compiler
+- GC
+- Scheduler
+
+* Compiler
+
+- Inlining
+- Escape Analysis
+- Bound Check Elimination
+
+* GC
+
+- STW
+- Mark Assist
+- Knobs
+- Finalizer
+- sync.Pool
+- Stack Growth
+- Write Barrier
+
+* Scheduler
+
+- G, M, P model
+- Global Run Queue, Local Run Queue
+- Knobs
+- Runaway threads problem
+- runtime.LockOsThread
