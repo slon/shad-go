@@ -1,3 +1,18 @@
+- group:    Basics
+  start:    18-02-2021 18:00
+  deadline: 28-02-2021 23:59
+  tasks:
+    - task: hotelbusiness
+      score: 100
+    - task: hogwarts
+      score: 100
+    - task: utf8
+      score: 100
+    - task: varfmt
+      score: 100
+    - task: speller
+      score: 100
+
 - group:    Hello World
   start:    11-02-2021 18:00
   deadline: 22-02-2021 23:59
