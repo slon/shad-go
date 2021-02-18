@@ -2,6 +2,7 @@ package reverse
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -36,9 +37,20 @@ func TestReverse(t *testing.T) {
 		{input: "🇩🇪", output: "🇪🇩"},
 		// NB: Флаг распался. :)
 		{input: "🏳️‍🌈", output: "🌈‍️🏳"},
+		{input: "\xff\x00\xff\x00", output: "\x00\xff\x00\xff"},
 	} {
 		t.Run(fmt.Sprintf("#%v: %v", i, tc.input), func(t *testing.T) {
 			require.Equal(t, tc.output, Reverse(tc.input))
 		})
+	}
+}
+
+func BenchmarkReverse(b *testing.B) {
+	input := strings.Repeat("🙂🙂", 100)
+
+	b.ReportAllocs()
+
+	for i := 0; i < b.N; i++ {
+		_ = Reverse(input)
 	}
 }
