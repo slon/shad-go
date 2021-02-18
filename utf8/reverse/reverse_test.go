@@ -37,7 +37,7 @@ func TestReverse(t *testing.T) {
 		{input: "🇩🇪", output: "🇪🇩"},
 		// NB: Флаг распался. :)
 		{input: "🏳️‍🌈", output: "🌈‍️🏳"},
-		{input: "\xff\x00\xff\x00", output: "\x00\xff\x00\xff"},
+		{input: "\xff\x00\xff\x00", output: "\x00\xef\xbf\xbd\x00\xef\xbf\xbd"},
 	} {
 		t.Run(fmt.Sprintf("#%v: %v", i, tc.input), func(t *testing.T) {
 			require.Equal(t, tc.output, Reverse(tc.input))

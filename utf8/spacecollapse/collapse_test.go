@@ -22,7 +22,7 @@ func TestCollapseSpaces(t *testing.T) {
 		{input: "\t*", output: " *"},
 		{input: " \t \t ", output: " "},
 		{input: " \tx\t ", output: " x "},
-		{input: "\xff\x00\xff\x00", output: "\xff\x00\xff\x00"},
+		{input: "\xff\x00   \xff\x00", output: "\xef\xbf\xbd\x00 \xef\xbf\xbd\x00"},
 	} {
 		t.Run(fmt.Sprintf("#%v: %v", i, tc.input), func(t *testing.T) {
 			require.Equal(t, tc.output, CollapseSpaces(tc.input))
