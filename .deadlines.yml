@@ -12,6 +12,10 @@
       score: 100
     - task: speller
       score: 100
+    - task: ciletters
+      score: 100
+    - task: forth
+      score: 100
 
 - group:    Hello World
   start:    11-02-2021 18:00
