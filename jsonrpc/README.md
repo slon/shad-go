@@ -1,6 +1,6 @@
 ## jsonrpc
 
-Главная идея [RPC](https://en.wikipedia.org/wiki/Remote_procedure_call) (remove procedure call) заключается в том,
+Главная идея [RPC](https://en.wikipedia.org/wiki/Remote_procedure_call) (remote procedure call) заключается в том,
 чтобы вызов удаленных процедур (например, работающих на другой машине) был очень похожим на вызов функций внутри программы.
 Вся механика удаленных вызовов прячется от пользователя.
 
