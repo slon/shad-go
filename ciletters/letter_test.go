@@ -17,7 +17,7 @@ type testCase struct {
 	expected     string
 }
 
-func TestSpell(t *testing.T) {
+func TestLetter(t *testing.T) {
 	const (
 		testUser      = "gopher"
 		gitlabGroupID = "go-spring-2021"
