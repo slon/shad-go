@@ -83,6 +83,20 @@ func TestKeyLock_DeadlockFree(t *testing.T) {
 	wg.Wait()
 }
 
+func TestKeyLock_NoMutates(t *testing.T) {
+	defer goleak.VerifyNone(t)
+	l := keylock.New()
+
+	keys := []string{"b", "c", "a"}
+	passedKeys := make([]string, len(keys))
+	copy(passedKeys, keys)
+
+	_, unlock := l.LockKeys(passedKeys, nil)
+	unlock()
+
+	require.Equal(t, keys, passedKeys, "passed keys shouldn't be mutated")
+}
+
 func TestKeyLock_SingleKeyStress(t *testing.T) {
 	const (
 		N = 1000
