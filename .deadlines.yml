@@ -1,3 +1,16 @@
+- group:    Interfaces
+  start:    25-02-2021 18:00
+  deadline: 07-03-2021 23:59
+  tasks:
+    - task: otp
+      score: 100
+    - task: lrucache
+      score: 100
+    - task: externalsort
+      score: 100
+    - task: retryupdate
+      score: 100
+
 - group:    Basics
   start:    18-02-2021 18:00
   deadline: 28-02-2021 23:59
