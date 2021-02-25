@@ -413,6 +413,52 @@ Check type
 
 * defer
 
+.play copyfile/copy.go /func/,/^}/
+
+* defer
+
+.play copyfile2/copy.go /func/,/^}/
+
+* defer
+
+  func a() {
+      i := 0
+      defer fmt.Println(i)
+      i++
+      return
+  }
+
+Output:
+
+  0
+
+* defer
+
+  func b() {
+      for i := 0; i < 4; i++ {
+          defer fmt.Print(i)
+      }
+  }
+
+Output:
+
+  3210
+
+* defer
+
+  func c() (i int) {
+      defer func() { i++ }()
+      return 1
+  }
+
+  fmt.Println(c())
+
+Output:
+
+  2
+
+* defer
+
   func main() {
       f(3)
   }
@@ -442,6 +488,31 @@ Output:
       }()
       // ...parser...
   }
+
+
+* recover
+
+  func main() {
+      defer func() {
+          recover()
+          fmt.Println("Checkpoint 1")
+          panic(1)
+      }()
+      defer func() {
+          recover()
+          fmt.Println("Checkpoint 2")
+          panic(2)
+      }()
+      panic(999)
+  }
+
+Output:
+
+  Checkpoint 2
+  Checkpoint 1
+  panic: 999 [recovered]
+  	panic: 2 [recovered]
+  	panic: 1
 
 * errors
 
