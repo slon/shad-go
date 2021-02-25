@@ -376,20 +376,20 @@ Check type
 * Type switch
 
   func sqlQuote(x interface{}) string {
-      switch x := x.(type) {
+      switch v := x.(type) {
       case nil:
           return "NULL"
       case int, uint:
-          return fmt.Sprintf("%d", x) // x has type interface{} here.
+          return fmt.Sprintf("%d", v) // v has type interface{} here.
       case bool:
-          if x {
+          if v {
               return "TRUE"
           }
           return "FALSE"
       case string:
-          return sqlQuoteString(x) // (not shown)
+          return sqlQuoteString(v) // (not shown)
       default:
-          panic(fmt.Sprintf("unexpected type %T: %v", x, x))
+          panic(fmt.Sprintf("unexpected type %T: %v", v, v))
       }
   }
 
