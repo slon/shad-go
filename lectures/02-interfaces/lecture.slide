@@ -428,6 +428,8 @@ Check type
       return
   }
 
+  fmt.Println(a())
+
 Output:
 
   0
@@ -439,6 +441,8 @@ Output:
           defer fmt.Print(i)
       }
   }
+
+  fmt.Println(b())
 
 Output:
 
@@ -488,7 +492,6 @@ Output:
       }()
       // ...parser...
   }
-
 
 * recover
 
