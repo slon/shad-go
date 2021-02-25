@@ -475,3 +475,7 @@ As
   if perr, ok := err.(*os.PathError); ok {
       fmt.Println(perr.Path)
   }
+
+* errors.As
+
+.play temporary/main.go
