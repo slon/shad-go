@@ -59,7 +59,11 @@ func TestComputeLoad_basic(t *testing.T) {
 		},
 	} {
 		t.Run(tc.title, func(t *testing.T) {
-			require.Equal(t, tc.result, ComputeLoad(tc.guests))
+			if len(tc.result) == 0 {
+				require.Empty(t, ComputeLoad(tc.guests))
+			} else {
+				require.Equal(t, tc.result, ComputeLoad(tc.guests))
+			}
 		})
 	}
 }
