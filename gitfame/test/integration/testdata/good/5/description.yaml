@@ -1,0 +1,5 @@
+# .md with single line, filtered out with --languages
+
+name: single file, languages filter
+args: [--format, csv, --revision, a7b4f155866102b0559392440f4217bc3c19bf62, --languages, c++]
+bundle: simple.bundle

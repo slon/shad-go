@@ -1,0 +1,5 @@
+# Empty .md file, old revision
+
+name: empty file, old revision
+args: [--format, csv, --revision, 49e9ed8b0c32adfa6b30ebe5d94d9d8811ba4d26]
+bundle: simple.bundle

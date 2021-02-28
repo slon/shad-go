@@ -1,0 +1,5 @@
+# author with name consisting of printable characters, empty commit
+
+name: printable in author name, empty commit
+args: [--format, csv, --revision, 68cc2ccd318dce0e86c86c0adc53a9d967e2192c]
+bundle: breaker.bundle

@@ -1,0 +1,5 @@
+# .md + .go x 2, tag,
+
+name: tag
+args: [--format, csv, --revision, v1.0]
+bundle: simple.bundle

@@ -1,0 +1,5 @@
+# go-cmp, HEAD, order by commits
+
+name: go-cmp HEAD order-by commits
+args: [--format, csv, --order-by, commits]
+bundle: go-cmp.bundle

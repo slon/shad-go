@@ -1,0 +1,5 @@
+# .md + .go x 2, tag, --use-committer
+
+name: tag committer
+args: [--format, csv, --revision, v1.0, --use-committer]
+bundle: simple.bundle

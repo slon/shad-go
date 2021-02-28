@@ -1,0 +1,5 @@
+# Empty project
+
+name: empty project
+args: [--format, csv, --revision, dff562439f0406fb00229e3e95a8d2048f265683]
+bundle: simple.bundle

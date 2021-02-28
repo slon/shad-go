@@ -1,0 +1,5 @@
+# go-cmp, HEAD
+
+name: go-cmp HEAD
+args: [--format, csv]
+bundle: go-cmp.bundle

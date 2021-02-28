@@ -1,0 +1,5 @@
+# go-cmp, HEAD, committer
+
+name: go-cmp HEAD committer
+args: [--format, csv, --use-committer]
+bundle: go-cmp.bundle
