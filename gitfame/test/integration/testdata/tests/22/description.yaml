@@ -1,0 +1,5 @@
+# go-cmp, HEAD, restrict to
+
+name: go-cmp HEAD restrict-to
+args: [--format, csv, --restrict-to, 'cmp/cmpopts/*,cmp/internal/testprotos/*,cmp/testdata/*,gopher/*']
+bundle: go-cmp.bundle

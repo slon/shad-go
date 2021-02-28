@@ -1,0 +1,5 @@
+# go-cmp, HEAD, extensions
+
+name: go-cmp HEAD extensions
+args: [--format, csv, --extensions, '.yml,.json,.md']
+bundle: go-cmp.bundle

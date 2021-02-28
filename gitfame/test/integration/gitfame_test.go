@@ -33,7 +33,7 @@ func TestGitFame(t *testing.T) {
 	require.NoError(t, err)
 
 	bundlesDir := path.Join("./testdata", "bundles")
-	testsDir := path.Join("./testdata", "good")
+	testsDir := path.Join("./testdata", "tests")
 	files, err := ioutil.ReadDir(testsDir)
 	require.NoError(t, err)
 
@@ -58,9 +58,14 @@ func TestGitFame(t *testing.T) {
 			cmd.Stderr = ioutil.Discard
 
 			output, err := cmd.Output()
-			require.NoError(t, err)
-
-			require.Equal(t, string(tc.Expected), string(output))
+			if !tc.Error {
+				require.NoError(t, err)
+				require.Equal(t, string(tc.Expected), string(output))
+			} else {
+				require.Error(t, err)
+				_, ok := err.(*exec.ExitError)
+				require.True(t, ok)
+			}
 		})
 	}
 }
@@ -85,6 +90,7 @@ type TestDescription struct {
 	Name   string   `yaml:"name"`
 	Args   []string `yaml:"args"`
 	Bundle string   `yaml:"bundle"`
+	Error  bool     `yaml:"error"`
 }
 
 func ReadTestDescription(t *testing.T, path string) *TestDescription {

@@ -1,0 +1,6 @@
+# bad sort order
+
+name: bad sort oder
+args: [--order-by, time, --revision, v1.0]
+bundle: simple.bundle
+error: true

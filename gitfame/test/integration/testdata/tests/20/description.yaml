@@ -1,0 +1,5 @@
+# go-cmp, HEAD, languages
+
+name: go-cmp HEAD languages
+args: [--format, csv, --languages, 'yaml,c++,markdown,gopher']
+bundle: go-cmp.bundle

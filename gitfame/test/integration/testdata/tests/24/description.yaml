@@ -1,0 +1,6 @@
+# bad format
+
+name: bad format
+args: [--format, yson, --revision, v1.0]
+bundle: simple.bundle
+error: true

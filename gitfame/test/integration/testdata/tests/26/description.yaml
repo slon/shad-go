@@ -1,0 +1,6 @@
+# bad revision
+
+name: bad revision
+args: [--revision, head]
+bundle: simple.bundle
+error: true
