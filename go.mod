@@ -25,5 +25,6 @@ require (
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
 	golang.org/x/sys v0.0.0-20200409092240-59c9f1ba88fa
 	golang.org/x/tools v0.0.0-20200125223703-d33eef8e6825
+	gopkg.in/src-d/go-git.v4 v4.13.1 // indirect
 	gopkg.in/yaml.v2 v2.2.8
 )
