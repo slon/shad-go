@@ -293,10 +293,12 @@ func TestRetrySetFalseConflict(t *testing.T) {
 			Set(SetRequest(K0, V1, UUID0, &conflictErr.ExpectedVersion)).
 			Return(nil, errSetTemporary),
 
-		// second Set returns conflict with ExpectedVersion == OldVersion from previous request.
+		// second Set returns conflict.
 		c.EXPECT().
 			Set(SetRequest(K0, V1, UUID0)).
 			Return(nil, &kvapi.APIError{Method: "set", Err: conflictErr}),
+
+		// client recognizes that first Set was successful, by inspecting ExpectedVersion of returned error.
 	)
 
 	require.NoError(t, retryupdate.UpdateValue(c, K0, updateFn))
