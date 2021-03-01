@@ -6,6 +6,8 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
+	"sort"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -34,17 +36,12 @@ func TestGitFame(t *testing.T) {
 
 	bundlesDir := path.Join("./testdata", "bundles")
 	testsDir := path.Join("./testdata", "tests")
-	files, err := ioutil.ReadDir(testsDir)
-	require.NoError(t, err)
+	testDirs := ListTestDirs(t, testsDir)
 
-	for _, f := range files {
-		if !f.IsDir() {
-			continue
-		}
+	for _, dir := range testDirs {
+		tc := ReadTestCase(t, filepath.Join(testsDir, dir))
 
-		tc := ReadTestCase(t, filepath.Join(testsDir, f.Name()))
-
-		t.Run(f.Name()+"/"+tc.Name, func(t *testing.T) {
+		t.Run(dir+"/"+tc.Name, func(t *testing.T) {
 			dir, err := ioutil.TempDir("", "gitfame-")
 			require.NoError(t, err)
 			defer func() { _ = os.RemoveAll(dir) }()
@@ -68,6 +65,33 @@ func TestGitFame(t *testing.T) {
 			}
 		})
 	}
+}
+
+func ListTestDirs(t *testing.T, path string) []string {
+	t.Helper()
+
+	files, err := ioutil.ReadDir(path)
+	require.NoError(t, err)
+
+	var names []string
+	for _, f := range files {
+		if !f.IsDir() {
+			continue
+		}
+		names = append(names, f.Name())
+	}
+
+	toInt := func(name string) int {
+		i, err := strconv.Atoi(name)
+		require.NoError(t, err)
+		return i
+	}
+
+	sort.Slice(names, func(i, j int) bool {
+		return toInt(names[i]) < toInt(names[j])
+	})
+
+	return names
 }
 
 type TestCase struct {
