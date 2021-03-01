@@ -1,3 +1,10 @@
+- group:    "[HW] Gitfame"
+  start:    01-03-2021 18:00
+  deadline: 17-03-2021 23:59
+  tasks:
+    - task: gitfame
+      score: 0
+
 - group:    Interfaces
   start:    25-02-2021 18:00
   deadline: 07-03-2021 23:59
