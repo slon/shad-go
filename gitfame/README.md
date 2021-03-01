@@ -86,7 +86,7 @@ ferhat elmas,1,1,1
 **--languages** — список языков (программирования, разметки и др.), сужающий список файлов в расчёте; множество ограничений разделяется запятыми например `'go,markdown'`
 
 Принадлежность файла к языку программирования определяется с помощью его расширения.
-В [configs/langauage_extensions.json](configs/language_extensions.json) лежит маппинг.
+В [configs/language_extensions.json](configs/language_extensions.json) лежит маппинг.
 Неизвестные языки никаких ограничений не накладывают. При их использовании можно написать warning в stderr.
 
 **--exclude** — набор [Glob](https://en.wikipedia.org/wiki/Glob_(programming)) паттернов, исключающих файлы из расчёта
