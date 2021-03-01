@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"bytes"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -57,7 +58,7 @@ func TestGitFame(t *testing.T) {
 			output, err := cmd.Output()
 			if !tc.Error {
 				require.NoError(t, err)
-				require.Equal(t, string(tc.Expected), string(output))
+				CompareResults(t, tc.Expected, output, tc.Format)
 			} else {
 				require.Error(t, err)
 				_, ok := err.(*exec.ExitError)
@@ -115,6 +116,7 @@ type TestDescription struct {
 	Args   []string `yaml:"args"`
 	Bundle string   `yaml:"bundle"`
 	Error  bool     `yaml:"error"`
+	Format string   `yaml:"format,omitempty"`
 }
 
 func ReadTestDescription(t *testing.T, path string) *TestDescription {
@@ -134,4 +136,41 @@ func Unbundle(t *testing.T, src, dst string) {
 
 	cmd := exec.Command("git", "clone", src, dst)
 	require.NoError(t, cmd.Run())
+}
+
+func CompareResults(t *testing.T, expected, actual []byte, format string) {
+	t.Helper()
+
+	switch format {
+	case "json":
+		if len(expected) == 0 {
+			require.Empty(t, string(actual))
+		} else {
+			require.JSONEq(t, string(expected), string(actual))
+		}
+	case "json-lines":
+		if len(expected) == 0 {
+			require.Empty(t, string(actual))
+		} else {
+			CompareJSONLines(t, expected, actual)
+		}
+	default:
+		require.Equal(t, string(expected), string(actual))
+	}
+}
+
+func CompareJSONLines(t *testing.T, expected, actual []byte) {
+	t.Helper()
+
+	expectedLines := ParseJSONLines(expected)
+	actualLines := ParseJSONLines(actual)
+	require.Equal(t, len(expectedLines), len(actualLines))
+
+	for i, l := range expectedLines {
+		require.JSONEq(t, string(l), string(actualLines[i]))
+	}
+}
+
+func ParseJSONLines(data []byte) [][]byte {
+	return bytes.Split(bytes.TrimSpace(data), []byte("\n"))
 }

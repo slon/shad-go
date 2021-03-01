@@ -1,0 +1,6 @@
+# go-cmp, HEAD, json
+
+name: go-cmp HEAD json
+args: [--format, json]
+bundle: go-cmp.bundle
+format: json
