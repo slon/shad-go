@@ -1,0 +1,5 @@
+# author with tabs in name, empty file
+
+name: tabs in author name, empty file
+args: [--format, csv, --revision, 17f8121d7a01af4dd79e2e9cba387f96edc64bd6, --restrict-to, empty.txt]
+bundle: breaker.bundle

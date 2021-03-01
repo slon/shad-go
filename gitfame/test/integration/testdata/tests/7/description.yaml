@@ -1,0 +1,5 @@
+# .md + .go x 2
+
+name: HEAD^1
+args: [--format, csv, --revision, HEAD^1]
+bundle: simple.bundle

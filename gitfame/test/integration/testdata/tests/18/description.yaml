@@ -1,0 +1,5 @@
+# go-cmp, HEAD, order by files
+
+name: go-cmp HEAD order-by files
+args: [--format, csv, --order-by, files]
+bundle: go-cmp.bundle

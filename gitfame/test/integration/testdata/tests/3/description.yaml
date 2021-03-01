@@ -1,0 +1,5 @@
+# .md with single line
+
+name: single line
+args: [--format, csv, --revision, a7b4f155866102b0559392440f4217bc3c19bf62]
+bundle: simple.bundle

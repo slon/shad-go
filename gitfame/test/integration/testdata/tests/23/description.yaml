@@ -1,0 +1,5 @@
+# go-cmp, HEAD, exclude and restrict to the same dir
+
+name: go-cmp HEAD exclude restrict-to
+args: [--format, csv, --restrict-to, 'cmp/cmpopts/*', --exclude, 'cmp/cmpopts/*']
+bundle: go-cmp.bundle

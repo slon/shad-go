@@ -1,0 +1,5 @@
+# author with tabs in name
+
+name: tabs in author name
+args: [--format, csv, --revision, 400683875aad1234a51d9fe6e8b6137556702ae6, --restrict-to, main.go]
+bundle: breaker.bundle
