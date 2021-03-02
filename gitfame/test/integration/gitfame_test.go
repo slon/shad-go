@@ -51,6 +51,7 @@ func TestGitFame(t *testing.T) {
 			args = append(args, tc.Args...)
 
 			Unbundle(t, filepath.Join(bundlesDir, tc.Bundle), dir)
+			headRef := GetHEADRef(t)
 
 			cmd := exec.Command(binary, args...)
 			cmd.Stderr = ioutil.Discard
@@ -59,6 +60,8 @@ func TestGitFame(t *testing.T) {
 			if !tc.Error {
 				require.NoError(t, err)
 				CompareResults(t, tc.Expected, output, tc.Format)
+				newHEADRef := GetHEADRef(t)
+				require.Equal(t, headRef, newHEADRef)
 			} else {
 				require.Error(t, err)
 				_, ok := err.(*exec.ExitError)
@@ -173,4 +176,14 @@ func CompareJSONLines(t *testing.T, expected, actual []byte) {
 
 func ParseJSONLines(data []byte) [][]byte {
 	return bytes.Split(bytes.TrimSpace(data), []byte("\n"))
+}
+
+func GetHEADRef(t *testing.T) string {
+	t.Helper()
+
+	cmd := exec.Command("git", "show-ref", "HEAD")
+	out, err := cmd.Output()
+	require.NoError(t, err)
+
+	return string(out)
 }
