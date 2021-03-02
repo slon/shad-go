@@ -2,6 +2,8 @@ package ratelimit
 
 import (
 	"context"
+	"math/rand"
+	"sort"
 	"sync"
 	"testing"
 	"time"
@@ -39,6 +41,56 @@ func TestSimpleLimitCancel(t *testing.T) {
 
 	err := limit.Acquire(ctx)
 	require.Equal(t, context.DeadlineExceeded, err)
+}
+
+func TestTimeDistribution(t *testing.T) {
+	limit := NewLimiter(100, time.Second)
+
+	var lock sync.Mutex
+	okTimes := []time.Duration{}
+	start := time.Now()
+
+	var wg sync.WaitGroup
+	for i := 0; i < 500; i++ {
+		time.Sleep(time.Millisecond * 5)
+
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+
+			dt := time.Duration(rand.Float64() * float64(time.Second))
+			ctx, cancel := context.WithTimeout(context.Background(), dt)
+			defer cancel()
+
+			err := limit.Acquire(ctx)
+			if err != nil {
+				return
+			}
+
+			lock.Lock()
+			defer lock.Unlock()
+			okTimes = append(okTimes, time.Since(start))
+		}()
+	}
+
+	wg.Wait()
+
+	require.Greater(t, len(okTimes), 200, "At least 200 goroutines should succeed")
+
+	sort.Slice(okTimes, func(i, j int) bool {
+		return okTimes[i] < okTimes[j]
+	})
+
+	for i, dt := range okTimes {
+		j := sort.Search(len(okTimes)-i, func(j int) bool {
+			return okTimes[i+j] > dt+time.Second
+		})
+
+		require.Lessf(t, j, 130, "%d goroutines acquired semaphore on interval [%v, %v)", j, dt, dt+time.Second)
+	}
+
+	// Uncomment this line to see full distribution
+	// spew.Fdump(os.Stderr, okTimes)
 }
 
 func TestStressBlocking(t *testing.T) {
