@@ -1,6 +1,6 @@
 # bad revision
 
 name: bad revision
-args: [--revision, head]
+args: [--revision, H3AD]
 bundle: simple.bundle
 error: true
