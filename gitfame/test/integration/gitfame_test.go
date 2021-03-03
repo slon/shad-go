@@ -60,14 +60,14 @@ func TestGitFame(t *testing.T) {
 			if !tc.Error {
 				require.NoError(t, err)
 				CompareResults(t, tc.Expected, output, tc.Format)
-
-				newHEADRef := GetHEADRef(t, dir)
-				require.Equal(t, headRef, newHEADRef)
 			} else {
 				require.Error(t, err)
 				_, ok := err.(*exec.ExitError)
 				require.True(t, ok)
 			}
+
+			newHEADRef := GetHEADRef(t, dir)
+			require.Equal(t, headRef, newHEADRef)
 		})
 	}
 }
@@ -182,7 +182,7 @@ func ParseJSONLines(data []byte) [][]byte {
 func GetHEADRef(t *testing.T, path string) string {
 	t.Helper()
 
-	cmd := exec.Command("git", "show-ref", "HEAD")
+	cmd := exec.Command("git", "rev-parse", "HEAD")
 	cmd.Dir = path
 
 	out, err := cmd.Output()
