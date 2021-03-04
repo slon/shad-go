@@ -361,8 +361,10 @@
   func Tick(d time.Duration) <-chan time.Time {
       ch := make(chan time.Time)
       go func() {
-          time.Sleep(d)
-          ch <- time.Now()
+          for {
+              time.Sleep(d)
+              ch <- time.Now()
+          }
       }()
       return ch
   }
