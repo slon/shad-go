@@ -85,7 +85,13 @@ func TestStaleRead(t *testing.T) {
 	wg.Wait()
 }
 
+var race = false
+
 func TestSpeed(t *testing.T) {
+	if race {
+		t.Skip("this test fails under race detector because of timing issues")
+	}
+
 	defer goleak.VerifyNone(t)
 
 	const (
