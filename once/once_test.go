@@ -52,3 +52,10 @@ func TestOncePanic(t *testing.T) {
 		t.Fatalf("Once.Do called twice")
 	})
 }
+
+func TestOnceManyTimes(t *testing.T) {
+	const N = 1000
+	for i := 0; i < N; i++ {
+		TestOnce(t)
+	}
+}
