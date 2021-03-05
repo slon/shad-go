@@ -9,11 +9,15 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
+	"go.uber.org/goleak"
 	"golang.org/x/sync/errgroup"
 )
 
 func TestNoRateLimit(t *testing.T) {
+	defer goleak.VerifyNone(t)
+
 	limit := NewLimiter(1, 0)
+	defer limit.Stop()
 
 	ctx := context.Background()
 
@@ -22,7 +26,12 @@ func TestNoRateLimit(t *testing.T) {
 }
 
 func TestBlockedRateLimit(t *testing.T) {
-	limit := NewLimiter(0, time.Minute)
+	defer goleak.VerifyNone(t)
+
+	limit := NewLimiter(1, time.Minute)
+	defer limit.Stop()
+
+	require.NoError(t, limit.Acquire(context.Background()))
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond)
 	defer cancel()
@@ -32,7 +41,10 @@ func TestBlockedRateLimit(t *testing.T) {
 }
 
 func TestSimpleLimitCancel(t *testing.T) {
+	defer goleak.VerifyNone(t)
+
 	limit := NewLimiter(1, time.Minute)
+	defer limit.Stop()
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond)
 	defer cancel()
@@ -44,7 +56,10 @@ func TestSimpleLimitCancel(t *testing.T) {
 }
 
 func TestTimeDistribution(t *testing.T) {
+	defer goleak.VerifyNone(t)
+
 	limit := NewLimiter(100, time.Second)
+	defer limit.Stop()
 
 	var lock sync.Mutex
 	okTimes := []time.Duration{}
@@ -94,12 +109,15 @@ func TestTimeDistribution(t *testing.T) {
 }
 
 func TestStressBlocking(t *testing.T) {
+	defer goleak.VerifyNone(t)
+
 	const (
 		N = 100
 		G = 100
 	)
 
 	limit := NewLimiter(N, time.Millisecond*10)
+	defer limit.Stop()
 
 	var eg errgroup.Group
 	for i := 0; i < G; i++ {
@@ -118,12 +136,15 @@ func TestStressBlocking(t *testing.T) {
 }
 
 func TestStressNoBlocking(t *testing.T) {
+	defer goleak.VerifyNone(t)
+
 	const (
 		N = 100
 		G = 100
 	)
 
 	limit := NewLimiter(N, time.Millisecond*10)
+	defer limit.Stop()
 
 	var eg errgroup.Group
 	for i := 0; i < G; i++ {
@@ -148,6 +169,7 @@ func BenchmarkNoBlocking(b *testing.B) {
 	b.SetBytes(1)
 
 	limit := NewLimiter(1, 0)
+	defer limit.Stop()
 
 	ctx := context.Background()
 
