@@ -1,3 +1,18 @@
+- group:    Goroutines
+  start:    05-03-2021 18:00
+  deadline: 15-03-2021 23:59
+  tasks:
+    - task: tour1
+      score: 100
+    - task: once
+      score: 100
+    - task: rwmutex
+      score: 100
+    - task: waitgroup
+      score: 100
+    - task: ratelimit
+      score: 100
+
 - group:    "[HW] Gitfame"
   start:    01-03-2021 18:00
   deadline: 17-03-2021 23:59
