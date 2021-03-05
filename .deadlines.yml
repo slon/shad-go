@@ -1,5 +1,5 @@
 - group:    Goroutines
-  start:    05-03-2021 18:00
+  start:    04-03-2021 18:00
   deadline: 15-03-2021 23:59
   tasks:
     - task: tour1
