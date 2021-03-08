@@ -6,7 +6,7 @@ package once
 type Once struct {
 }
 
-// New create Once.
+// New creates Once.
 func New() *Once {
 	return nil
 }
