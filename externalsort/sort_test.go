@@ -34,15 +34,6 @@ func TestMerge(t *testing.T) {
 2
 `,
 		},
-		{
-			// Merge believes lines are read in sorted order.
-			name: "single-unsorted-file",
-			in: []string{`1
-0`},
-			out: `1
-0
-`,
-		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			out := &bytes.Buffer{}
