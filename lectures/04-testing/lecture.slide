@@ -276,7 +276,23 @@ Good example
 
 * Coverage
 
-- Пример в goland.
+.play size/size.go /func/,/^}/
+
+* Coverage
+
+.play size/size_test.go /func/,/^}/
+
+  go test -cover
+  PASS
+  coverage: 42.9% of statements
+  ok  	gitlab.com/slon/shad-go/lectures/04-testing/size	0.001s
+
+* Coverage
+
+  go test -coverprofile=coverage.out
+  go tool cover -html=coverage.out
+
+.image size/coverage.png
 
 * Benchmark Functions
 
@@ -435,6 +451,20 @@ Good example
       // ...
   }
 
+* t.Cleanup()
+
+  func newEnv(t *testing.T) *env {
+      // ...
+      t.Cleanup(func() {
+          DB.Close()
+      })
+  }
+
+  func TestA(t *testing.T) {
+      env := newEnv(t)
+      // ...
+  }
+
 * Fixture Composition
 
   type MyFixture struct {
@@ -480,7 +510,7 @@ Good example
 
 * White box testing
 
-.play mocks/mocks.go /var/,/OMIT/
+.play mocks/mocks.go /func CheckQuota/,/OMIT/
 
 * White box testing
 
