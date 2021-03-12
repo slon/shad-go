@@ -31,7 +31,7 @@ func TestMain(m *testing.M) {
 	}())
 }
 
-func TestUrlFetch_valid(t *testing.T) {
+func TestURLFetch_valid(t *testing.T) {
 	binary, err := binCache.GetBinary(urlfetchImportPath)
 	require.NoError(t, err)
 
@@ -102,7 +102,7 @@ func TestUrlFetch_valid(t *testing.T) {
 	}
 }
 
-func TestUrlFetch_malformed(t *testing.T) {
+func TestURLFetch_malformed(t *testing.T) {
 	binary, err := binCache.GetBinary(urlfetchImportPath)
 	require.NoError(t, err)
 
@@ -139,7 +139,7 @@ func TestUrlFetch_malformed(t *testing.T) {
 	}
 }
 
-func TestUrlFetch_order(t *testing.T) {
+func TestURLFetch_order(t *testing.T) {
 	binary, err := binCache.GetBinary(urlfetchImportPath)
 	require.NoError(t, err)
 
