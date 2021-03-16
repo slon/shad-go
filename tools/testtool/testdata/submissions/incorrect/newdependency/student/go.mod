@@ -1,6 +1,6 @@
 module gitlab.com/slon/shad-go
 
-go 1.13
+go 1.16
 
 require (
 	github.com/spf13/cobra v0.0.5
