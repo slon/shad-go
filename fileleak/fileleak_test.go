@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net"
 	"os"
+	"syscall"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -80,20 +81,6 @@ func TestFileLeak_ReopenFile(t *testing.T) {
 	})
 }
 
-func TestFileLeak_ReopenSameFile(t *testing.T) {
-	f, err := os.Open("/proc/self/exe")
-	require.NoError(t, err)
-	defer f.Close()
-
-	checkLeak(t, true, func() {
-		_ = f.Close()
-
-		ff, err := os.Open("/proc/self/exe")
-		require.NoError(t, err)
-		f = ff
-	})
-}
-
 func TestFileLeak_PipeLeak(t *testing.T) {
 	checkLeak(t, true, func() {
 		f, _, err := os.Pipe()
@@ -131,5 +118,25 @@ func TestFileLeak_SocketNoLeak(t *testing.T) {
 		conn, err := net.Listen("tcp", addr)
 		require.NoError(t, err)
 		_ = conn.Close()
+	})
+}
+
+func TestFileLeak_DupLeak(t *testing.T) {
+	var fd int
+	defer syscall.Close(fd)
+
+	checkLeak(t, true, func() {
+		var err error
+		fd, err = syscall.Dup(1)
+		require.NoError(t, err)
+
+	})
+}
+
+func TestFileLeak_DupNoLeak(t *testing.T) {
+	checkLeak(t, false, func() {
+		fd, err := syscall.Dup(1)
+		require.NoError(t, err)
+		_ = syscall.Close(fd)
 	})
 }
