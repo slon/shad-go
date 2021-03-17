@@ -99,13 +99,13 @@ func TestFileLeak_PipeNoLeak(t *testing.T) {
 
 func TestFileLeak_SocketLeak(t *testing.T) {
 	var conn net.Listener
-	defer conn.Close()
+	defer func() { conn.Close() }()
 
 	checkLeak(t, true, func() {
 		addr, err := testtool.GetFreePort()
 		require.NoError(t, err)
 
-		conn, err = net.Listen("tcp", addr)
+		conn, err = net.Listen("tcp", fmt.Sprintf(":%s", addr))
 		require.NoError(t, err)
 	})
 }
@@ -115,7 +115,7 @@ func TestFileLeak_SocketNoLeak(t *testing.T) {
 		addr, err := testtool.GetFreePort()
 		require.NoError(t, err)
 
-		conn, err := net.Listen("tcp", addr)
+		conn, err := net.Listen("tcp", fmt.Sprintf(":%s", addr))
 		require.NoError(t, err)
 		_ = conn.Close()
 	})
