@@ -1,3 +1,10 @@
+- group:    Dockertest
+  start:    18-03-2021 21:45
+  deadline: 04-04-2021 23:59
+  tasks:
+    - task: dockertest
+      score: 0
+
 - group:    Concurrency with shared memory
   start:    18-03-2021 21:45
   deadline: 28-03-2021 23:59
