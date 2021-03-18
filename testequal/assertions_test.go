@@ -61,7 +61,6 @@ func TestNotEqual(t *testing.T) {
 		{expected: 123, actual: nil},
 		{expected: math.MaxInt64, actual: math.MaxInt32},
 		{expected: []int{}, actual: nil},
-		{expected: []int{}, actual: nil},
 		{expected: []int{1, 2, 3}, actual: []int{}},
 		{expected: []int{1, 2, 3}, actual: []int{1, 3, 3}},
 		{expected: []int{1, 2, 3}, actual: []int{1, 2, 3, 4}},
