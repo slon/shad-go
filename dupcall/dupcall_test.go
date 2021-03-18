@@ -102,10 +102,13 @@ func TestCall_HalfCancel(t *testing.T) {
 func TestCall_FullCancel(t *testing.T) {
 	defer goleak.VerifyNone(t)
 
-	cancelled := make(chan struct{})
+	cancelled := make(chan struct{}, 1)
 	cb := func(ctx context.Context) (interface{}, error) {
 		<-ctx.Done()
-		close(cancelled)
+		select {
+		case cancelled <- struct{}{}:
+		default:
+		}
 
 		return nil, nil
 	}
