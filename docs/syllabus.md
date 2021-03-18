@@ -35,11 +35,9 @@
    Интеграционные тесты. Goroutine leak detector. TestingMain. Coverage. Сравнение бенчмарков.
 
 6. Concurrency with shared memory. sync.Mutex. sync.RWMutex. sync.Cond. atomic. sync.Once.
-   Race detector. Async cache.
+   Race detector. Async cache. Package context. context.WithTimeout.
 
-7. Package context. Passing request-scoped data. http middleware. chi.Router. Request cancellation.
-   Advanced concurrency patterns. Async cache. Graceful server shutdown. context.WithTimeout.
-   Batching and cancellation.
+7. net/http. Passing request-scoped data. http middleware. chi.Router .Graceful server shutdown.
 
 8. database/sql, sqlx, работа с базами данных, redis.
 
