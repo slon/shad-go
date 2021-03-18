@@ -5,7 +5,7 @@
     - task: dupcall
       score: 200
     - task: keylock
-      score 200
+      score: 200
     - task: batcher
       score: 200
     - task: pubsub
