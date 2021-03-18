@@ -1,3 +1,16 @@
+- group:    Concurrency with shared memory
+  start:    18-03-2021 21:45
+  deadline: 28-03-2021 23:59
+  tasks:
+    - task: dupcall
+      score: 200
+    - task: keylock
+      score 200
+    - task: batcher
+      score: 200
+    - task: pubsub
+      score: 300
+
 - group:    Testing
   start:    12-03-2021 22:30
   deadline: 22-03-2021 23:59
