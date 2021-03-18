@@ -1,5 +1,11 @@
 grade:
   image: eu.gcr.io/shad-ts/grader/go
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_TLS_CERTDIR: ""
+    APP_HOST: docker
+  services:
+    - docker:dind
   script:
     - testtool grade
   timeout: 10 minutes

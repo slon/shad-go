@@ -1,5 +1,11 @@
 check:
   image: eu.gcr.io/shad-ts/grader/go-build
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_TLS_CERTDIR: ""
+    APP_HOST: docker
+  services:
+    - docker:dind
   script:
     - rm -rf lectures/ # do not run tests from lecture examples
     - golangci-lint run --build-tags private,solution ./...
@@ -7,8 +13,6 @@ check:
     - go test -v -race -tags private,solution ./...
 
 rebuild-base-image:
-  only:
-    - master
   tags:
     - docker
   when: manual
