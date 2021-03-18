@@ -1,4 +1,4 @@
-http и context
+http
 Лекция 6
 
 Фёдор Короткий
@@ -124,80 +124,6 @@ http и context
 * Graceful shutdown
 
 .play gracefulshutdown/gracefulshutdown.go /func run()/,/^}/
-
-* context
-
-  type Context interface {
-    // Возвращает время, когда операция будет оповещена о необходимости завершения
-    Deadline() (deadline time.Time, ok bool)
-
-    // Возвращает канал, который будет закрыт при необходимости завершить операцию
-    // Служит в качестве инструмента оповещения об отмене
-    Done() <-chan struct{}
-
-    // Если Done не закрыт - возвращает nil.
-    // Если Done закрыт, Err ошибку с объяснением причины:
-    // - Canceled - контекст был отменен
-    // - DeadlineExceeded - наступил дедлайн.
-    // После возврашения не nil ошибки Err всегда возвращает данную ошибку.
-    Err() error
-
-    // Позволяет получить произвольный объект из контекста
-    Value(key interface{}) interface{}
-  }
-
-- Отмена таймауты
-- Передача request scoped значений
-
-* context
-
-Типы контекстов:
-
-  // root context
-  todo := context.TODO()
-  ctx := context.Background()
-
-  // manual cancel
-  ctx, cancel := context.WithCancel(ctx)
-  defer cancel()
-
-  // cancel by timeout
-  ctx, cancel := context.WithTimeout(ctx, 100*time.Millisecond)
-  defer cancel()
-
-  ctx, cancel := context.WithDeadline(ctx, time.Now().Add(time.Second))
-  defer cancel()
-  
-* Отменяем операции
-
-.code context/cancelation/cancelation.go /func SimpleCancelation()/,/OMIT/
-.code context/cancelation/cancelation.go /func doSlowJob/,/OMIT/
-
-* Отменяем операции
-
-.code context/cancelation/cancelation.go /func SimpleTimeout()/,/OMIT/
-.code context/cancelation/cancelation.go /func doSlowJob/,/OMIT/
-
-* context в библиотеках Go
-
-По соглашению `Context` всегда передается первым параметром в функции, обычно именуясь `ctx`.
-
-  database/sql.(*DB).QueryContext(ctx context.Context, query string, args ...interface{}) (*Rows, error)
-  database/sql.(*DB).ExecContext(ctx context.Context, query string, args ...interface{}) (Result, error)
-  net/http.NewRequestWithContext(ctx context.Context, method, url string, body io.Reader) (*Request, error)
-  golang.org/x/sync/errgroup.WithContext(ctx context.Context) (*Group, context.Context)
-  ...
-
-Быстрый пример:
-  
-  ctx, cancel := context.WithTimeout(context.Background(), 1 * time.Second)
-  defer cancel()
-
-  req, _ := http.NewRequestWithContext(ctx, "GET", "http://loremipsum.com", nil)
-  resp, err := http.DefaultClient.Do(req)
-  if err != nil {
-    // возможно тут будет DeadlineExceeded
-  }
 
 * Контекст в HTTP сервере
 
