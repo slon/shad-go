@@ -51,7 +51,9 @@ func TestCall_Dedup(t *testing.T) {
 
 	var call Call
 	for i := 0; i < 10; i++ {
-		go call.Do(context.Background(), cb)
+		go func() {
+			_, _ = call.Do(context.Background(), cb)
+		}()
 	}
 
 	result, err := call.Do(context.Background(), cb)
@@ -74,13 +76,17 @@ func TestCall_HalfCancel(t *testing.T) {
 
 	var call Call
 	for i := 0; i < 10; i++ {
-		go call.Do(context.Background(), cb)
+		go func() {
+			_, _ = call.Do(context.Background(), cb)
+		}()
 	}
 
 	for i := 0; i < 10; i++ {
 		ctx, cancel := context.WithCancel(context.Background())
 
-		go call.Do(ctx, cb)
+		go func() {
+			_, _ = call.Do(ctx, cb)
+		}()
 
 		time.Sleep(time.Millisecond)
 		cancel()
@@ -109,7 +115,9 @@ func TestCall_FullCancel(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		ctx, cancel := context.WithCancel(context.Background())
 
-		go call.Do(ctx, cb)
+		go func() {
+			_, _ = call.Do(ctx, cb)
+		}()
 
 		time.Sleep(time.Millisecond)
 		cancel()
