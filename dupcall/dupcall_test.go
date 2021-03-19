@@ -23,8 +23,8 @@ func TestCall_Simple(t *testing.T) {
 	})
 
 	require.NoError(t, err)
-	require.Equal(t, result, "ok")
-	require.Equal(t, called, 1)
+	require.Equal(t, "ok", result)
+	require.Equal(t, 1, called)
 
 	errFailed := errors.New("failed")
 
@@ -33,9 +33,9 @@ func TestCall_Simple(t *testing.T) {
 		return nil, errFailed
 	})
 
-	require.Equal(t, err, errFailed)
+	require.Equal(t, errFailed, err)
 	require.Nil(t, result)
-	require.Equal(t, called, 2)
+	require.Equal(t, 2, called)
 }
 
 func TestCall_Dedup(t *testing.T) {
@@ -59,8 +59,8 @@ func TestCall_Dedup(t *testing.T) {
 	result, err := call.Do(context.Background(), cb)
 
 	require.NoError(t, err)
-	require.Equal(t, result, "ok")
-	require.Equal(t, called, 1)
+	require.Equal(t, "ok", result)
+	require.Equal(t, 1, called)
 }
 
 func TestCall_HalfCancel(t *testing.T) {
@@ -95,8 +95,8 @@ func TestCall_HalfCancel(t *testing.T) {
 	result, err := call.Do(context.Background(), cb)
 
 	require.NoError(t, err)
-	require.Equal(t, result, "ok")
-	require.Equal(t, called, 1)
+	require.Equal(t, "ok", result)
+	require.Equal(t, 1, called)
 }
 
 func TestCall_FullCancel(t *testing.T) {
