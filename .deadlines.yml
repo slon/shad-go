@@ -20,7 +20,7 @@
 
 - group:    Testing
   start:    12-03-2021 22:30
-  deadline: 22-03-2021 23:59
+  deadline: 23-03-2021 1:59
   tasks:
     - task: cond
       score: 100
