@@ -1,3 +1,18 @@
+- group:    HTTP
+  start:    25-03-2021 18:00
+  deadline: 04-04-2021 23:59
+  tasks:
+    - task: urlshortener
+      score: 100
+    - task: digitalclock
+      score: 100
+    - task: coverme
+      score: 200
+    - task: olympics
+      score: 200
+    - task: firewall
+      score: 200
+
 - group:    Dockertest
   start:    18-03-2021 21:45
   deadline: 04-04-2021 23:59
