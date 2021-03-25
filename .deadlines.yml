@@ -10,7 +10,7 @@
       score: 200
     - task: olympics
       score: 200
-    - task firewall
+    - task: firewall
       score: 200
 
 - group:    Dockertest
