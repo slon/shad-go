@@ -83,7 +83,7 @@ athlete AB not found
 
 Успешный запрос (200, json фиксированного вида):
 ```
-$ curl -X GET "localhost:6029/top-athletes-in-sport?sport=Swimming&&limit=1"
+$ curl -X GET "localhost:6029/top-athletes-in-sport?sport=Swimming&limit=1"
 [
   {
     "athlete": "Michael Phelps",
@@ -134,7 +134,7 @@ sport 'chess' not found
 
 Успешный запрос (200, json фиксированного вида):
 ```
-$ curl -X GET "localhost:6029/top-countries-in-year?year=2012&&limit=2"
+$ curl -X GET "localhost:6029/top-countries-in-year?year=2012&limit=2"
 [
   {
     "country": "United States",
