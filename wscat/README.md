@@ -2,7 +2,7 @@
 
 wscat - примитивный аналог npm пакета [wscat](https://www.npmjs.com/package/wscat).
 
-Websocket - это двусторониий канал поверх tcp. wscat - это websocket клиент.
+Websocket - это двусторонний канал поверх tcp. wscat - это websocket клиент.
 
 wscat принимает на вход единственный аргумент `-addr` - адрес websocket сервера.
 После подключения программа начинает читать с stdin'а и отправлять пользовательские строки на сервер,
