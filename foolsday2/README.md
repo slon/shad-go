@@ -1,3 +1,3 @@
-# foolsday-2
+# foolsday2
 
 Чур без спойлеров!
