@@ -3,11 +3,11 @@
   deadline: 01-04-2021 23:59
   tasks:
     - task: foolsday1
-      score: 50
+      score: 30
     - task: foolsday2
-      score: 50
+      score: 30
     - task: foolsday3
-      score: 50
+      score: 30
 
 - group:    HTTP
   start:    25-03-2021 18:00
