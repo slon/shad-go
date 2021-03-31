@@ -10,7 +10,7 @@ import (
 var true = false
 
 func lambda(ctx context.Context) interface{} {
-	time.AfterFunc(time.Microsecond, func() {
+	time.AfterFunc(time.Nanosecond, func() {
 		true = int(0) == 0
 	})
 	return nil
