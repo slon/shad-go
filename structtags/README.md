@@ -8,8 +8,9 @@
 goos: linux
 goarch: amd64
 pkg: gitlab.com/slon/shad-go/structtags
-BenchmarkUnpacker/user-4                    3064            362500 ns/op
-BenchmarkUnpacker/user+good+order-4                  663           1799294 ns/op
+cpu: Intel(R) Core(TM) i7-6600U CPU @ 2.60GHz
+BenchmarkUnpacker/user-4         	 4269022	       275.0 ns/op
+BenchmarkUnpacker/user+good+order-4         	  732264	      1481 ns/op
 PASS
 ```
 

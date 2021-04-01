@@ -139,19 +139,15 @@ func BenchmarkUnpacker(b *testing.B) {
 
 	b.Run("user", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			for j := 0; j < 1000; j++ {
-				_ = Unpack(userRequest, user)
-			}
+			_ = Unpack(userRequest, user)
 		}
 	})
 
 	b.Run("user+good+order", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			for j := 0; j < 1000; j++ {
-				_ = Unpack(userRequest, user)
-				_ = Unpack(goodRequest, good)
-				_ = Unpack(orderRequest, order)
-			}
+			_ = Unpack(userRequest, user)
+			_ = Unpack(goodRequest, good)
+			_ = Unpack(orderRequest, order)
 		}
 	})
 }

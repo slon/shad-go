@@ -10,18 +10,11 @@ import (
 	"strings"
 )
 
-// Функция Unpack присваивает значения параметров из url query в поля переданной структуры.
-
-// Для этого сначала в первом цикле создается map,
-// где ключи -- названия параметров из url query,
-// а значения -- "ссылки" на соответствующие поля структуры.
-
-// В следующем цикле поля структуры заполняются соответствующими
-// значениями из url query.
 func Unpack(req *http.Request, ptr interface{}) error {
 	if err := req.ParseForm(); err != nil {
 		return err
 	}
+
 	fields := make(map[string]reflect.Value)
 	v := reflect.ValueOf(ptr).Elem()
 	for i := 0; i < v.NumField(); i++ {
@@ -33,11 +26,13 @@ func Unpack(req *http.Request, ptr interface{}) error {
 		}
 		fields[name] = v.Field(i)
 	}
+
 	for name, values := range req.Form {
-		f := fields[name]
-		if !f.IsValid() {
+		f, ok := fields[name]
+		if !ok {
 			continue
 		}
+
 		for _, value := range values {
 			if f.Kind() == reflect.Slice {
 				elem := reflect.New(f.Type().Elem()).Elem()
