@@ -1,13 +1,26 @@
+- group:    Reflect
+  start:    01-04-2021 23:59
+  deadline: 11-04-2021 23:59
+  tasks:
+    - task: reversemap
+      score: 100
+    - task: jsonlist
+      score: 100
+    - task: jsonrpc
+      score: 100
+    - task: structtags
+      score: 100
+
 - group: April Fools' Day
   start:    01-04-2021 00:00
   deadline: 01-04-2021 23:59
   tasks:
     - task: foolsday1
-      score: 30
+      score: 0
     - task: foolsday2
-      score: 30
+      score: 0
     - task: foolsday3
-      score: 30
+      score: 0
 
 - group:    HTTP
   start:    25-03-2021 18:00
