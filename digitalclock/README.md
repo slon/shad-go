@@ -26,7 +26,7 @@ http://localhost:6029/?time=15:04:05&k=15
 
 ![Image description](assets/150405_15.png)
 
-На невалидных `time` и `k` сервер должен возврщать произвольное сообщение об ошибке и http status 400 (Bad Request):
+На невалидных `time` и `k` сервер должен возвращать произвольное сообщение об ошибке и http status 400 (Bad Request):
 
 ```
 $ curl -i "http://localhost:6029/?k=100" 
