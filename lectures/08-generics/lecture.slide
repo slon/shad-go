@@ -1,0 +1,259 @@
+generics
+Лекция 8
+
+Арсений Балобанов
+
+* Generics (draft)
+
+* New language features
+
+- Mechanism to parameterize a type or function by types.
+- Constraints mechanism to express requirements on type parameters.
+- Type inference (optional)
+
+* Parameter lists
+
+An ordinary parameter list
+
+  (x, y aType, z anotherType)
+
+A type parameter list
+
+  [P, Q aConstraint, R anotherConstraint]
+
+- Convention: Type parameter names are capitalized
+
+* Sorting in Go
+
+what we have
+
+  func Sort(data Interface)
+
+  type Interface interface {
+    Len() int
+    Less(i, j int) bool
+    Swap(i, j int)
+  }
+
+what we really want
+
+  func Sort(list []Elem)
+
+  // use
+  Sort(myList)
+
+* Type parameters to the rescue
+
+  func Sort[Elem ?](list []Elem)
+
+* Constraints
+
+- A constraint specifies the requirements which a type argument must satisfy.
+- In generic Go, constraints are interfaces
+- A type argument is valid if it implements its constraint.
+
+* Generic Sort
+
+  func Sort[Elem interface{ Less(y Elem) bool }](list []Elem) {
+    ...
+  }
+
+- The constraint is an interface, but the actual type argument can be any type that implements that interface.
+- The scope of a type parameter starts at the opening "[" and ends at the end of the generic type or function declaration
+
+* Using generic Sort
+
+Somewhere in library
+
+  func Sort[Elem interface{ Less(y Elem) bool }](list []Elem)
+
+User code
+
+  type book struct{...}
+  func (x book) Less(y book) bool {...}
+
+  var bookshelf []book
+  ...
+  Sort[book](bookshelf) // generic function call
+
+* Type-checking the Sort call: Instantiation
+
+  Sort[book] | (bookshelf)
+
+pass type argument
+
+  Sort[Elem interface{ Less(y Elem) bool }] | (list []Elem)
+
+substitute book for elem
+
+  Sort[book interface{ Less(y book) bool }] | (list []book)
+
+verify that book satisfies the book parameter constraint
+
+  #Sort[book] | (list []book)
+
+A generic function or type must be instantiated before it can be used.
+
+* Type-checking a generic call
+
+Instantiation (new)
+
+- replace type parameters with type arguments in entire signature
+- verify that each type argument satisfies its constraintThen, using the instantiated signature.
+
+Invocation (as usual)
+
+- verify that each ordinary argument can be assigned to its parameter
+
+* Types can be generic, too
+
+  type Lesser[T any] interface{
+    Less(y T) bool}
+  }
+
+any stands for "no constraint"(same as "interface{}")
+
+* Sort, decomposed
+
+  type Lesser[T any] interface{
+    Less(y T) bool
+  }
+
+  func Sort[Elem Lesser[Elem]](list []Elem)
+
+* Sort internals
+
+  func Sort[Elem interface{ Less(y Elem) bool }](list []Elem) {
+    ...
+    var i, j int
+    ...
+    if list[i].Less(List[j]) {...}
+    ...
+  }
+
+- type of list[i], list[j] is Elem
+- Elem is NOT an interface type!
+- A type parameter is a real type.It is not an interface type.
+
+* Argument type inference
+
+what we have
+
+  Sort[book](bookshelf)
+
+what we want
+
+  Sort(bookshelf)
+
+Type unification
+
+  bookshelf -> []book
+
+Inference
+
+  func Sort[Elem ...]([]Elem) => Elem == book
+
+* Problems
+
+what we want
+
+  Sort([]int{1, 2, 3})
+
+int does not implement Elem constraint (no Less method)
+
+what we could do
+
+  type myInt int
+
+  func (x myInt) Less(y myInt) bool { return x < y }
+
+* Type lists
+
+A constraint interface may have a list of types (besides methods):
+
+  type Float interface {
+    type float32, float64
+  }
+
+  // Sin computes sin(x) for x of type float32 or float64.
+  func Sin[T Float](x T) T
+
+Satisfying a type list
+
+An argument type satisfies a constraint with a type list if
+
+- The argument type implements the methods of the constraint
+- The argument type or its underlying type is found in the type list.
+
+As usual, the satisfaction check happens after substitution.
+
+* Generic min function
+
+  type Ordered interface {
+    type int, int8, int16, ..., uint, uint8, uint16, ...,
+    float32, float64, string
+  }
+
+min internals
+
+  func min[T Ordered](x, y T) T {
+    if x < y {
+      return x
+    }
+    return y
+  }
+
+* Different type parameters are different types
+
+  func invalid[Tx, Ty Ordered](x Tx, y Ty) Tx {
+    ...
+    if x < y { ...// INVALID
+    ...
+  }
+
+- "<" requires that both operands have the same type
+
+* Relationships between type parameters
+
+  type Pointer[T any] interface {
+    type *T
+  }
+
+  func f[T any, PT Pointer[T]](x T)
+
+or with inlined constraint
+
+  func foo[T any, PT interface{type *T}](x T)
+
+* When to use generics
+
+- Improved static type safety.
+- More efficient memory use.
+- (Significantly) better performance.
+
+* Summary
+
+Generics are type-checked macros.
+
+Declarations
+
+- Type parameter lists are like ordinary parameter lists with "[" "]".
+- Function and type declarations may have type parameter lists.
+- Type parameters are constrained by interfaces.
+
+Use
+
+- Generic functions and types must be instantiated when used.
+- Type inference (if applicable) makes function instantiation implicit.
+- Instantiation is valid if the type arguments satisfy their constraints.
+
+* How to try?
+
+.link https://go2goplay.golang.org/ - playground
+.link https://go.googlesource.com/go/+/refs/heads/dev.go2go/README.go2go.md - dev branch
+
+* Ссылки
+
+.link https://go.googlesource.com/proposal/+/refs/heads/master/design/go2draft-contracts.md - generics design draft
+.link https://blog.golang.org/why-generics - The Go Blog - Why Generics?
+.link https://www.youtube.com/watch?v=TborQFPY2IM - GopherCon 2020, Robert Griesemer - Typing [Generic] Go
