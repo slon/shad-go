@@ -48,6 +48,10 @@ func TestReverseMap(t *testing.T) {
 				6: 3,
 			},
 		},
+		{
+			forward:  map[string]int{},
+			backward: map[int]string{},
+		},
 	}
 	for _, d := range data {
 		t.Run(reflect.TypeOf(d.forward).String(), func(t *testing.T) {
