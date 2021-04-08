@@ -100,16 +100,14 @@ database/sql
 
 .code prepare/prepare.go /^func Prepare/,/^}/
 
-* *sql.DB - это пул коннектов
-
-* Настройка DB
+* Настройка *sql.DB
 
 - func (db *DB) SetConnMaxIdleTime(d time.Duration)
 - func (db *DB) SetConnMaxLifetime(d time.Duration)
 - func (db *DB) SetMaxIdleConns(n int)
 - func (db *DB) SetMaxOpenConns(n int)
 
-* Статистика DB
+* Статистика *sql.DB
 
 - func (db *DB) Stats() DBStats
 

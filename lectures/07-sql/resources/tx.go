@@ -13,7 +13,8 @@ func TxExhaust(ctx context.Context, db *sql.DB) {
 		return
 	}
 
-	if _, err = tx.ExecContext(ctx, `UPDATE users SET name = "Surl/Tesh-echer" WHERE id = 1`); err != nil {
+	_, err = tx.ExecContext(ctx, `UPDATE users SET name = "Surl/Tesh-echer" WHERE id = 1`)
+	if err != nil {
 		log.Println(err)
 		return
 	}

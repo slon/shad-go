@@ -12,7 +12,7 @@ func Open() {
 	dbFoo, _ := sql.Open("pgx", "host=foo")
 	dbBar, _ := sql.Open("pgx", "host=bar")
 	cluster, err := hasql.NewCluster(
-		[]hasql.Node{hasql.NewNode("foo", dbFoo), hasql.NewNode("bar", dbBar) },
+		[]hasql.Node{hasql.NewNode("foo", dbFoo), hasql.NewNode("bar", dbBar)},
 		checkers.PostgreSQL,
 	)
 	if err != nil {

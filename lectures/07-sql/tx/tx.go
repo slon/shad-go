@@ -13,7 +13,8 @@ func Begin(ctx context.Context, db *sql.DB) {
 	}
 	defer tx.Rollback()
 
-	if _, err = tx.ExecContext(ctx, `UPDATE users SET name = "Tyador Borlú" WHERE id = 1`); err != nil {
+	_, err = tx.ExecContext(ctx, `UPDATE users SET name = "Tyador Borlú" WHERE id = 1`)
+	if err != nil {
 		log.Fatal(err)
 	}
 
