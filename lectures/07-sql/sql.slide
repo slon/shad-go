@@ -78,6 +78,14 @@ database/sql
 * Null в результатах
 .code nulls/rows.go /^func Results/,/^}/
 
+* Одно подключение
+
+.code conn/conn.go /^func Conn/,/^}/
+
+* Транзакции
+
+.code tx/tx.go /^func Begin/,/^}/
+
 * Prepared Statements
 
 Плюсы:
@@ -92,15 +100,49 @@ database/sql
 
 .code prepare/prepare.go /^func Prepare/,/^}/
 
-* Одно подключение
+* *sql.DB - это пул коннектов
 
-.code conn/conn.go /^func Conn/,/^}/
+* Настройка DB
 
-* Транзакции
+- func (db *DB) SetConnMaxIdleTime(d time.Duration)
+- func (db *DB) SetConnMaxLifetime(d time.Duration)
+- func (db *DB) SetMaxIdleConns(n int)
+- func (db *DB) SetMaxOpenConns(n int)
 
-.code tx/tx.go /^func Begin/,/^}/
+* Статистика DB
 
-* Типовые ошибки и подводные камни
+- func (db *DB) Stats() DBStats
+
+.code conf/stats.go /^type DBStats/,/^}
+
+* Подводные камни при работе с database/sql
+
+* Основные типы граблей
+
+- исчерпание ресурсов
+- дедлоки
+- комбинация первого и второго
+- нюансы каждого отдельного драйвера
+
+* Context
+
+.code resources/ctx.go /^func NoContext/,/^}/
+
+* Запросы - исчерпание ресурсов
+
+.code resources/rows.go /^func RowsExhaust/,/^}/
+
+* Коннекты - исчерпание ресурсов
+
+.code resources/conn.go /^func ConnExhaust/,/^}/
+
+* Транзакции - исчерпание ресурсов
+
+.code resources/tx.go /^func TxExhaust/,/^}/
+
+* Транзакции - deadlock
+
+.code resources/tx.go /^func TxDeadlock/,/^}/
 
 * Запросы - deadlock
 
@@ -114,22 +156,6 @@ database/sql
 
 .code resources/queries.go /^func QueryDeadlockFixTwo/,/^}/
 
-* Запросы - исчерпание ресурсов
-
-.code resources/rows.go /^func RowsExhaust/,/^}/
-
-* Транзакции - исчерпание ресурсов
-
-.code resources/tx.go /^func TxExhaust/,/^}/
-
-* Транзакции - deadlock
-
-.code resources/tx.go /^func TxDeadlock/,/^}/
-
-* Коннекты - исчерпание ресурсов
-
-.code resources/conn.go /^func ConnExhaust/,/^}/
-
 * Удобства и расширения
 
 * github.com/jmoiron/sqlx
@@ -141,12 +167,6 @@ database/sql
 * sqlx - подключение
 
 .code sqlx/open.go
-
-* sqlx - обобщенный интерфейс
-
-.code sqlx/ext.go /^type QueryerContext/,/^}/
-.code sqlx/ext.go /^type ExecerContext/,/^}/
-.code sqlx/ext.go /^type ExtContext/,/^}/
 
 * sqlx - StructScan
 
@@ -175,6 +195,15 @@ database/sql
 
 .code sqlx/named.go /^func Insert/,/^}/
 
+* golang.yandex/hasql
+
+- удобная работа с многохостовыми кластерами
+- поддерживает database/sql и sqlx
+
+* hasql - подключение и использование
+
+.code hasql/open.go /^func Open/,/^}/
+
 * Нетипичные драйверы
 
 * Нетипичные драйверы - github.com/DATA-DOG/go-sqlmock
@@ -202,7 +231,7 @@ database/sql
 .link https://github.com/go-sql-driver/mysql - MySQL
 .link https://github.com/ClickHouse/clickhouse-go - ClickHouse
 
-Разное:
+Другие:
 
 .link https://github.com/go-redis/redis - Redis
 .link https://github.com/mongodb/mongo-go-driver - MongoDB
