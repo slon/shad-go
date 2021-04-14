@@ -13,5 +13,5 @@ func TestStringFromBytes(t *testing.T) {
 	s := illegal.StringFromBytes(b)
 
 	assert.Equal(t, "abc", s)
-	assert.Equal(t, **(**uintptr)(unsafe.Pointer(&b)), **(**uintptr)(unsafe.Pointer(&s)))
+	assert.Equal(t, *(*uintptr)(unsafe.Pointer(&b)), *(*uintptr)(unsafe.Pointer(&s)))
 }
