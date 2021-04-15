@@ -1,3 +1,3 @@
 # filecachetest
 
-Этот пакет содержит тесты на [filecachetest](../distbuild/pkg/filecachetest).
+Этот пакет содержит тесты на [filecache](../distbuild/pkg/filecache).
