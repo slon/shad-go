@@ -1,6 +1,6 @@
 # blowfish
 
-Реализуйте cgo wrapper для реализации blowfish из пакета openssl.
+Реализуйте cgo wrapper для шифра blowfish из библиотеки openssl.
 
 - Вам нужно использовать две функции:
 
