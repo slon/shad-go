@@ -136,6 +136,20 @@ Package *io/ioutil* implements some I/O utility functions.
   func TempFile(dir, pattern string) (f *os.File, err error)
   func WriteFile(filename string, data []byte, perm os.FileMode) error
 
+* ioutil as of Go 1.16
+
+The same functionality is now provided by package *io* or package *os*, and those implementations should be preferred in new code.
+
+  ioutil.Discard  -> io.Discard
+  ioutil.NopCloser -> io.NopCloser
+  ioutil.ReadAll -> io.ReadAll
+
+  ioutil.ReadDir -> os.ReadDir
+  ioutil.ReadFile -> os.ReadFile
+  ioutil.TempDir -> os.TempDir
+  ioutil.TempFile -> os.TempFile
+  ioutil.WriteFile -> os.WriteFile
+
 * ReadAll
 
 Convenience method for Reader → []byte conversion.
@@ -418,7 +432,7 @@ Useful when you want to use code that takes an io.Writer, and store the results 
 - useful if you don't want to read the whole file into memory
 - has no internal buffers
 
-*ioutil.ReadFile* reads an entire file into memory (as a []byte) in a single call
+*os.ReadFile* (ioutil.ReadFile) reads an entire file into memory (as a []byte) in a single call
 
 - allocates a byte slice of the correct size (no need to Read + append in a loop)
 - closes the file
@@ -432,7 +446,7 @@ There are also
 * Summary
 
 - *io* defines interfaces that handle streams of bytes (Reader, Writer, etc...) as well as functions that work generically with types implement these interfaces (e.g. io.Copy)
-- *io/ioutil* provides helper functions for some non-trivial file and io tasks
+- *io/ioutil* (deprecated) provides helper functions for some non-trivial file and io tasks
 - *testing/iotest* implements Readers and Writers useful mainly for testing
 - *bufio* provides buffering wrapper for io.Reader and io.Writer that can improve efficiency
 - *bytes* provides helper functions and types for interacting with byte slices
