@@ -1,3 +1,18 @@
+- group:    Low level
+  start:    15-04-2021 18:00
+  deadline: 25-04-2021 23:59
+  tasks:
+    - task: illegal
+      score: 100
+    - task: blowfish
+      score: 100
+    - task: tarstreamtest
+      score: 100
+    - task: filecachetest
+      score: 100
+    - task: artifactcachetest
+      score: 100
+
 - group:    Reflect
   start:    01-04-2021 23:59
   deadline: 11-04-2021 23:59
