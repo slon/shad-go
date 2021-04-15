@@ -1,4 +1,4 @@
-package tarstream
+package tarstreamtest
 
 import (
 	"bytes"
@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"gitlab.com/slon/shad-go/distbuild/pkg/tarstream"
 	"golang.org/x/sys/unix"
 )
 
@@ -30,9 +31,9 @@ func TestTarStream(t *testing.T) {
 	require.NoError(t, ioutil.WriteFile(filepath.Join(from, "a", "x.bin"), []byte("xxx"), 0777))
 	require.NoError(t, ioutil.WriteFile(filepath.Join(from, "b", "c", "y.txt"), []byte("yyy"), 0666))
 
-	require.NoError(t, Send(from, &buf))
+	require.NoError(t, tarstream.Send(from, &buf))
 
-	require.NoError(t, Receive(to, &buf))
+	require.NoError(t, tarstream.Receive(to, &buf))
 
 	checkDir := func(path string) {
 		st, err := os.Stat(path)

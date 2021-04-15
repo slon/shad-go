@@ -1,4 +1,4 @@
-package artifact_test
+package artifacttest
 
 import (
 	"errors"
