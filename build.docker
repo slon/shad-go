@@ -1,7 +1,7 @@
 FROM golang:1.16
 
 RUN apt-get update && apt-get install -y \
-    rsync \
+    rsync libssl-dev \
  && rm -rf /var/lib/apt/lists/*
 
 RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.23.6
