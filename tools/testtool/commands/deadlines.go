@@ -15,9 +15,8 @@ const timeFormat = "02-01-2006 15:04"
 
 type (
 	Task struct {
-		Name  string   `yaml:"task"`
-		Score int      `yaml:"score"`
-		Watch []string `yaml:"watch"`
+		Name  string `yaml:"task"`
+		Score int    `yaml:"score"`
 	}
 
 	Group struct {
@@ -33,16 +32,6 @@ type (
 func (g Group) IsOpen() bool {
 	t, _ := time.Parse(timeFormat, g.Start)
 	return time.Until(t) < 0
-}
-
-func (d Deadlines) Tasks() []*Task {
-	var tasks []*Task
-	for _, g := range d {
-		for i := range g.Tasks {
-			tasks = append(tasks, &g.Tasks[i])
-		}
-	}
-	return tasks
 }
 
 func (d Deadlines) FindTask(name string) (*Group, *Task) {
@@ -91,19 +80,11 @@ func findChangedTasks(d Deadlines, files []string) []string {
 		}
 
 		_, task := d.FindTask(components[0])
-		if task != nil {
-			tasks[task.Name] = struct{}{}
+		if task == nil {
 			continue
 		}
 
-		for _, task := range d.Tasks() {
-			for _, path := range task.Watch {
-				if components[0] == path {
-					tasks[task.Name] = struct{}{}
-					continue
-				}
-			}
-		}
+		tasks[task.Name] = struct{}{}
 	}
 
 	var l []string
