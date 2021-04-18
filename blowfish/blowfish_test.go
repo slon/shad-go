@@ -39,11 +39,11 @@ func TestBlowfish(t *testing.T) {
 
 			b.Encrypt(out[:], in[:])
 			binary.BigEndian.PutUint64(expected[:], testCase.enc)
-			require.Equal(t, out, expected)
+			require.Equal(t, expected, out)
 
 			b.Decrypt(out[:], in[:])
 			binary.BigEndian.PutUint64(expected[:], testCase.dec)
-			require.Equal(t, out, expected)
+			require.Equal(t, expected, out)
 		})
 	}
 }
