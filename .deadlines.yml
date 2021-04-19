@@ -10,7 +10,7 @@
       score: 100
     - task: filecachetest
       score: 100
-    - task: artifactcachetest
+    - task: artifacttest
       score: 100
 
 - group:    Reflect
