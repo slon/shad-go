@@ -93,14 +93,12 @@ func findChangedTasks(d Deadlines, files []string) []string {
 		_, task := d.FindTask(components[0])
 		if task != nil {
 			tasks[task.Name] = struct{}{}
-			continue
 		}
 
 		for _, task := range d.Tasks() {
 			for _, path := range task.Watch {
 				if components[0] == path {
 					tasks[task.Name] = struct{}{}
-					continue
 				}
 			}
 		}
