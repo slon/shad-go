@@ -8,10 +8,16 @@
       score: 100
     - task: tarstreamtest
       score: 100
+      watch:
+        - distbuild
     - task: filecachetest
       score: 100
+      watch:
+        - distbuild
     - task: artifacttest
       score: 100
+      watch:
+        - distbuild
 
 - group:    Reflect
   start:    01-04-2021 23:59
