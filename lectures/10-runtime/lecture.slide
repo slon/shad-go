@@ -1,5 +1,4 @@
-low-level
-Лекция 9
+Go Runtime Internals
 
 Короткий Фёдор
 
@@ -12,16 +11,18 @@ low-level
 * Compiler
 
 - Inlining
-- Escape Analysis
+- Escape Analysis `-m=1` `-m=2`
 - Bound Check Elimination
+- Call ABI
+- ASM
 
 * GC
 
+- Finalizer
+- Knobs
+- sync.Pool
 - STW
 - Mark Assist
-- Knobs
-- Finalizer
-- sync.Pool
 - Stack Growth
 - Write Barrier
 
