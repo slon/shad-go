@@ -12,7 +12,7 @@ import (
 	"gitlab.com/slon/shad-go/distbuild/pkg/build"
 )
 
-var timeAfter = time.After
+var TimeAfter = time.After
 
 type PendingJob struct {
 	Job      *api.JobSpec
