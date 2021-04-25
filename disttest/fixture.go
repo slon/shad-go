@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 	"go.uber.org/goleak"
@@ -168,6 +169,15 @@ func newEnv(t *testing.T, config *Config) (e *env, cancel func()) {
 			env.Logger.Fatal("worker stopped", zap.Error(err))
 		}(w)
 	}
+
+	go func() {
+		select {
+		case <-time.After(time.Second * 10):
+			panic("test hang")
+		case <-env.Ctx.Done():
+			return
+		}
+	}()
 
 	return env, func() {
 		cancelRootContext()
