@@ -331,7 +331,7 @@ Concurrency with Shared Memory
 
 Пакеты в golang.org/x содержат код, который не вошёл в стандартную библиотеку.
 
-- errgroup - `sync.WaitGroup` в встроенной обработкой ошибок
+- errgroup - `sync.WaitGroup` со встроенной обработкой ошибок
 - semaphore - семафор
 - singleflight - дедубликация вызовов
 
