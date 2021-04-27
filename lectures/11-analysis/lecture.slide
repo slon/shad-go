@@ -1,0 +1,353 @@
+Статический Анализ Go Кода
+
+Короткий Фёдор
+
+* Работа с Go кодом в stdlib
+
+    import (
+        "go/types"
+        "go/constant"
+        "go/parser"
+        "go/ast"
+        "go/scanner"
+        "go/token"
+
+        "golang.org/x/tools/go/loader"
+    )
+
+- `go/token` - определяет токены
+- `go/scanner` - разбивает файл с исходным кодом на токены
+- `go/ast` - определяет типы, из которых состоит AST
+- `go/parser` - рекурсивный парсер, строящий AST
+- `go/constant` - представление констант и операции над ними
+- `go/types` - реализует type-checker.
+
+* Type Checker
+
+Три процесса:
+
+1. Для каждого *имени* определяет *объявление*. (identifier resolution)
+
+    var x int // declaration
+
+    func F() {
+        _ = x // name
+    }
+
+2. Для каждого *выражения* определяет *тип*. (type deduction)
+
+    time.Now().String()
+
+    // time.Now() -> *time.Time
+    // time.Now().String() -> string
+
+3. Для каждого *константного*выражения* определяет *значение*. (constant evaluation)
+
+    const x = 1 + 2
+
+* Type Checker Fun Facts
+
+- Сonst evaluation depends on type deduction
+
+    const x = unsafe.Sizeof(int(0))
+
+- Type deduction depends on const evalutation
+
+    var y = [2+3]int{}
+
+- Identifier resolution depends on type deduction
+
+    type T struct{ k int }
+    var _ = T{k: 0}
+
+    type T [10]int
+    const k = 1
+
+    var _ = T{k: 0}
+
+* Example
+
+.code pkginfo/main.go /const/,/END/
+
+* Run Example
+
+    $ ./pkginfo
+    Package  "cmd/hello"
+    Name:    main
+    Imports: [package fmt ("fmt")]
+    Scope:   package "cmd/hello" scope 0x820533590 {
+    .  func cmd/hello.main()
+    }
+
+* Objects
+
+*Identifier*resolution* строит отображение из *имени* (`*ast.Ident`) в `Object` (например `var`, `const` или `func`).
+
+    type Object interface {
+        Name() string   // package-local object name
+        Exported() bool // reports whether the name starts with a capital letter
+        Type() Type     // object type
+        Pos() token.Pos // position of object identifier in declaration
+
+        Parent() *Scope // scope in which this object is declared
+        Pkg() *Package  // nil for objects in the Universe scope and labels
+        Id() string     // object id (see Ids section below)
+    }
+
+* Objects
+
+    Object = *Func         // function, concrete method, or abstract method
+           | *Var          // variable, parameter, result, or struct field
+           | *Const        // constant
+           | *TypeName     // type name
+           | *Label        // statement label
+           | *PkgName      // package name, e.g. json after import "encoding/json"
+           | *Builtin      // predeclared function such as append or len
+           | *Nil          // predeclared nil
+
+Некоторые типы имеют дополнительные методы
+
+    func (*Func) Scope() *Scope
+    func (*Var) Anonymous() bool
+    func (*Var) IsField() bool
+    func (*Const) Val() constant.Value
+    func (*TypeName) IsAlias() bool
+    func (*PkgName) Imported() *Package
+
+* Identifier Resolution
+
+    type Info struct {
+        Defs       map[*ast.Ident]Object
+        Uses       map[*ast.Ident]Object
+        Implicits  map[ast.Node]Object
+        Selections map[*ast.SelectorExpr]*Selection
+        Scopes     map[ast.Node]*Scope
+        ...
+    }
+
+Пример:
+
+    var x int        // def of x, use of int
+    fmt.Println(x)   // uses of fmt, Println, and x
+    type T struct{U} // def of T, use of U (type), def of U (field)
+
+* Types
+
+    type Type interface {
+        Underlying() Type
+    }
+
+Реализации Type
+
+    Type = *Basic
+         | *Pointer
+         | *Array
+         | *Slice
+         | *Map
+         | *Chan
+         | *Struct
+         | *Tuple
+         | *Signature
+         | *Named
+         | *Interface
+
+* Struct types
+
+Описание структуры.
+
+    type Struct struct{ ... } 
+    func (*Struct) NumFields() int
+    func (*Struct) Field(i int) *Var
+    func (*Struct) Tag(i int) string
+
+* Named Types
+
+    type Celsius float64
+
+Идентификатор `Celsius` определяет объект `*TypeName`.
+
+`*TypeName` ссылается на `*Named` тип.
+
+    type Named struct{ ... }
+    func (*Named) NumMethods() int
+    func (*Named) Method(i int) *Func
+    func (*Named) Obj() *TypeName
+    func (*Named) Underlying() Type
+
+`Underlying()` возвращает `int` в обоих случаях.
+
+    type T int
+    type U T
+
+* TypeAndValue
+
+Для каждого вырашения выводится тип. Он доступен в `Types`.
+
+    type Info struct {
+        ...
+        Types map[ast.Expr]TypeAndValue
+    }
+
+`TypeAndValue` описывает тип, и опциональное значение (для констант).
+
+    type TypeAndValue struct {
+        Type  Type
+        Value constant.Value // for constant expressions only
+        ...
+    }
+
+    func (TypeAndValue) IsVoid() bool      // e.g. "main()"
+    func (TypeAndValue) IsType() bool      // e.g. "*os.File"
+    func (TypeAndValue) IsBuiltin() bool   // e.g. "len(x)"
+    func (TypeAndValue) IsValue() bool     // e.g. "*os.Stdout"
+    func (TypeAndValue) IsNil() bool       // e.g. "nil"
+    func (TypeAndValue) Addressable() bool // e.g. "a[i]" but not "f()", "m[key]"
+    func (TypeAndValue) Assignable() bool  // e.g. "a[i]", "m[key]"
+    func (TypeAndValue) HasOk() bool       // e.g. "<-ch", "m[key]"
+
+* Пример
+
+    // CheckNilFuncComparison reports unintended comparisons
+    // of functions against nil, e.g., "if x.Method == nil {".
+    func CheckNilFuncComparison(info *types.Info, n ast.Node) {
+        e, ok := n.(*ast.BinaryExpr)
+        if !ok {
+            return // not a binary operation
+        }
+        if e.Op != token.EQL && e.Op != token.NEQ {
+            return // not a comparison
+        }
+
+        // If this is a comparison against nil, find the other operand.
+        var other ast.Expr
+        if info.Types[e.X].IsNil() {
+            other = e.Y
+        } else if info.Types[e.Y].IsNil() {
+            other = e.X
+        } else {
+            return // not a comparison against nil
+        }
+
+        ...
+
+* Пример
+
+    // CheckNilFuncComparison reports unintended comparisons
+    // of functions against nil, e.g., "if x.Method == nil {".
+    func CheckNilFuncComparison(info *types.Info, n ast.Node) {
+        ...
+
+        // Find the object.
+        var obj types.Object
+        switch v := other.(type) {
+        case *ast.Ident:
+            obj = info.Uses[v]
+        case *ast.SelectorExpr:
+            obj = info.Uses[v.Sel]
+        default:
+            return // not an identifier or selection
+        }
+
+        if _, ok := obj.(*types.Func); !ok {
+            return // not a function or method
+        }
+
+        fmt.Printf("%s: comparison of function %v %v nil is always %v\n",
+            fset.Position(e.Pos()), obj.Name(), e.Op, e.Op == token.NEQ)
+    }
+
+* Analysis
+
+    package unusedresult
+
+    var Analyzer = &analysis.Analyzer{
+        Name: "unusedresult",
+        Doc:  "check for unused results of calls to some functions",
+        Run:  run,
+        ...
+    }
+
+    func run(pass *analysis.Pass) (interface{}, error) {
+        ...
+    }
+
+Analysis реализует одну проверку.
+
+* Pass
+
+    type Pass struct {
+        Fset         *token.FileSet
+        Files        []*ast.File
+        OtherFiles   []string
+        IgnoredFiles []string
+        Pkg          *types.Package
+        TypesInfo    *types.Info
+        ResultOf     map[*Analyzer]interface{}
+        Report       func(Diagnostic)
+        ...
+    }
+
+Pass - это запуск одного Analysis на одном пакете.
+
+* Standalone
+
+    package main
+
+    import (
+        "golang.org/x/tools/go/analysis/passes/findcall"
+        "golang.org/x/tools/go/analysis/singlechecker"
+    )
+
+    func main() { singlechecker.Main(findcall.Analyzer) }
+
+* Unitchecker
+
+    package main
+
+    import (
+        "golang.org/x/tools/go/analysis/passes/findcall"
+        "golang.org/x/tools/go/analysis/unitchecker"
+    )
+
+    func main() { unitchecker.Main(findcall.Analyzer) }
+
+Запуск через govet.
+
+    $ go vet -vettool=$(which vet)
+
+* analysistest
+
+    package jokelint
+
+    import (
+        "testing"
+
+        "golang.org/x/tools/go/analysis/analysistest"
+    )
+
+    func Test(t *testing.T) {
+        testdata := analysistest.TestData()
+        analysistest.Run(t, testdata, Analyzer, "tests/...")
+    }
+
+Тесты хранятся в testdata/.
+
+    package test
+
+    import "fmt"
+
+    func F() {
+        fmt.Println("lol no generics") // want `outdated joke`
+    }
+
+* Пример
+
+.code jokelint/analysis.go /package/,/^}/
+
+* Пример
+
+.code jokelint/analysis.go /func run/,/^}/
+
+* Пример
+
+.code jokelint/analysis.go /func visitCall/,/^}/
