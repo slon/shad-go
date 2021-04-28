@@ -51,11 +51,6 @@
     горутин. GOMACPROCS. Утечка тредов.
 
 12. Go tooling. pprof. CPU and Memory profiling. Кросс-компиляция. GOOS, GOARCH. CGO_ENABLED=0.
-    Build tags. go modules. godoc. x/analysis. Code generation.
+    Build tags. go modules. godoc. Code generation.
 
-13. Полезные библиотеки. CLI applications with cobra. Protobuf and
-    GRPC. zap logging.
-
-14. Запасная лекция #1. Работа с crypto/* и x/crypto.
-
-15. Запасная лекция #2.
+13. go/types и x/analysis. Статический анализ го кода.
