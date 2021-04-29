@@ -3,6 +3,7 @@
   deadline: 10-05-2021 23:59
   tasks:
     - task: testifycheck
+      score: 200
 
 - group:    "[HW] Dist Build"
   start:    25-04-2021 18:00
