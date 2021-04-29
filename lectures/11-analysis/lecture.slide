@@ -22,6 +22,126 @@
 - `go/constant` - представление констант и операции над ними
 - `go/types` - реализует type-checker.
 
+* Example
+
+.code pkginfo/main.go /const/,/END/
+
+* Run Example
+
+    $ ./pkginfo
+    Package  "cmd/hello"
+    Name:    main
+    Imports: [package fmt ("fmt")]
+    Scope:   package "cmd/hello" scope 0x820533590 {
+    .  func cmd/hello.main()
+    }
+
+* AST
+
+    type Node interface {
+        Pos() token.Pos // position of first character belonging to the node
+        End() token.Pos // position of first character immediately after the node
+    }
+
+    // All expression nodes implement the Expr interface.
+    type Expr interface {
+        Node
+        exprNode()
+    }
+
+    // All statement nodes implement the Stmt interface.
+    type Stmt interface {
+        Node
+        stmtNode()
+    }
+
+    // All declaration nodes implement the Decl interface.
+    type Decl interface {
+        Node
+        declNode()
+    }
+
+* AST Expr
+
+    Expr = *BadExpr
+         | *Ident
+         | *Ellipsis
+         | *BasicLit
+         | *FuncLit
+         | *CompositeLit
+         | *ParenExpr
+         | *SelectorExpr
+         | *IndexExpr
+         | *SliceExpr
+         | *TypeAssertExpr
+         | *CallExpr
+         | *StarExpr
+         | *UnaryExpr
+         | *BinaryExpr
+         | *KeyValueExpr
+
+         | *ArrayType
+         | *StructType
+         | *FuncType
+         | *InterfaceType
+         | *MapType
+         | *ChanType
+
+* AST Stmt
+
+    Stmt = *BadStmt
+         | *DeclStmt
+         | *EmptyStmt
+         | *LabeledStmt
+         | *ExprStmt
+         | *SendStmt
+         | *IncDecStmt
+         | *AssignStmt
+         | *GoStmt
+         | *DeferStmt
+         | *ReturnStmt
+         | *BranchStmt
+         | *BlockStmt
+         | *IfStmt
+         | *CaseClause
+         | *SwitchStmt
+         | *TypeSwitchStmt
+         | *CommClause
+         | *SelectStmt
+         | *ForStmt
+         | *RangeStmt
+
+* AST Decl
+
+    Decl = *BadDecl
+         | *GenDecl
+         | *FuncDecl
+
+* AST Example
+
+    package main
+
+    import "fmt"
+
+    func main() {
+        fmt.Printf("hello %d", x)
+    }
+
+.link https://astexplorer.net/#/gist/7c8cc64a979996984768aa4d7be6ceb9/203bc9b1588375699f2d733517d94d370e868d36 astexplorer.net
+
+    *ast.File
+       *GenDecl  // import
+       *FuncDecl // func
+           *BlockStmt
+               *ExprStmt // fmt.Printf("hello %d", x)
+                   *CallExpr
+                       *SelectorExpr // fmt.Printf
+                           *Ident
+                           *Ident
+                       *BasicLit // "hello %d"
+                       *Ident    // x
+
+
 * Type Checker
 
 Три процесса:
@@ -64,20 +184,6 @@
     const k = 1
 
     var _ = T{k: 0}
-
-* Example
-
-.code pkginfo/main.go /const/,/END/
-
-* Run Example
-
-    $ ./pkginfo
-    Package  "cmd/hello"
-    Name:    main
-    Imports: [package fmt ("fmt")]
-    Scope:   package "cmd/hello" scope 0x820533590 {
-    .  func cmd/hello.main()
-    }
 
 * Objects
 
