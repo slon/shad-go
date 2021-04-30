@@ -213,7 +213,7 @@ func runTests(testDir, privateRepo, problem string) error {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err := os.Chmod(binCache, 0755); err != nil {
+	if err = os.Chmod(binCache, 0755); err != nil {
 		log.Fatal(err)
 	}
 
@@ -222,7 +222,7 @@ func runTests(testDir, privateRepo, problem string) error {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err := os.Chmod(goCache, 0777); err != nil {
+	if err = os.Chmod(goCache, 0777); err != nil {
 		log.Fatal(err)
 	}
 
