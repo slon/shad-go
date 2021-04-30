@@ -97,7 +97,6 @@ func testSubmission(studentRepo, privateRepo, problem string) error {
 	if err := os.Chmod(tmpRepo, 0755); err != nil {
 		log.Fatal(err)
 	}
-
 	defer func() { _ = os.RemoveAll(tmpRepo) }()
 	log.Printf("testing submission in %s", tmpRepo)
 
@@ -287,6 +286,7 @@ func runTests(testDir, privateRepo, problem string) error {
 				testtool.BinariesEnv + "=" + string(binariesJSON),
 				"PATH=" + os.Getenv("PATH"),
 				"HOME=" + os.Getenv("HOME"),
+				"GOCACHE=" + filepath.Join(binCache, ".cache"),
 			}
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
@@ -311,6 +311,7 @@ func runTests(testDir, privateRepo, problem string) error {
 				testtool.BinariesEnv + "=" + string(binariesJSON),
 				"PATH=" + os.Getenv("PATH"),
 				"HOME=" + os.Getenv("HOME"),
+				"GOCACHE=" + filepath.Join(binCache, ".cache"),
 			}
 			benchCmd.Stdout = &buf
 			benchCmd.Stderr = os.Stderr
