@@ -286,6 +286,7 @@ func runTests(testDir, privateRepo, problem string) error {
 			cmd.Env = []string{
 				testtool.BinariesEnv + "=" + string(binariesJSON),
 				"PATH=" + os.Getenv("PATH"),
+				"HOME=" + os.Getenv("HOME"),
 			}
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
@@ -309,6 +310,7 @@ func runTests(testDir, privateRepo, problem string) error {
 			benchCmd.Env = []string{
 				testtool.BinariesEnv + "=" + string(binariesJSON),
 				"PATH=" + os.Getenv("PATH"),
+				"HOME=" + os.Getenv("HOME"),
 			}
 			benchCmd.Stdout = &buf
 			benchCmd.Stderr = os.Stderr
