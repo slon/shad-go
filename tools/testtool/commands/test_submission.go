@@ -217,7 +217,8 @@ func runTests(testDir, privateRepo, problem string) error {
 		log.Fatal(err)
 	}
 
-	goCache, err := ioutil.TempDir("/tmp", "gocache")
+	var goCache string
+	goCache, err = ioutil.TempDir("/tmp", "gocache")
 	if err != nil {
 		log.Fatal(err)
 	}
