@@ -217,6 +217,14 @@ func runTests(testDir, privateRepo, problem string) error {
 		log.Fatal(err)
 	}
 
+	goCache, err := ioutil.TempDir("/tmp", "gocache")
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err := os.Chmod(goCache, 0777); err != nil {
+		log.Fatal(err)
+	}
+
 	runGo := func(arg ...string) error {
 		log.Printf("> go %s", strings.Join(arg, " "))
 
@@ -286,7 +294,7 @@ func runTests(testDir, privateRepo, problem string) error {
 				testtool.BinariesEnv + "=" + string(binariesJSON),
 				"PATH=" + os.Getenv("PATH"),
 				"HOME=" + os.Getenv("HOME"),
-				"GOCACHE=" + filepath.Join(binCache, ".cache"),
+				"GOCACHE=" + goCache,
 			}
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
@@ -311,7 +319,7 @@ func runTests(testDir, privateRepo, problem string) error {
 				testtool.BinariesEnv + "=" + string(binariesJSON),
 				"PATH=" + os.Getenv("PATH"),
 				"HOME=" + os.Getenv("HOME"),
-				"GOCACHE=" + filepath.Join(binCache, ".cache"),
+				"GOCACHE=" + goCache,
 			}
 			benchCmd.Stdout = &buf
 			benchCmd.Stderr = os.Stderr
