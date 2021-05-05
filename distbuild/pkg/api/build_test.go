@@ -128,7 +128,7 @@ func TestBuildRunning(t *testing.T) {
 	require.Contains(t, u.BuildFailed.Error, "foo bar error")
 
 	_, err = r.Next()
-	require.Equal(t, err, io.EOF)
+	require.Equal(t, io.EOF, err)
 }
 
 func TestBuildResultsStreaming(t *testing.T) {
