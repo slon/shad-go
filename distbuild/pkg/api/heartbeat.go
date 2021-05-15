@@ -29,9 +29,9 @@ func (w WorkerID) String() string {
 type HeartbeatRequest struct {
 	// WorkerID задаёт персистентный идентификатор данного воркера.
 	//
-	// WorkerID так же выступает в качестве endpoint-а, к которому можно подключиться по HTTP.
+	// WorkerID также выступает в качестве endpoint-а, к которому можно подключиться по HTTP.
 	//
-	// В наших тестов, идентификатор будет иметь вид "localhost:%d".
+	// В наших тестах идентификатор будет иметь вид "localhost:%d".
 	WorkerID WorkerID
 
 	// RunningJobs перечисляет список джобов, которые выполняются на этом воркере
