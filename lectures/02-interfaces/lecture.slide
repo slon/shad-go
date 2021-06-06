@@ -428,7 +428,7 @@ Check type
       return
   }
 
-  fmt.Println(a())
+  a()
 
 Output:
 
