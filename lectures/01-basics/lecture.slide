@@ -590,7 +590,7 @@
 
 * multiple return values
 
-  func Get(url string) (*http.Responce, error) {
+  func Get(url string) (*http.Response, error) {
       // ...
       if err != nil {
           return nil, err
@@ -598,7 +598,7 @@
       // ...
   }
 
-  func logAndGet(url string) (*http.Responce, error) {
+  func logAndGet(url string) (*http.Response, error) {
       log.Printf("logAndGet %s", url)
       return Get(url)
   }
