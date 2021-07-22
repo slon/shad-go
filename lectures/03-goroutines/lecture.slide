@@ -111,7 +111,7 @@
   var recv <-chan int = ch
 
   func counter(out chan<- int)
-  func squarer(out chan<- int, int <-chan int)
+  func squarer(out chan<- int, in <-chan int)
   func printer(in <-chan int)
 
   func main() {
