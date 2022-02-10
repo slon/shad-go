@@ -1,3 +1,4 @@
+//go:build !change
 // +build !change
 
 package coverme
