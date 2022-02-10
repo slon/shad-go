@@ -27,7 +27,7 @@
    # Перейдите по ссылке My Repo на https://go.manytask.org/
    # Нажмите на синюю кнопку clone и скопируйте адрес и "Clone with SSH"
    # Выполните в консоли команду, заменив последний аргумент на ваш адрес
-   git remote add student git@gitlab.manytask.org:go-spring-2021/USERNAME.git
+   git remote add student git@gitlab.manytask.org:go-spring-2022/USERNAME.git
    ```
 
 5. **(Один раз)** [Настройте](https://gitlab.manytask.org/profile/keys) ssh ключ. Если вы не знаете как это сделать,
