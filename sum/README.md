@@ -30,7 +30,7 @@
    git remote add student git@gitlab.manytask.org:go-spring-2022/USERNAME.git
    ```
 
-5. **(Один раз)** [Настройте](https://gitlab.manytask.org/profile/keys) ssh ключ. Если вы не знаете как это сделать,
+5. **(Один раз)** [Настройте](https://gitlab.manytask.org/-/profile/keys) ssh ключ. Если вы не знаете как это сделать,
    воспользуйтесь инструкцией на странице по ссылке.
    
 6. Добавьте ваши изменения в гит и сделайте коммит.
