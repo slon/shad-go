@@ -1,5 +1,5 @@
-// +build !solution
-// +build !change
+//go:build !solution && !change
+// +build !solution,!change
 
 package allocs
 

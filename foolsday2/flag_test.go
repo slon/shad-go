@@ -1,4 +1,4 @@
-// +build private
+//go:build private
 
 package main
 

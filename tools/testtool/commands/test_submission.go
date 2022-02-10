@@ -240,7 +240,8 @@ func runTests(testDir, privateRepo, problem string) error {
 	binaries := map[string]string{}
 	testBinaries := map[string]string{}
 
-	binPkgs, testPkgs := listTestsAndBinaries(filepath.Join(testDir, problem), []string{"-tags", "private", "-mod", "readonly"})
+	//binPkgs, testPkgs := listTestsAndBinaries(filepath.Join(testDir, problem), []string{"-tags", "private", "-mod", "readonly"}) // todo return readonly
+	binPkgs, testPkgs := listTestsAndBinaries(filepath.Join(testDir, problem), []string{"-tags", "private"})
 	for binaryPkg := range binPkgs {
 		binPath := filepath.Join(binCache, randomName())
 		binaries[binaryPkg] = binPath

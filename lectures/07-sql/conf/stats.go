@@ -1,5 +1,7 @@
 package conf
 
+import "time"
+
 type DBStats struct {
 	MaxOpenConnections int // Maximum number of open connections to the database; added in Go 1.11
 

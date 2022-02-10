@@ -1,3 +1,4 @@
+//go:build !solution
 // +build !solution
 
 package fileleak
@@ -9,4 +10,4 @@ type testingT interface {
 
 func VerifyNone(t testingT) {
 	panic("implement me")
-} 
+}

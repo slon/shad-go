@@ -40,17 +40,20 @@ linters-settings:
     # put imports beginning with prefix after 3rd-party packages;
     # it's a comma-separated list of prefixes
     local-prefixes: gitlab.com
+  stylecheck:
+    # https://staticcheck.io/docs/options#checks
+    checks: ["all", "-ST1018"]
 
 linters:
   disable-all: true
   enable:
     - errcheck
     - gofmt
-    - golint
+    - stylecheck
     - gosimple
     - govet
     - ineffassign
-    - scopelint
+    - exportloopref
     - staticcheck
     - typecheck
     - unconvert
