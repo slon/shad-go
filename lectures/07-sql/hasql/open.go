@@ -4,8 +4,8 @@ import (
 	"log"
 
 	_ "github.com/jackc/pgx/v4/stdlib"
-	"goalng.yandex/hasql"
-	"goalng.yandex/hasql/checkers"
+	"golang.yandex/hasql"
+	"golang.yandex/hasql/checkers"
 )
 
 func Open() {
