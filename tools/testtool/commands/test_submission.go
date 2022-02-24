@@ -378,7 +378,7 @@ func runTests(testDir, privateRepo, problem string) error {
 }
 
 func noMoreThanTwoTimesWorse(old, new *benchstat.Metrics) (float64, error) {
-	if new.Mean > 2*old.Mean {
+	if new.Mean > 1.99*old.Mean {
 		return 0.0, nil
 	}
 
