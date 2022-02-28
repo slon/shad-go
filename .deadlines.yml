@@ -1,6 +1,6 @@
 - group:    Interfaces
   start:    24-02-2022 18:00
-  deadline: 06-03-2022 23:59
+  deadline: 13-03-2022 23:59
   tasks:
     - task: otp
       score: 100
@@ -15,7 +15,7 @@
 
 - group:    Basics
   start:    17-02-2022 18:00
-  deadline: 27-02-2022 23:59
+  deadline: 06-03-2022 23:59
   tasks:
     - task: hotelbusiness
       score: 100
