@@ -11,7 +11,7 @@
     - task: waitgroup
       score: 100
     - task: cond
-     score: 100
+      score: 100
     - task: ratelimit
       score: 100
 
