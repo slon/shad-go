@@ -91,7 +91,7 @@ func TestReader(t *testing.T) {
 			r := NewReader(testCase.r, testCase.prng)
 
 			buf, err := ioutil.ReadAll(r)
-			require.Equal(t, testCase.err, err)
+			require.ErrorIs(t, err, testCase.err)
 			require.Equal(t, testCase.result, buf)
 		})
 	}
@@ -139,7 +139,7 @@ func TestWriterError(t *testing.T) {
 	n, err := w.Write(plaintext)
 
 	require.Equalf(t, plaintextBackup, plaintext, "Write must not modify the slice data, even temporarily.")
-	require.Equal(t, err, iotest.ErrTimeout)
+	require.ErrorIs(t, err, iotest.ErrTimeout)
 	require.Equal(t, 512, n)
 	require.Equal(t, out.buf.Bytes(), ciphertext[:512])
 }
