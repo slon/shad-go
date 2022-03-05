@@ -1,3 +1,20 @@
+- group:    Goroutines
+  start:    03-03-2022 18:00
+  deadline: 22-03-2022 23:59
+  tasks:
+    - task: tour1
+      score: 100
+    - task: once
+      score: 100
+    - task: rwmutex
+      score: 100
+    - task: waitgroup
+      score: 100
+    - task: cond
+      score: 100
+    - task: ratelimit
+      score: 100
+
 - group:    Interfaces
   start:    24-02-2022 18:00
   deadline: 13-03-2022 23:59
