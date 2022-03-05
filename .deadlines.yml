@@ -1,6 +1,6 @@
 - group:    Goroutines
   start:    03-03-2022 18:00
-  deadline: 20-03-2022 23:59
+  deadline: 22-03-2022 23:59
   tasks:
     - task: tour1
       score: 100
