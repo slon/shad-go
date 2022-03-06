@@ -6,17 +6,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type Node[T any] interface {
-	Left() *T
-	Right() *T
-}
-
 type ValuesNode[T any] struct {
 	value       T
 	left, right *ValuesNode[T]
 }
-
-var _ Node[ValuesNode[any]] = (*ValuesNode[any])(nil)
 
 func (t ValuesNode[T]) Left() *ValuesNode[T] {
 	return t.left
