@@ -1,3 +1,16 @@
+- group:    Testing
+  start:    10-03-2022 20:00
+  deadline: 29-03-2022 23:59
+  tasks:
+    - task: testequal
+      score: 100
+    - task: fileleak
+      score: 100
+    - task: tabletest
+      score: 100
+    - task: tparallel
+      score: 200
+
 - group:    Goroutines
   start:    03-03-2022 18:00
   deadline: 22-03-2022 23:59
