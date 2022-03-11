@@ -1,6 +1,6 @@
 - group:    "[HW] Gitfame"
-  start:    10-03-2022 18:00
-  deadline: 29-03-2022 23:59
+  start:    11-03-2022 11:59
+  deadline: 30-03-2022 23:59
   tasks:
    - task: gitfame
      score: 0
