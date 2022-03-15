@@ -1,7 +1,10 @@
 package hasql
 
 import (
+	"context"
+	"database/sql"
 	"log"
+	"time"
 
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"golang.yandex/hasql"
@@ -24,7 +27,7 @@ func Open() {
 		log.Fatal(err)
 	}
 
-	log.Println("Node address", node.Addr)
+	log.Println("Node address", node.Addr())
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
