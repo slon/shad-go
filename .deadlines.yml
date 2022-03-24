@@ -6,12 +6,12 @@
       score: 100
     - task: digitalclock
       score: 100
-    - task: coverme
-      score: 200
     - task: olympics
       score: 200
     - task: firewall
       score: 200
+    - task: coverme
+      score: 300
 
 - group:    Concurrency with shared memory
   start:    17-03-2022 23:59
