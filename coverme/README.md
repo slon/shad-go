@@ -16,12 +16,18 @@ Package main можно не тестировать.
 Coverage 100% говорит ровно о том, что все строки кода выполнялись.
 Хорошие тесты, в первую очередь, тестируют функциональность.
 
-Как посмотреть coverage:
+Как посмотреть общий coverage:
 ```
 go test -v -cover ./coverme/...
 ```
 
-Coverage можно выводить в html (см. ссылки), и эта функциональность поддерживается в Goland.
+Как посмотреть coverage пакета в html:
+```
+go test -v -coverprofile=/tmp/coverage.out ./coverme/models/...
+go tool cover -html=/tmp/coverage.out
+```
+Аналогичная функциональность поддерживается в Goland.
+Также рекомендуем ознакомиться с рассказом о cover в блоге (см. ссылки).
 
 ## Ссылки
 
@@ -44,7 +50,7 @@ Todo-app с минимальной функциональностью + client.
 
 Health check:
 ```
-✗ curl -i -X GET localhost:6029/    
+✗ curl -i -X GET localhost:6029/
 HTTP/1.1 200 OK
 Content-Type: application/json
 Date: Thu, 19 Mar 2020 21:46:02 GMT
@@ -66,7 +72,7 @@ Content-Length: 51
 
 Получить todo по id:
 ```
-✗ curl -i localhost:6029/todo/0                                       
+✗ curl -i localhost:6029/todo/0
 HTTP/1.1 200 OK
 Content-Type: application/json
 Date: Thu, 19 Mar 2020 21:44:17 GMT
@@ -77,11 +83,27 @@ Content-Length: 51
 
 Получить все todo:
 ```
-✗ curl -i -X GET localhost:6029/todo                                        
+✗ curl -i -X GET localhost:6029/todo
 HTTP/1.1 200 OK
 Content-Type: application/json
 Date: Thu, 19 Mar 2020 21:44:37 GMT
 Content-Length: 53
 
 [{"id":0,"title":"A","content":"a","finished":false}]
+```
+
+Завершить todo:
+```
+✗ curl -i -X POST localhost:6029/todo/0/finish
+HTTP/1.1 200 OK
+Date: Thu, 24 Mar 2022 15:40:49 GMT
+Content-Length: 0
+
+✗ curl -i -X GET localhost:6029/todo
+HTTP/1.1 200 OK
+Content-Type: application/json
+Date: Thu, 24 Mar 2022 15:41:04 GMT
+Content-Length: 52
+
+[{"id":0,"title":"A","content":"a","finished":true}]%
 ```
