@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"strings"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -34,10 +33,11 @@ func (app *App) Start(port int) {
 
 func (app *App) initRoutes() {
 	app.router = mux.NewRouter()
-	app.router.HandleFunc("/", app.status).Methods("Get")
-	app.router.HandleFunc("/todo", app.list).Methods("Get")
-	app.router.HandleFunc("/todo/{id:[0-9]+}", app.getTodo).Methods("Get")
-	app.router.HandleFunc("/todo/create", app.addTodo).Methods("Post")
+	app.router.HandleFunc("/", app.status).Methods("GET")
+	app.router.HandleFunc("/todo", app.list).Methods("GET")
+	app.router.HandleFunc("/todo/{id:[0-9]+}", app.getTodo).Methods("GET")
+	app.router.HandleFunc("/todo/{id:[0-9]+}/finish", app.finishTodo).Methods("POST")
+	app.router.HandleFunc("/todo/create", app.addTodo).Methods("POST")
 }
 
 func (app *App) run(addr string) {
@@ -80,7 +80,7 @@ func (app *App) addTodo(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *App) getTodo(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(strings.TrimPrefix(r.URL.Path, "/todo/"))
+	id, err := strconv.Atoi(mux.Vars(r)["id"])
 	if err != nil {
 		utils.BadRequest(w, "ID must be an int")
 		return
@@ -93,6 +93,21 @@ func (app *App) getTodo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_ = utils.RespondJSON(w, http.StatusOK, todo)
+}
+
+func (app *App) finishTodo(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(mux.Vars(r)["id"])
+	if err != nil {
+		utils.BadRequest(w, "ID must be an int")
+		return
+	}
+
+	if err := app.db.FinishTodo(models.ID(id)); err != nil {
+		utils.ServerError(w)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }
 
 func (app *App) status(w http.ResponseWriter, r *http.Request) {

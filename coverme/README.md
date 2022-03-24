@@ -44,7 +44,7 @@ Todo-app с минимальной функциональностью + client.
 
 Health check:
 ```
-✗ curl -i -X GET localhost:6029/    
+✗ curl -i -X GET localhost:6029/
 HTTP/1.1 200 OK
 Content-Type: application/json
 Date: Thu, 19 Mar 2020 21:46:02 GMT
@@ -66,7 +66,7 @@ Content-Length: 51
 
 Получить todo по id:
 ```
-✗ curl -i localhost:6029/todo/0                                       
+✗ curl -i localhost:6029/todo/0
 HTTP/1.1 200 OK
 Content-Type: application/json
 Date: Thu, 19 Mar 2020 21:44:17 GMT
@@ -77,11 +77,27 @@ Content-Length: 51
 
 Получить все todo:
 ```
-✗ curl -i -X GET localhost:6029/todo                                        
+✗ curl -i -X GET localhost:6029/todo
 HTTP/1.1 200 OK
 Content-Type: application/json
 Date: Thu, 19 Mar 2020 21:44:37 GMT
 Content-Length: 53
 
 [{"id":0,"title":"A","content":"a","finished":false}]
+```
+
+Завершить todo:
+```
+✗ curl -i -X POST localhost:6029/todo/0/finish
+HTTP/1.1 200 OK
+Date: Thu, 24 Mar 2022 15:40:49 GMT
+Content-Length: 0
+
+✗ curl -i -X GET localhost:6029/todo
+HTTP/1.1 200 OK
+Content-Type: application/json
+Date: Thu, 24 Mar 2022 15:41:04 GMT
+Content-Length: 52
+
+[{"id":0,"title":"A","content":"a","finished":true}]%
 ```
