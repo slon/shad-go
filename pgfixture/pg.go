@@ -30,7 +30,7 @@ func Start(t *testing.T) string {
 	cmd := exec.Command("initdb", "-N", "-D", pgdata)
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
-	if err := cmd.Run(); err != nil {
+	if err = cmd.Run(); err != nil {
 		t.Fatalf("initdb failed: %v", err)
 	}
 
@@ -39,7 +39,7 @@ func Start(t *testing.T) string {
 	cmd = exec.Command("postgres", "-D", pgdata, "-k", pgrun, "-F")
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
-	if err := cmd.Start(); err != nil {
+	if err = cmd.Start(); err != nil {
 		t.Fatalf("postgres failed: %v", err)
 	}
 
