@@ -17,7 +17,7 @@ Concurrency with Shared Memory
   a := 1
   a += 1
 
-- Посылка значения из канал _happens_before_ получения этого значения из канала.
+- Посылка значения из канала _happens_before_ получения этого значения из канала.
 
 - Два события A и B _происходят_одновременно_ (_are_concurrent_), если нельзя сказать что одно случилось раньше другого.
 
@@ -312,18 +312,19 @@ Concurrency with Shared Memory
   func (once *Once) Do(f func()) {
       once.mu.Lock()
       defer once.mu.Unlock()
-      if done {
+      if once.done {
           return
       }
-      if running {
+      if once.running {
           once.cond.Wait() // releases and acquires mutex
           return
       }
-      running = true
+
+      once.running = true
       once.mu.Unlock()
       f()
       once.mu.Lock()
-      done = true
+      once.done = true
       once.cond.Broadcast()
   }
 
