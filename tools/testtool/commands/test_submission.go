@@ -423,7 +423,7 @@ func noMoreThanTwoTimesWorse(old, new *benchstat.Metrics) (float64, error) {
 func compareToBaseline(testPkg, privateRepo string, run []byte) error {
 	var buf bytes.Buffer
 
-	goTest := exec.Command("go", "test", "-tags", "private,solution", "-bench=.", testPkg)
+	goTest := exec.Command("go", "test", "-tags", "private,solution", "-bench=.", "-run=^$", testPkg)
 	goTest.Dir = privateRepo
 	goTest.Stdout = &buf
 	goTest.Stderr = os.Stderr
