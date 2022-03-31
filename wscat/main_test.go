@@ -76,7 +76,7 @@ func startCommand(t *testing.T, addr string) (conn *Conn, stop func()) {
 		// try killing softly
 		_ = cmd.Process.Signal(syscall.SIGTERM)
 
-		ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond*100)
+		ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond*200)
 		defer cancel()
 
 		select {
@@ -132,7 +132,7 @@ func TestWScat(t *testing.T) {
 	}
 
 	// give client time to make a request
-	time.Sleep(time.Millisecond * 100)
+	time.Sleep(time.Millisecond * 200)
 	stop()
 
 	require.Equal(t, bytes.Join(in, nil), bytes.Join(received, nil))
