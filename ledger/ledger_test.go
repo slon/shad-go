@@ -25,7 +25,7 @@ func TestLedger(t *testing.T) {
 		checkBalance := func(account ledger.ID, amount ledger.Money) {
 			b, err := l0.GetBalance(ctx, account)
 			require.NoError(t, err)
-			require.Equal(t, b, amount)
+			require.Equal(t, amount, b)
 		}
 
 		require.NoError(t, l0.CreateAccount(ctx, "a0"))
@@ -130,6 +130,6 @@ func TestLedger(t *testing.T) {
 			total += amount
 		}
 
-		require.Equal(t, total, ledger.Money(initialBalance*nAccounts))
+		require.Equal(t, ledger.Money(initialBalance*nAccounts), total)
 	})
 }
