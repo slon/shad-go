@@ -3,11 +3,11 @@
   deadline: 17-04-2022 23:59
   tasks:
     - task: wscat
-      score: 100
+      score: 200
     - task: dao
       score: 100
     - task: ledger
-      score: 100
+      score: 200
     - task: shopfront
       score: 100
 
