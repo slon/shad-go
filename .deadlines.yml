@@ -1,3 +1,16 @@
+- group:    SQL
+  start:    31-03-2022 18:00
+  deadline: 17-04-2022 23:59
+  tasks:
+    - task: wscat
+      score: 100
+    - task: dao
+      score: 100
+    - task: ledger
+      score: 100
+    - task: shopfront
+      score: 100
+
 - group:    HTTP
   start:    23-03-2022 18:00
   deadline: 10-04-2022 23:59
