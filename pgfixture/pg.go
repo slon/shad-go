@@ -8,6 +8,9 @@ import (
 	"path/filepath"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
+	"gitlab.com/slon/shad-go/tools/testtool"
 )
 
 func lookPath(t *testing.T, name string) string {
@@ -50,9 +53,12 @@ func Start(t *testing.T) string {
 		t.Fatalf("initdb failed: %v", err)
 	}
 
+	port, err := testtool.GetFreePort()
+	require.NoError(t, err)
+
 	pgrun := t.TempDir()
 
-	cmd = exec.Command(lookPath(t, "postgres"), "-D", pgdata, "-k", pgrun, "-F")
+	cmd = exec.Command(lookPath(t, "postgres"), "-D", pgdata, "-k", pgrun, "-F", "-p", port)
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
 	if err := cmd.Start(); err != nil {
@@ -75,5 +81,5 @@ func Start(t *testing.T) string {
 		_ = cmd.Process.Kill()
 	})
 
-	return fmt.Sprintf("host=%s database=postgres", pgrun)
+	return fmt.Sprintf("host=localhost port=%s database=postgres", port)
 }
