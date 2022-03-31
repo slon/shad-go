@@ -1,0 +1,10 @@
+version: '3'
+services:
+  pg:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: shad-go
+      POSTGRES_USER: gopher
+      POSTGRES_PASSWORD: pass
+    ports:
+      - 5432:5432

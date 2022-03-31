@@ -19,3 +19,11 @@ sudo apt install redis-server
 Если вы работаете на другом дистрибутиве linux, воспользуйтесь своим пакетным менеджером.
 
 Тесты сами запускают `redis` в начале, и останавливают его в конце.
+
+## Запуск redis в docker
+
+Комментарии по запуску бд в docker смотрите в задаче [dao](../dao/).
+
+```
+(cd shopfront && docker-compose up -d && sleep 1 && env REDIS="localhost:6379" go test -v ./... -count=1 || true && docker-compose down)
+```
