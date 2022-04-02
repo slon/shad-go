@@ -126,7 +126,7 @@ func TestCondBroadcast(t *testing.T) {
 
 // nolint
 func TestCondSignalStealing(t *testing.T) {
-	for iters := 0; iters < 1000; iters++ {
+	for iters := 0; iters < 20000; iters++ {
 		var m sync.Mutex
 		cond := New(&m)
 

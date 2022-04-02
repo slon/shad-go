@@ -1,5 +1,4 @@
 //go:build !change
-// +build !change
 
 package models
 
@@ -12,6 +11,7 @@ type Storage interface {
 	AddTodo(string, string) (*Todo, error)
 	GetTodo(ID) (*Todo, error)
 	GetAll() ([]*Todo, error)
+	FinishTodo(ID) error
 }
 
 type InMemoryStorage struct {
@@ -68,4 +68,17 @@ func (s *InMemoryStorage) GetAll() ([]*Todo, error) {
 	}
 
 	return out, nil
+}
+
+func (s *InMemoryStorage) FinishTodo(id ID) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	todo, ok := s.todos[id]
+	if !ok {
+		return fmt.Errorf("todo %d not found", id)
+	}
+
+	todo.MarkFinished()
+	return nil
 }

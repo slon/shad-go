@@ -70,7 +70,7 @@ func BenchmarkKeyLock_NoBusyWait(b *testing.B) {
 
 	cancel := make(chan struct{})
 	defer close(cancel)
-	for i := 0; i < 10000; i++ {
+	for i := 0; i < 1000; i++ {
 		go func() {
 			l.LockKeys(lockedKey, cancel)
 		}()

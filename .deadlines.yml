@@ -1,6 +1,99 @@
+- group:    SQL
+  start:    31-03-2022 18:00
+  deadline: 17-04-2022 23:59
+  tasks:
+    - task: wscat
+      score: 200
+    - task: dao
+      score: 100
+    - task: ledger
+      score: 200
+    - task: shopfront
+      score: 100
+
+- group:    HTTP
+  start:    23-03-2022 18:00
+  deadline: 10-04-2022 23:59
+  tasks:
+    - task: urlshortener
+      score: 100
+    - task: digitalclock
+      score: 100
+    - task: olympics
+      score: 200
+    - task: firewall
+      score: 200
+    - task: coverme
+      score: 300
+
+- group:    Concurrency with shared memory
+  start:    17-03-2022 23:59
+  deadline: 03-04-2022 23:59
+  tasks:
+    - task: dupcall
+      score: 200
+    - task: keylock
+      score: 200
+    - task: batcher
+      score: 200
+    - task: pubsub
+      score: 300
+
+- group:    "[HW] Gitfame"
+  start:    11-03-2022 11:59
+  deadline: 30-03-2022 23:59
+  tasks:
+   - task: gitfame
+     score: 0
+
+- group:    Testing
+  start:    10-03-2022 20:00
+  deadline: 29-03-2022 23:59
+  tasks:
+    - task: testequal
+      score: 100
+    - task: fileleak
+      score: 100
+    - task: tabletest
+      score: 100
+    - task: tparallel
+      score: 200
+
+- group:    Goroutines
+  start:    03-03-2022 18:00
+  deadline: 22-03-2022 23:59
+  tasks:
+    - task: tour1
+      score: 100
+    - task: once
+      score: 100
+    - task: rwmutex
+      score: 100
+    - task: waitgroup
+      score: 100
+    - task: cond
+      score: 100
+    - task: ratelimit
+      score: 100
+
+- group:    Interfaces
+  start:    24-02-2022 18:00
+  deadline: 13-03-2022 23:59
+  tasks:
+    - task: otp
+      score: 100
+    - task: lrucache
+      score: 100
+    - task: externalsort
+      score: 100
+    - task: retryupdate
+      score: 100
+    - task: ciletters
+      score: 100
+
 - group:    Basics
   start:    17-02-2022 18:00
-  deadline: 27-02-2022 23:59
+  deadline: 06-03-2022 23:59
   tasks:
     - task: hotelbusiness
       score: 100

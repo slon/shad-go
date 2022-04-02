@@ -1,5 +1,4 @@
 //go:build !solution
-// +build !solution
 
 package ciletters
 

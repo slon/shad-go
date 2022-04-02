@@ -242,10 +242,10 @@
 
 Кодировка utf8
 
-  0xxxxxx                              runes 0−127
-  11xxxxx 10xxxxxx                     128−2047
-  110xxxx 10xxxxxx 10xxxxxx            2048−65535
-  1110xxx 10xxxxxx 10xxxxxx 10xxxxxx   65536−0x10ffff
+  0xxxxxxx                              runes 0−127
+  110xxxxx 10xxxxxx                     128−2047
+  1110xxxx 10xxxxxx 10xxxxxx            2048−65535
+  11110xxx 10xxxxxx 10xxxxxx 10xxxxxx   65536−0x10ffff
 
 Разница между рунами и байтами
 

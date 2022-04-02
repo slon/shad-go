@@ -1,5 +1,4 @@
 //go:build !change
-// +build !change
 
 package client
 
@@ -68,4 +67,20 @@ func (c *Client) List() ([]*models.Todo, error) {
 	var todos []*models.Todo
 	err = json.NewDecoder(resp.Body).Decode(&todos)
 	return todos, err
+}
+
+func (c *Client) Finish(id models.ID) error {
+	u := fmt.Sprintf("%s/todo/%d/finish", c.addr, id)
+
+	resp, err := http.Post(u, "application/json", nil)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("unexpected status code %d", resp.StatusCode)
+	}
+
+	return err
 }

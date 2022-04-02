@@ -237,8 +237,11 @@ func runTests(testDir, privateRepo, problem string) error {
 		return cmd.Run()
 	}
 
-	binaries := map[string]string{}
-	testBinaries := map[string]string{}
+	var (
+		binaries     = make(map[string]string)
+		testBinaries = make(map[string]string)
+		raceBinaries = make(map[string]string)
+	)
 
 	//binPkgs, testPkgs := listTestsAndBinaries(filepath.Join(testDir, problem), []string{"-tags", "private", "-mod", "readonly"}) // todo return readonly
 	binPkgs, testPkgs := listTestsAndBinaries(filepath.Join(testDir, problem), []string{"-tags", "private"})
@@ -263,12 +266,21 @@ func runTests(testDir, privateRepo, problem string) error {
 	binariesJSON, _ := json.Marshal(binaries)
 
 	for testPkg := range testPkgs {
-		binPath := filepath.Join(binCache, randomName())
-		testBinaries[testPkg] = binPath
-		cmd := []string{"test", "-mod", "readonly", "-tags", "private", "-c", "-o", binPath, testPkg}
+		testPath := filepath.Join(binCache, randomName())
+		testBinaries[testPkg] = testPath
+
+		cmd := []string{"test", "-mod", "readonly", "-tags", "private", "-c", "-o", testPath, testPkg}
 		if coverageReq.Enabled {
 			cmd = append(cmd, "-cover", "-coverpkg", strings.Join(coveragePackages, ","))
 		}
+		if err := runGo(cmd...); err != nil {
+			return fmt.Errorf("error building test in %s: %w", testPkg, err)
+		}
+
+		racePath := filepath.Join(binCache, randomName())
+		raceBinaries[testPkg] = racePath
+
+		cmd = []string{"test", "-mod", "readonly", "-race", "-tags", "private", "-c", "-o", racePath, testPkg}
 		if err := runGo(cmd...); err != nil {
 			return fmt.Errorf("error building test in %s: %w", testPkg, err)
 		}
@@ -285,6 +297,29 @@ func runTests(testDir, privateRepo, problem string) error {
 				cmd = exec.Command(testBinary, "-test.coverprofile", coverProfile)
 				coverProfiles = append(coverProfiles, coverProfile)
 			}
+			if currentUserIsRoot() {
+				if err := sandbox(cmd); err != nil {
+					log.Fatal(err)
+				}
+			}
+
+			cmd.Dir = filepath.Join(testDir, relPath)
+			cmd.Env = []string{
+				testtool.BinariesEnv + "=" + string(binariesJSON),
+				"PATH=" + os.Getenv("PATH"),
+				"HOME=" + os.Getenv("HOME"),
+				"GOCACHE=" + goCache,
+			}
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+
+			if err := cmd.Run(); err != nil {
+				return &TestFailedError{E: err}
+			}
+		}
+
+		{
+			cmd := exec.Command(raceBinaries[testPkg], "-test.bench=.")
 			if currentUserIsRoot() {
 				if err := sandbox(cmd); err != nil {
 					log.Fatal(err)
@@ -378,7 +413,7 @@ func runTests(testDir, privateRepo, problem string) error {
 }
 
 func noMoreThanTwoTimesWorse(old, new *benchstat.Metrics) (float64, error) {
-	if new.Mean > 2*old.Mean {
+	if new.Mean > 1.99*old.Mean {
 		return 0.0, nil
 	}
 
@@ -388,7 +423,7 @@ func noMoreThanTwoTimesWorse(old, new *benchstat.Metrics) (float64, error) {
 func compareToBaseline(testPkg, privateRepo string, run []byte) error {
 	var buf bytes.Buffer
 
-	goTest := exec.Command("go", "test", "-tags", "private,solution", "-bench=.", testPkg)
+	goTest := exec.Command("go", "test", "-tags", "private,solution", "-bench=.", "-run=^$", testPkg)
 	goTest.Dir = privateRepo
 	goTest.Stdout = &buf
 	goTest.Stderr = os.Stderr

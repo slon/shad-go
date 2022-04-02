@@ -66,18 +66,18 @@ func TestNotEqual(t *testing.T) {
 		{expected: []int{1, 2, 3}, actual: []int{1, 2, 3, 4}},
 		{expected: []int{1, 2, 3, 4}, actual: []int{1, 2, 3}},
 		{expected: []int{}, actual: []interface{}{}},
-		{expected: []int{}, actual: *new([]int)},
+		{expected: []int{}, actual: []int(nil)},
 		{expected: []int{}, actual: map[int]int{}},
 		{expected: map[string]string{"a": "b"}, actual: map[string]string{}},
 		{expected: map[string]string{"a": "b"}, actual: map[string]string{"a": "d"}},
 		{expected: map[string]string{"a": "b"}, actual: map[string]string{"a": "b", "c": "b"}},
 		{expected: map[string]string{"a": "b", "c": "b"}, actual: map[string]string{"a": "b"}},
 		{expected: map[string]string{"a": "b"}, actual: map[string]interface{}{"a": "b"}},
-		{expected: map[string]string{}, actual: *new(map[string]string)},
+		{expected: map[string]string{}, actual: map[string]string(nil)},
 		{expected: map[int]int{}, actual: []int{}},
-		{expected: []byte{}, actual: *new([]byte)},
+		{expected: []byte{}, actual: []byte(nil)},
 		{expected: []byte{}, actual: nil},
-		{expected: *new([]byte), actual: nil},
+		{expected: []byte(nil), actual: nil},
 		{expected: struct{}{}, actual: struct{}{}}, // unsupported type
 	} {
 		t.Run(fmt.Sprintf("%T_%T", tc.expected, tc.actual), func(t *testing.T) {

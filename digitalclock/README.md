@@ -94,7 +94,7 @@ go install ./digitalclock/...
 3. форматирование времени: https://gobyexample.com/time-formatting-parsing
 4. работа с картинками: https://golang.org/pkg/image/
 
-Пример, создания простой png размера 5x5:
+Пример создания простой png размера 5x5:
 ```go
 package main
 
