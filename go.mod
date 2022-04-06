@@ -26,6 +26,7 @@ require (
 	github.com/testcontainers/testcontainers-go v0.9.0
 	go.uber.org/goleak v1.0.0
 	go.uber.org/zap v1.14.0
+	golang.org/x/exp v0.0.0-20220328175248-053ad81199eb
 	golang.org/x/net v0.0.0-20211015210444-4f30a5c0130f
 	golang.org/x/perf v0.0.0-20191209155426-36b577b0eb03
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
@@ -78,9 +79,9 @@ require (
 	go.uber.org/atomic v1.5.0 // indirect
 	go.uber.org/multierr v1.3.0 // indirect
 	go.uber.org/tools v0.0.0-20190618225709-2cfd321de3ee // indirect
-	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9 // indirect
+	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
 	golang.org/x/lint v0.0.0-20190930215403-16217165b5de // indirect
-	golang.org/x/mod v0.5.1 // indirect
+	golang.org/x/mod v0.6.0-dev.0.20211013180041-c96bc1413d57 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/genproto v0.0.0-20191108220845-16a3f7862a1a // indirect
