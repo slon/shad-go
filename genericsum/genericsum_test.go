@@ -61,7 +61,7 @@ func TestMapsEqual(t *testing.T) {
 		i int
 		s string
 	}
-	assert.True(t, MapsEqual(map[k]k{k{10, "abc"}: {20, "def"}}, map[k]k{k{10, "abc"}: {20, "def"}}))
+	assert.True(t, MapsEqual(map[k]k{{10, "abc"}: {20, "def"}}, map[k]k{{10, "abc"}: {20, "def"}}))
 
 	type myMap map[int]int
 	assert.True(t, MapsEqual(myMap(nil), myMap(nil)), "type aliases must also be ok")
@@ -200,4 +200,8 @@ func TestIsHermitianMatrix(t *testing.T) {
 		{1 + 1i, 3 + 2i},
 		{3 - 2i, 4},
 	}))
+
+	first, second := [][]int{{1, 2}, {3, 4}}, [][]int{{1, 2}, {3, 4}}
+	assert.False(t, IsHermitianMatrix(first))
+	assert.Equal(t, second, first, "shouldn't change matrix in the method")
 }
