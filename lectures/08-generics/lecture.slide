@@ -3,13 +3,13 @@ generics
 
 Арсений Балобанов
 
-* Generics (draft)
+* Generics
 
 * New language features
 
-- Mechanism to parameterize a type or function by types.
-- Constraints mechanism to express requirements on type parameters.
-- Type inference (optional)
+- Type parameters for functions and types
+- Type sets
+- Type inference
 
 * Parameter lists
 
@@ -22,6 +22,108 @@ A type parameter list
   [P, Q aConstraint, R anotherConstraint]
 
 - Convention: Type parameter names are capitalized
+
+* min
+
+.play -edit min/basic/min.go /^func min/,/^}/
+
+* Generic min
+
+.play -edit min/basic/min.go /^func min/,/^}/
+
+.play -edit min/generic/min.go /^func min/,/^}/
+
+* Calling generic min
+
+  m := min[int](1, 2)
+
+* Instantiation
+
+  fmin := min[float64] // non generic
+  m := fmin(2.71, 3.14)
+
+* Generic type
+
+  type Tree[T interface{}] struct {
+  	left, right *Tree[T]
+  	data T
+  }
+
+  func (t *Tree[T]) Lookup(x T) *Tree[T]
+
+  var stringTree Tree[string]
+
+- Methods cannot have it's own type parameters
+
+* Type sets
+
+  func min(x, y float64) float64
+
+- float64 defines a set of values x and y can have
+
+  func min[T constraints.Ordered](x, y T) T {
+
+- constraints.Ordered defines a set of values T can have
+
+* constaints.Ordered
+
+  // Ordered is a constraint that permits any ordered type: any type
+  // that supports the operators < <= >= >.
+  // If future releases of Go add new ordered types,
+  // this constraint will be modified to include them.
+  type Ordered interface {
+  	Integer | Float | ~string
+  }
+
+- The < operator is supported by every type in this subset
+- ~T means with underlying type T
+
+* constaints
+
+  type Signed interface {
+  	~int | ~int8 | ~int16 | ~int32 | ~int64
+  }
+
+  type Unsigned interface {
+  	~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~uintptr
+  }
+
+  type Integer interface {
+  	Signed | Unsigned
+  }
+
+  type Float interface {
+  	~float32 | ~float64
+  }
+
+  type Complex interface {
+  	~complex64 | ~complex128
+  }
+
+* Constaints & type sets
+
+  [T aConstraint]
+
+- aConstraint is an interface
+- interface has a type set
+- type set defines the types that are permissible
+
+* Constaint literals
+
+  [S interface{~[]E}, E interface{}]
+
+- interface{E} could be rewritten as E in a constraint
+
+  [S ~[]E, E interface{}]
+
+- any is a new predeclared identifier — an alias for interface{} in a constraint
+
+  [S ~[]E, E any]
+
+* Type inference
+
+- Type intefence is complicated but usage is simple
+- Programms that don't need type arguments today won't need them tomorrow
 
 * Sorting in Go
 
@@ -108,10 +210,10 @@ Invocation (as usual)
 * Types can be generic, too
 
   type Lesser[T any] interface{
-    Less(y T) bool}
+    Less(y T) bool
   }
 
-any stands for "no constraint"(same as "interface{}")
+any stands for "no constraint" (same as "interface{}")
 
 * Sort, decomposed
 
@@ -133,7 +235,7 @@ any stands for "no constraint"(same as "interface{}")
 
 - type of list[i], list[j] is Elem
 - Elem is NOT an interface type!
-- A type parameter is a real type.It is not an interface type.
+- A type parameter is a real type. It is not an interface type.
 
 * Argument type inference
 
@@ -246,11 +348,6 @@ Use
 - Generic functions and types must be instantiated when used.
 - Type inference (if applicable) makes function instantiation implicit.
 - Instantiation is valid if the type arguments satisfy their constraints.
-
-* How to try?
-
-.link https://go2goplay.golang.org/ - playground
-.link https://go.googlesource.com/go/+/refs/heads/dev.go2go/README.go2go.md - dev branch
 
 * Ссылки
 
