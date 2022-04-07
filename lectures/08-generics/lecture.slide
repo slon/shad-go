@@ -234,7 +234,7 @@ what we could do
 
 * Type inference
 
-- Type intefence is complicated but usage is simple
+- Type inference is complicated but usage is simple
 - Programms that don't need type arguments today won't need them tomorrow
 
 * Scale
