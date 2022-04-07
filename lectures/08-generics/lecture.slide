@@ -329,14 +329,14 @@ Why don't we need explicit type parameters?
 * Relationships between type parameters
 
   type Pointer[T any] interface {
-    type *T
+    *T
   }
 
   func f[T any, PT Pointer[T]](x T)
 
 or with inlined constraint
 
-  func foo[T any, PT interface{type *T}](x T)
+  func foo[T any, PT interface{*T}](x T)
 
 * When to use generics
 
