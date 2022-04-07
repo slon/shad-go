@@ -3,25 +3,13 @@ generics
 
 Арсений Балобанов
 
-* Generics (draft)
+* Generics
 
 * New language features
 
-- Mechanism to parameterize a type or function by types.
-- Constraints mechanism to express requirements on type parameters.
-- Type inference (optional)
-
-* Parameter lists
-
-An ordinary parameter list
-
-  (x, y aType, z anotherType)
-
-A type parameter list
-
-  [P, Q aConstraint, R anotherConstraint]
-
-- Convention: Type parameter names are capitalized
+- Type parameters for functions and types
+- Type sets
+- Type inference
 
 * Sorting in Go
 
@@ -45,6 +33,18 @@ what we really want
 * Type parameters to the rescue
 
   func Sort[Elem ?](list []Elem)
+
+* Parameter lists
+
+An ordinary parameter list
+
+  (x, y aType, z anotherType)
+
+A type parameter list
+
+  [P, Q aConstraint, R anotherConstraint]
+
+- Convention: Type parameter names are capitalized
 
 * Constraints
 
@@ -78,28 +78,28 @@ User code
 
 * Type-checking the Sort call: Instantiation
 
-  Sort[book] | (bookshelf)
+What happens when we call Sort?
 
-pass type argument
+  Sort[book](bookshelf)
+
+- Substitution. Substitute book for elem
 
   Sort[Elem interface{ Less(y Elem) bool }] | (list []Elem)
 
-substitute book for elem
-
   Sort[book interface{ Less(y book) bool }] | (list []book)
 
-verify that book satisfies the book parameter constraint
+- Verification. Verify that book satisfies the book parameter constraint
+
+- Instantiate book-specific function
 
   #Sort[book] | (list []book)
-
-A generic function or type must be instantiated before it can be used.
 
 * Type-checking a generic call
 
 Instantiation (new)
 
 - replace type parameters with type arguments in entire signature
-- verify that each type argument satisfies its constraintThen, using the instantiated signature.
+- verify that each type argument satisfies its constraint
 
 Invocation (as usual)
 
@@ -108,10 +108,10 @@ Invocation (as usual)
 * Types can be generic, too
 
   type Lesser[T any] interface{
-    Less(y T) bool}
+    Less(y T) bool
   }
 
-any stands for "no constraint"(same as "interface{}")
+any stands for "no constraint" (same as "interface{}")
 
 * Sort, decomposed
 
@@ -120,38 +120,6 @@ any stands for "no constraint"(same as "interface{}")
   }
 
   func Sort[Elem Lesser[Elem]](list []Elem)
-
-* Sort internals
-
-  func Sort[Elem interface{ Less(y Elem) bool }](list []Elem) {
-    ...
-    var i, j int
-    ...
-    if list[i].Less(List[j]) {...}
-    ...
-  }
-
-- type of list[i], list[j] is Elem
-- Elem is NOT an interface type!
-- A type parameter is a real type.It is not an interface type.
-
-* Argument type inference
-
-what we have
-
-  Sort[book](bookshelf)
-
-what we want
-
-  Sort(bookshelf)
-
-Type unification
-
-  bookshelf -> []book
-
-Inference
-
-  func Sort[Elem ...]([]Elem) => Elem == book
 
 * Problems
 
@@ -167,41 +135,186 @@ what we could do
 
   func (x myInt) Less(y myInt) bool { return x < y }
 
-* Type lists
+* min
 
-A constraint interface may have a list of types (besides methods):
+.play -edit min/basic/min.go /^func min/,/^}/
+
+* Generic min
+
+.play -edit min/basic/min.go /^func min/,/^}/
+
+.play -edit min/generic/min.go /^func min/,/^}/
+
+* Calling generic min
+
+  m := min[int](1, 2)
+
+* Instantiation
+
+  fmin := min[float64] // non generic
+  m := fmin(2.71, 3.14)
+
+* Generic type
+
+  type Tree[T interface{}] struct {
+  	left, right *Tree[T]
+  	data T
+  }
+
+  func (t *Tree[T]) Lookup(x T) *Tree[T]
+
+  var stringTree Tree[string]
+
+- Methods cannot have it's own type parameters
+
+* Type sets
+
+  func min(x, y float64) float64
+
+- float64 defines a set of values x and y can have
+
+  func min[T constraints.Ordered](x, y T) T {
+
+- constraints.Ordered defines a set of values T can have
+
+* constaints.Ordered
+
+  // Ordered is a constraint that permits any ordered type: any type
+  // that supports the operators < <= >= >.
+  // If future releases of Go add new ordered types,
+  // this constraint will be modified to include them.
+  type Ordered interface {
+  	Integer | Float | ~string
+  }
+
+- The < operator is supported by every type in this subset
+- ~T means with underlying type T
+
+* constaints
+
+  type Signed interface {
+  	~int | ~int8 | ~int16 | ~int32 | ~int64
+  }
+
+  type Unsigned interface {
+  	~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~uintptr
+  }
+
+  type Integer interface {
+  	Signed | Unsigned
+  }
 
   type Float interface {
-    type float32, float64
+  	~float32 | ~float64
   }
 
-  // Sin computes sin(x) for x of type float32 or float64.
-  func Sin[T Float](x T) T
-
-Satisfying a type list
-
-An argument type satisfies a constraint with a type list if
-
-- The argument type implements the methods of the constraint
-- The argument type or its underlying type is found in the type list.
-
-As usual, the satisfaction check happens after substitution.
-
-* Generic min function
-
-  type Ordered interface {
-    type int, int8, int16, ..., uint, uint8, uint16, ...,
-    float32, float64, string
+  type Complex interface {
+  	~complex64 | ~complex128
   }
 
-min internals
+* Constaints & type sets
 
-  func min[T Ordered](x, y T) T {
-    if x < y {
-      return x
-    }
-    return y
+  [T aConstraint]
+
+- aConstraint is an interface
+- interface has a type set
+- type set defines the types that are permissible
+
+* Constaint literals
+
+  [S interface{~[]E}, E interface{}]
+
+- interface{E} could be rewritten as E in a constraint
+
+  [S ~[]E, E interface{}]
+
+- any is a new predeclared identifier — an alias for interface{} in a constraint
+
+  [S ~[]E, E any]
+
+* Type inference
+
+- Type intefence is complicated but usage is simple
+- Programms that don't need type arguments today won't need them tomorrow
+
+* Scale
+
+  type Point []uint32
+
+  func (p Point) String() string { return "" }
+
+We'd like to write function scale and Println
+
+  func ScaleAndPrint(p Point) {
+  	r := Scale(p, 2)
+  	fmt.Println(r.String())
   }
+
+* Scale, first attempt
+
+.play -edit scale/wrong/scale.go /^func Scale/,/^}/
+
+* Scale, first attempt
+
+.play -edit scale/wrong/scale.go /^func Scale/,/^}/
+
+  func ScaleAndPrint(p Point) {
+  	r := Scale(p, 2)
+  	fmt.Println(r.String())
+  }
+
+- Compiler error: (type []uint32 has no field or method String)
+
+* Scale, fixed
+
+.play -edit scale/fixed/scale.go /^func Scale/,/^}/
+
+* Scale, fixed
+
+  func Scale[S ~[]E, E constraints.Integer](s S, c E) S
+
+vs
+
+  func Scale[E constraints.Integer](s []E, c E) []E
+
+* Inference
+
+  func ScaleAndPrint(p Point) {
+  	r := Scale(p, 2)
+  	fmt.Println(r.String())
+  }
+
+Why don't we need explicit type parameters?
+
+  	r := Scale[Point, int32](p, 2)
+
+* Inference
+
+- argument type inference
+- constraint type inference
+
+* Argument type inference
+
+  func Scale[S ~[]E, E constraints.Integer](s S, c E) S
+
+  type Point []int32
+
+  Scale(p, 2)
+
+- p is []Point => S is Point
+- 2 is untyped constant => no info
+
+* Constraint type inference
+
+  func Scale[S ~[]E, E constraints.Integer](s S, c E) S
+
+  type Point []int32
+
+  Scale(p, 2)
+
+- S is Point (argument type inference)
+- S is defined in terms of E => we can infer E
+- E is int32
 
 * Different type parameters are different types
 
@@ -246,11 +359,6 @@ Use
 - Generic functions and types must be instantiated when used.
 - Type inference (if applicable) makes function instantiation implicit.
 - Instantiation is valid if the type arguments satisfy their constraints.
-
-* How to try?
-
-.link https://go2goplay.golang.org/ - playground
-.link https://go.googlesource.com/go/+/refs/heads/dev.go2go/README.go2go.md - dev branch
 
 * Ссылки
 
