@@ -1,3 +1,12 @@
+- group:    Generics
+  start:    08-04-2022 21:00
+  deadline: 24-04-2022 23:59
+  tasks:
+    - task: genericsum
+      score: 100
+    - task: treeiter
+      score: 100
+
 - group:    SQL
   start:    31-03-2022 18:00
   deadline: 17-04-2022 23:59
