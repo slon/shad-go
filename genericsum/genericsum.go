@@ -22,10 +22,6 @@ func MergeChans(chs ...<-chan int) <-chan int {
 	panic("implement me")
 }
 
-func MergeChans(chs ...<-chan int) <-chan int {
-	panic("implement me")
-}
-
 func IsHermitianMatrix(m [][]int) bool {
 	panic("implement me")
 }

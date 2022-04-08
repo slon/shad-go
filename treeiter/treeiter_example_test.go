@@ -1,6 +1,10 @@
-package treeiter
+package treeiter_test
 
-import "fmt"
+import (
+	"fmt"
+
+	"gitlab.com/slon/shad-go/treeiter"
+)
 
 func ExampleDoInOrder() {
 	tree := &ValuesNode[string]{
@@ -13,7 +17,7 @@ func ExampleDoInOrder() {
 		},
 	}
 
-	DoInOrder(tree, func(t *ValuesNode[string]) {
+	treeiter.DoInOrder(tree, func(t *ValuesNode[string]) {
 		fmt.Println(t.value)
 	})
 

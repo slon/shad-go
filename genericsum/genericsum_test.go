@@ -1,4 +1,4 @@
-package genericsum
+package genericsum_test
 
 import (
 	"context"
@@ -7,75 +7,76 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"gitlab.com/slon/shad-go/genericsum"
 	"go.uber.org/goleak"
 )
 
 func TestMin(t *testing.T) {
-	assert.Equal(t, 10, Min(10, 20))
-	assert.Equal(t, -10, Min(20, -10))
+	assert.Equal(t, 10, genericsum.Min(10, 20))
+	assert.Equal(t, -10, genericsum.Min(20, -10))
 
-	assert.Equal(t, 1.0, Min(1.0, 2.0))
-	assert.Equal(t, int64(10), Min(int64(10), 20))
+	assert.Equal(t, 1.0, genericsum.Min(1.0, 2.0))
+	assert.Equal(t, int64(10), genericsum.Min(int64(10), 20))
 
-	assert.Equal(t, "abc", Min("def", "abc"))
+	assert.Equal(t, "abc", genericsum.Min("def", "abc"))
 	type myString string
-	assert.Equal(t, myString("abc"), Min(myString("def"), myString("abc")))
+	assert.Equal(t, myString("abc"), genericsum.Min(myString("def"), myString("abc")))
 }
 
 func TestSortSlice(t *testing.T) {
 	t.Run("ints", func(t *testing.T) {
 		inputs, expected := []int{3, 6, 2, 4, 5, 1}, []int{1, 2, 3, 4, 5, 6}
-		SortSlice(inputs)
+		genericsum.SortSlice(inputs)
 		assert.Equal(t, expected, inputs)
 	})
 	t.Run("ints64", func(t *testing.T) {
 		inputs, expected := []int64{3, 6, 2, 4, 5, 1}, []int64{1, 2, 3, 4, 5, 6}
-		SortSlice(inputs)
+		genericsum.SortSlice(inputs)
 		assert.Equal(t, expected, inputs)
 	})
 	t.Run("strings", func(t *testing.T) {
 		inputs, expected := []string{"d", "b", "ab", "a"}, []string{"a", "ab", "b", "d"}
-		SortSlice(inputs)
+		genericsum.SortSlice(inputs)
 		assert.Equal(t, expected, inputs)
 	})
 
 	type myStringSlice []string
 	t.Run("strings custom type", func(t *testing.T) {
 		inputs, expected := myStringSlice([]string{"d", "b", "ab", "a"}), myStringSlice([]string{"a", "ab", "b", "d"})
-		SortSlice(inputs)
+		genericsum.SortSlice(inputs)
 		assert.Equal(t, expected, inputs)
 	})
 }
 
 func TestMapsEqual(t *testing.T) {
-	assert.True(t, MapsEqual(map[string]string{"1": "3", "2": "4"}, map[string]string{"2": "4", "1": "3"}))
+	assert.True(t, genericsum.MapsEqual(map[string]string{"1": "3", "2": "4"}, map[string]string{"2": "4", "1": "3"}))
 
 	var i int
-	assert.False(t, MapsEqual(map[string]*int{"1": &i, "2": nil}, map[string]*int{"1": &i}))
-	assert.False(t, MapsEqual(map[string]*int{"1": &i}, map[string]*int{"1": &i, "2": nil}))
+	assert.False(t, genericsum.MapsEqual(map[string]*int{"1": &i, "2": nil}, map[string]*int{"1": &i}))
+	assert.False(t, genericsum.MapsEqual(map[string]*int{"1": &i}, map[string]*int{"1": &i, "2": nil}))
 
-	assert.False(t, MapsEqual(map[string]*int{"1": new(int)}, map[string]*int{"1": new(int)}),
+	assert.False(t, genericsum.MapsEqual(map[string]*int{"1": new(int)}, map[string]*int{"1": new(int)}),
 		"different pointers")
 
 	type k struct {
 		i int
 		s string
 	}
-	assert.True(t, MapsEqual(map[k]k{{10, "abc"}: {20, "def"}}, map[k]k{{10, "abc"}: {20, "def"}}))
+	assert.True(t, genericsum.MapsEqual(map[k]k{{10, "abc"}: {20, "def"}}, map[k]k{{10, "abc"}: {20, "def"}}))
 
 	type myMap map[int]int
-	assert.True(t, MapsEqual(myMap(nil), myMap(nil)), "type aliases must also be ok")
+	assert.True(t, genericsum.MapsEqual(myMap(nil), myMap(nil)), "type aliases must also be ok")
 }
 
 func TestSliceContains(t *testing.T) {
-	assert.True(t, SliceContains([]int{5, 9, 12}, 5))
-	assert.False(t, SliceContains([]int{5, 9, 12}, 7))
+	assert.True(t, genericsum.SliceContains([]int{5, 9, 12}, 5))
+	assert.False(t, genericsum.SliceContains([]int{5, 9, 12}, 7))
 
 	type k struct{ i, j int }
-	assert.True(t, SliceContains([]k{{1, 2}, {5, 7}, {9, 12}}, k{5, 7}))
+	assert.True(t, genericsum.SliceContains([]k{{1, 2}, {5, 7}, {9, 12}}, k{5, 7}))
 
 	type mySlice []k
-	assert.True(t, SliceContains(mySlice{{1, 2}, {5, 7}, {9, 12}}, k{5, 7}))
+	assert.True(t, genericsum.SliceContains(mySlice{{1, 2}, {5, 7}, {9, 12}}, k{5, 7}))
 }
 
 func TestMergeChansTypes(t *testing.T) {
@@ -89,7 +90,7 @@ func TestMergeChansTypes(t *testing.T) {
 			chanArgs[i] = chans[i]
 		}
 
-		ch := MergeChans(chanArgs...)
+		ch := genericsum.MergeChans(chanArgs...)
 
 		for _, ch := range chans {
 			close(ch)
@@ -111,7 +112,7 @@ func TestMergeChansTypes(t *testing.T) {
 			chanArgs[i] = chans[i]
 		}
 
-		ch := MergeChans(chanArgs...)
+		ch := genericsum.MergeChans(chanArgs...)
 
 		for _, ch := range chans {
 			close(ch)
@@ -134,7 +135,7 @@ func TestMergeChans(t *testing.T) {
 		chanArgs[i] = chans[i]
 	}
 
-	ch := MergeChans(chanArgs...)
+	ch := genericsum.MergeChans(chanArgs...)
 	chans[5] <- 10
 	assert.Equal(t, 10, <-ch)
 	chans[1] <- 5
@@ -177,31 +178,31 @@ Loop:
 }
 
 func TestIsHermitianMatrix(t *testing.T) {
-	assert.True(t, IsHermitianMatrix([][]int{
+	assert.True(t, genericsum.IsHermitianMatrix([][]int{
 		{1, 7, 9},
 		{7, 2, 12},
 		{9, 12, 19},
 	}))
-	assert.False(t, IsHermitianMatrix([][]int{
+	assert.False(t, genericsum.IsHermitianMatrix([][]int{
 		{1, 12, 8},
 		{3, 4, 7},
 		{8, 7, 11},
 	}))
-	assert.True(t, IsHermitianMatrix([][]complex64{
+	assert.True(t, genericsum.IsHermitianMatrix([][]complex64{
 		{1, 3 + 2i},
 		{3 - 2i, 4},
 	}))
-	assert.True(t, IsHermitianMatrix([][]complex128{
+	assert.True(t, genericsum.IsHermitianMatrix([][]complex128{
 		{1, 3 + 2i, 9 - 1i},
 		{3 - 2i, 5, 7 - 3i},
 		{9 + 1i, 7 + 3i, 19},
 	}))
-	assert.False(t, IsHermitianMatrix([][]complex64{
+	assert.False(t, genericsum.IsHermitianMatrix([][]complex64{
 		{1 + 1i, 3 + 2i},
 		{3 - 2i, 4},
 	}))
 
 	first, second := [][]int{{1, 2}, {3, 4}}, [][]int{{1, 2}, {3, 4}}
-	assert.False(t, IsHermitianMatrix(first))
+	assert.False(t, genericsum.IsHermitianMatrix(first))
 	assert.Equal(t, second, first, "shouldn't change matrix in the method")
 }
