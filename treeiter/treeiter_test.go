@@ -1,9 +1,10 @@
-package treeiter
+package treeiter_test
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"gitlab.com/slon/shad-go/treeiter"
 )
 
 type ValuesNode[T any] struct {
@@ -29,14 +30,14 @@ func (c *Collector[T]) Collect(tree *ValuesNode[T]) {
 
 func TestInOrderNil(t *testing.T) {
 	var collector Collector[any]
-	DoInOrder(nil, collector.Collect)
+	treeiter.DoInOrder(nil, collector.Collect)
 }
 
 func TestInOrderIntTree(t *testing.T) {
 	root := &ValuesNode[int]{value: 1}
 	collector := Collector[int]{}
 
-	DoInOrder(root, collector.Collect)
+	treeiter.DoInOrder(root, collector.Collect)
 
 	assert.Equal(t, []*ValuesNode[int]{{value: 1}}, collector.nodes)
 }
@@ -64,7 +65,7 @@ func TestInOrderStringTree(t *testing.T) {
 	}
 	var collector Collector[string]
 
-	DoInOrder(root, collector.Collect)
+	treeiter.DoInOrder(root, collector.Collect)
 
 	assert.Equal(t, []*ValuesNode[string]{left, root, rightLeft, rightLeftRight, right}, collector.nodes)
 }
