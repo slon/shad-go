@@ -48,8 +48,8 @@ func TestDao(t *testing.T) {
 		return users[i].Name < users[j].Name
 	})
 
-	require.Equal(t, users, []User{
+	require.Equal(t, []User{
 		{ID: aliceID, Name: "Alice"},
 		{ID: charlieID, Name: "Chaplin"},
-	})
+	}, users)
 }
