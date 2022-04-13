@@ -20,6 +20,7 @@ func TestLedger(t *testing.T) {
 
 	l0, err := ledger.New(ctx, dsn)
 	require.NoError(t, err)
+	defer func() { _ = l0.Close() }()
 
 	t.Run("SimpleCommands", func(t *testing.T) {
 		checkBalance := func(account ledger.ID, amount ledger.Money) {

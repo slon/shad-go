@@ -17,6 +17,7 @@ func TestDao(t *testing.T) {
 
 	dao, err := CreateDao(ctx, dsn)
 	require.NoError(t, err)
+	defer func() { _ = dao.Close() }()
 
 	_, err = dao.Lookup(ctx, 42)
 	require.ErrorIs(t, err, sql.ErrNoRows)
