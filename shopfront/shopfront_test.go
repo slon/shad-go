@@ -13,6 +13,7 @@ func TestShopfront(t *testing.T) {
 	rdb := redis.NewClient(&redis.Options{
 		Addr: StartRedis(t),
 	})
+	defer func() { _ = rdb.Close() }()
 
 	ctx := context.Background()
 
@@ -48,6 +49,7 @@ func BenchmarkShopfront(b *testing.B) {
 	rdb := redis.NewClient(&redis.Options{
 		Addr: StartRedis(b),
 	})
+	defer func() { _ = rdb.Close() }()
 
 	ctx := context.Background()
 	c := shopfront.New(rdb)
