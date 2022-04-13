@@ -17,10 +17,10 @@ wscat принимает на вход единственный аргумент
 
 Публичный echo сервер:
 ```
-✗ $GOPATH/bin/wscat -addr ws://echo.websocket.org
+✗ $GOPATH/bin/wscat -addr ws://ws.ifelse.io
 abc
 abcdef
-def^C2020/04/04 05:01:32 received signal interrupt
+def^C2022/04/13 22:23:42 received signal interrupt
 ```
 ```
 ✗ echo $?
@@ -30,4 +30,5 @@ def^C2020/04/04 05:01:32 received signal interrupt
 ## Ссылки
 
 1. websocket: https://en.wikipedia.org/wiki/WebSocket
-2. signal shutdown: https://p.go.manytask.org/06-http/lecture.slide#20
+2. gorilla/websocket: https://pkg.go.dev/github.com/gorilla/websocket
+3. signal shutdown: https://p.go.manytask.org/06-http/lecture.slide#20
