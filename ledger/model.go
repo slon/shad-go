@@ -18,4 +18,5 @@ type Ledger interface {
 	Deposit(ctx context.Context, id ID, amount Money) error
 	Withdraw(ctx context.Context, id ID, amount Money) error
 	Transfer(ctx context.Context, from, to ID, amount Money) error
+	Close() error
 }
