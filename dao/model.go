@@ -18,5 +18,6 @@ type (
 		Delete(ctx context.Context, id UserID) error
 		Lookup(ctx context.Context, id UserID) (User, error)
 		List(ctx context.Context) ([]User, error)
+		Close() error
 	}
 )
