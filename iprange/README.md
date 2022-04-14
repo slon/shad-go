@@ -30,5 +30,5 @@ go test -v -fuzz=. ./iprange...
 
 ### Ссылки
 
-* fuzzing design draft https://go.googlesource.com/proposal/+/master/design/draft-fuzzing.md
 * fuzzing tutorial https://go.dev/doc/tutorial/fuzz
+* fuzzing design draft https://go.googlesource.com/proposal/+/master/design/draft-fuzzing.md
