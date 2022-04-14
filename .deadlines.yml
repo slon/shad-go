@@ -1,3 +1,10 @@
+- group:    Bonus
+  start:    14-04-2022 17:59
+  deadline: 22-05-2022 23:59
+  tasks:
+    - task: iprange
+      score: 100
+
 - group:    Reflect
   start:    14-04-2022 17:59
   deadline: 28-04-2022 23:59
