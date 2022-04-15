@@ -1,0 +1,15 @@
+- group:    "[HW] Dist Build Blocks"
+  start:    14-04-2022 17:59
+  deadline: 28-04-2022 23:59
+  tasks:
+    - task: tarstreamtest
+      score: 100
+      watch:
+        - distbuild/pkg/tarstream
+
+- group:    Hello World
+  start:    10-02-2022 18:00
+  deadline: 20-02-2022 23:59
+  tasks:
+    - task: sum
+      score: 100
