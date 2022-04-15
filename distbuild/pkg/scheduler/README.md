@@ -56,7 +56,7 @@
 на детали вашей реализации. Ожидание `CacheTimeout` и `DepTimeout` должно быть реализовано как `select {}` на
 канале, который вернула функция `TimeAfter`. Мы считаем, что `CacheTimeout < DepsTimeout`, и ожидание этих
 таймаутов происходит отдельно в двух разных вызовах `select {}`:
-```
+```go
 select {
     case <-TimeAfter(timeout):
         ...
