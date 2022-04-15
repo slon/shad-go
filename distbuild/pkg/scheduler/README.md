@@ -58,9 +58,9 @@
 таймаутов происходит отдельно в двух разных вызовах `select {}`:
 ```go
 select {
-    case <-TimeAfter(timeout):
-        ...
+case <-TimeAfter(timeout):
     ...
+...
 }
 ```
 
