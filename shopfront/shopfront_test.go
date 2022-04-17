@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-redis/redis/v8"
 	"github.com/stretchr/testify/require"
+
 	"gitlab.com/slon/shad-go/shopfront"
 )
 

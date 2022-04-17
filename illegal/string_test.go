@@ -5,6 +5,7 @@ import (
 	"unsafe"
 
 	"github.com/stretchr/testify/assert"
+
 	"gitlab.com/slon/shad-go/illegal"
 )
 

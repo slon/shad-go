@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
+
 	"gitlab.com/slon/shad-go/ledger"
 	"gitlab.com/slon/shad-go/pgfixture"
 )

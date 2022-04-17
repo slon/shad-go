@@ -7,8 +7,9 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"gitlab.com/slon/shad-go/genericsum"
 	"go.uber.org/goleak"
+
+	"gitlab.com/slon/shad-go/genericsum"
 )
 
 func TestMin(t *testing.T) {

@@ -39,7 +39,7 @@ linters-settings:
   goimports:
     # put imports beginning with prefix after 3rd-party packages;
     # it's a comma-separated list of prefixes
-    local-prefixes: gitlab.com
+    local-prefixes: gitlab.com/slon/shad-go
   stylecheck:
     # https://staticcheck.io/docs/options#checks
     checks: ["all", "-ST1018"]
@@ -56,6 +56,7 @@ linters:
   enable:
     - errcheck
     - gofmt
+    - goimports
     - stylecheck
     - gosimple
     - govet

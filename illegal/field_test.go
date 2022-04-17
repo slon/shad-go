@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
 	"gitlab.com/slon/shad-go/illegal"
 	"gitlab.com/slon/shad-go/illegal/internal"
 )
