@@ -15,6 +15,7 @@ import (
 	"github.com/go-resty/resty/v2"
 	"github.com/google/go-cmp/cmp"
 	"github.com/stretchr/testify/require"
+
 	"gitlab.com/slon/shad-go/tools/testtool"
 )
 

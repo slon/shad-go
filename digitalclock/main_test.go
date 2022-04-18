@@ -17,6 +17,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
+
 	"gitlab.com/slon/shad-go/tools/testtool"
 )
 
