@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"strings"
 )
@@ -15,7 +14,7 @@ func main() {
 	tee := io.TeeReader(r, &buf)
 
 	printall := func(r io.Reader) {
-		b, err := ioutil.ReadAll(r)
+		b, err := io.ReadAll(r)
 		if err != nil {
 			log.Fatal(err)
 		}

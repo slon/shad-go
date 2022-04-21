@@ -122,7 +122,7 @@ Problem: proxy a chunked HTTP in a stream.
 
 .play -edit httpchunking/solution3/main.go  /^func transfer/,/^}/
 
-* ioutil
+* ioutil (deprecated)
 
 Package *io/ioutil* implements some I/O utility functions.
 
@@ -216,7 +216,7 @@ Can we avoid using an intermediate buffer entirely?
 
 * Example: sendfile
 
-- http.ResponseWriter's is an io.ReaderFrom that uses the implementation of underlying tcp conn.
+- http.ResponseWriter is an io.ReaderFrom that uses the implementation of underlying tcp conn.
 
   // ReadFrom is here to optimize copying from an *os.File regular file
   // to a *net.TCPConn with sendfile.
@@ -226,11 +226,15 @@ Can we avoid using an intermediate buffer entirely?
 
   func (c *TCPConn) ReadFrom(r io.Reader) (int64, error) {
 
-* ioutil.Discard
+* io.Discard
 
-  // Discard is an io.Writer on which all Write calls succeed
-  // without doing anything.
-  var Discard io.Writer = devNull(0)
+  var Discard Writer = discard{}
+
+  type discard struct{}
+
+  func (discard) Write(p []byte) (int, error) {
+    return len(p), nil
+  }
 
 - Implements io.ReaderFrom!
 
@@ -409,7 +413,7 @@ Useful when you want to use code that takes an io.Writer, and store the results 
       return string(b.buf[b.off:])
   }
 
-* strings.Builder vs strings.Builder
+* bytes.Buffer vs strings.Builder
 
 .play -edit stringsbuilder/main.go
 
@@ -432,7 +436,7 @@ Useful when you want to use code that takes an io.Writer, and store the results 
 - useful if you don't want to read the whole file into memory
 - has no internal buffers
 
-*os.ReadFile* (ioutil.ReadFile) reads an entire file into memory (as a []byte) in a single call
+*os.ReadFile* reads an entire file into memory (as a []byte) in a single call
 
 - allocates a byte slice of the correct size (no need to Read + append in a loop)
 - closes the file

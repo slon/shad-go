@@ -2,10 +2,9 @@ package main
 
 import (
 	"io"
-	"io/ioutil"
 	"strings"
 )
 
 func main() {
-	_, _ = io.Copy(ioutil.Discard, strings.NewReader("nothing of use"))
+	_, _ = io.Copy(io.Discard, strings.NewReader("nothing of use"))
 }
