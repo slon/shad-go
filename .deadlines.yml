@@ -5,6 +5,15 @@
     - task: iprange
       score: 100
 
+- group:    Low level
+  start:    21-04-2022 18:00
+  deadline: 02-05-2022 23:59
+  tasks:
+    - task: illegal
+      score: 100
+    - task: blowfish
+      score: 100
+
 - group:    Reflect
   start:    14-04-2022 17:59
   deadline: 28-04-2022 23:59
