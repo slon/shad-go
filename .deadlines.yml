@@ -5,6 +5,23 @@
     - task: iprange
       score: 100
 
+- group:    "[HW] Dist Build"
+  start:    23-04-2022 18:00
+  deadline: 15-05-2022 23:59
+  tasks:
+    - task: disttest
+      score: 0
+      watch:
+        - distbuild
+    - task: distbuild
+      score: 100
+      watch:
+        - distbuild
+    - task: smartsched
+      score: 200
+      watch:
+        - distbuild/pkg/scheduler
+
 - group:    Low level
   start:    21-04-2022 18:00
   deadline: 02-05-2022 23:59
