@@ -13,23 +13,25 @@
     ```
 
 - Реализация не должна делать динамического выделения памяти.
-- Для сборки этой задачи, на вашей системе должен быть установлен dev пакет openssl. На ubuntu установить пакет можно командой `sudo apt-get install libssl-dev`. Сборка под другие платформы не гарантируется. На macOS должна сработать следующая последовательность действий:
+- Для сборки этой задачи, на вашей системе должен быть установлен dev пакет openssl. На ubuntu установить пакет можно командой `sudo apt-get install libssl-dev`. Сборка под другие платформы не гарантируется.
+
+<details>
+<summary><b>Установка openssl на Mac OS через Homebrew</b></summary>
+
 ```
-Установка openssl через Homebrew
+$ brew install openssl@3
 
-$ brew install openssl
+После установки Homebrew предупредит вас о том, что для корректной работы библиотеки может понадобиться выставить несколько переменных окружения, нас интересует последняя:
+$ export PKG_CONFIG_PATH="/usr/local/opt/openssl@3/lib/pkgconfig"
 
-Далее нужно указать путь до библиотеки одним из способов:
+Важно: на вашем компьютере путь может быть другим, а именно, начинаться с префикса /opt/homebrew вместо /usr/local. Если у вас уже стоит openssl, для правильного экспорта переменной вы можете узнать этот префикс через команду:
+$ brew --prefix
 
-1. Установка переменной окружения через GoLand: Run -> Edit Configurations -> Environment:
-CGO_LDFLAGS=-L/usr/local/opt/openssl/lib
-
-2. Установка переменной окружения через консоль и запуск тестов:
-$ CGO_LDFLAGS=-L/usr/local/opt/openssl/lib go test -v ./blowfish/…
-
-3. Добавить флаг прямо в коде:
-// #cgo LDFLAGS: -lcrypto -L/usr/local/opt/openssl/lib
+Вы также можете выставить переменную окружения в самом GoLand: Run -> Edit Configurations -> Environment:
+PKG_CONFIG_PATH="/usr/local/opt/openssl@3/lib/pkgconfig"
 ```
+
+</details>
 
 **Disclaimer:** Эта задача дана в учебных целях. Помните, что (1) нельзя реализовывать собственную криптографию, (2) шифр blowfish устарел, (3) в стандартной библиотеке есть pure go реализация для большинства криптографических примитивов.
 

@@ -2,7 +2,7 @@
 
 package blowfish
 
-// #cgo LDFLAGS: -lcrypto
+// #cgo pkg-config: libcrypto
 // #include <openssl/blowfish.h>
 import "C"
 
