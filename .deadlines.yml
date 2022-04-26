@@ -52,14 +52,14 @@
       score: 100
       watch:
         - distbuild/pkg/tarstream
-    - task: filecachetest
-      score: 100
-      watch:
-        - distbuild/pkg/filecache
     - task: artifacttest
       score: 100
       watch:
         - distbuild/pkg/artifact
+    - task: filecachetest
+      score: 100
+      watch:
+        - distbuild/pkg/filecache
 
 - group:    Generics
   start:    08-04-2022 21:00
