@@ -14,11 +14,10 @@ import (
 )
 
 func BenchmarkEncode(b *testing.B) {
-	data := []byte(
+	data := []byte(testtool.RandomName() +
 		"New function should generally only return pointer types, " +
-			"since a pointer can be put into the return interface " +
-			"value without an allocation. " +
-			testtool.RandomName(),
+		"since a pointer can be put into the return interface " +
+		"value without an allocation.",
 	)
 
 	b.ResetTimer()
