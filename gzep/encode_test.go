@@ -1,4 +1,4 @@
-package gzep
+package gzep_test
 
 import (
 	"bytes"
@@ -9,6 +9,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"gitlab.com/slon/shad-go/gzep"
 	"gitlab.com/slon/shad-go/tools/testtool"
 )
 
@@ -23,7 +24,7 @@ func BenchmarkEncode(b *testing.B) {
 	b.ResetTimer()
 	b.ReportAllocs()
 	for n := 0; n < b.N; n++ {
-		require.NoError(b, Encode(data, io.Discard))
+		require.NoError(b, gzep.Encode(data, io.Discard))
 	}
 }
 
@@ -40,9 +41,9 @@ func TestEncode_RoundTrip(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			buf := new(bytes.Buffer)
-			require.NoError(t, Encode([]byte(tc.in), buf))
+			require.NoError(t, gzep.Encode([]byte(tc.in), buf))
 
-			out, err := decode(buf.Bytes())
+			out, err := decode(buf)
 			require.NoError(t, err, tc.in)
 			require.Equal(t, tc.in, string(out))
 		})
@@ -51,29 +52,30 @@ func TestEncode_RoundTrip(t *testing.T) {
 }
 
 func TestEncode_Stress(t *testing.T) {
-	n := 100
-
 	wg := &sync.WaitGroup{}
-	wg.Add(n)
+
+	n := 100
 	for i := 0; i < n; i++ {
+		wg.Add(1)
 		go func() {
 			defer wg.Done()
 
-			require.NoError(t, Encode([]byte("payload"), io.Discard))
+			_ = gzep.Encode([]byte("stonks"), io.Discard)
 		}()
 	}
 
 	wg.Wait()
 }
 
-func decode(data []byte) ([]byte, error) {
-	r, err := gzip.NewReader(bytes.NewReader(data))
+func decode(r io.Reader) ([]byte, error) {
+	rr, err := gzip.NewReader(r)
 	if err != nil {
 		return nil, err
 	}
+	defer func() { _ = rr.Close() }()
 
 	buf := &bytes.Buffer{}
-	if _, err := io.Copy(buf, r); err != nil {
+	if _, err := io.Copy(buf, rr); err != nil {
 		return nil, err
 	}
 
