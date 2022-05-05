@@ -1,6 +1,6 @@
 //go:build !solution
 
-package vegz
+package gzep
 
 import (
 	"compress/gzip"

@@ -1,4 +1,4 @@
-package vegz
+package gzep
 
 import (
 	"bytes"
