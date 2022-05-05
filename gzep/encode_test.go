@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"compress/gzip"
 	"io"
+	"sync"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -26,7 +27,7 @@ func BenchmarkEncode(b *testing.B) {
 	}
 }
 
-func TestRoundTrip(t *testing.T) {
+func TestEncode_RoundTrip(t *testing.T) {
 	testCases := []struct {
 		name string
 		in   string
@@ -47,6 +48,22 @@ func TestRoundTrip(t *testing.T) {
 		})
 
 	}
+}
+
+func TestEncode_Stress(t *testing.T) {
+	n := 100
+
+	wg := &sync.WaitGroup{}
+	wg.Add(n)
+	for i := 0; i < n; i++ {
+		go func() {
+			defer wg.Done()
+
+			require.NoError(t, Encode([]byte("payload"), io.Discard))
+		}()
+	}
+
+	wg.Wait()
 }
 
 func decode(data []byte) ([]byte, error) {
