@@ -41,7 +41,8 @@ func TestEncode_RoundTrip(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			buf := new(bytes.Buffer)
-			require.NoError(t, gzep.Encode([]byte(tc.in), buf))
+			err := gzep.Encode([]byte(tc.in), buf)
+			require.NoError(t, err)
 
 			out, err := decode(buf)
 			require.NoError(t, err, tc.in)
@@ -74,7 +75,7 @@ func decode(r io.Reader) ([]byte, error) {
 	}
 	defer func() { _ = rr.Close() }()
 
-	buf := &bytes.Buffer{}
+	buf := new(bytes.Buffer)
 	if _, err := io.Copy(buf, rr); err != nil {
 		return nil, err
 	}
