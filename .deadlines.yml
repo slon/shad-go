@@ -1,3 +1,12 @@
+- group:    Analysis
+  start:    05-05-2022 18:00
+  deadline: 15-05-2022 23:59
+  tasks:
+    - task: testifycheck
+      score: 200
+    - task: gzep
+      score: 100
+
 - group:    Bonus
   start:    14-04-2022 17:59
   deadline: 22-05-2022 23:59
