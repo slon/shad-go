@@ -42,10 +42,11 @@ build-slides:
     - docker push eu.gcr.io/shad-ts/go-lectures
 
 push-to-public:
-  stage: .post
+  # stage: .post
   image: eu.gcr.io/shad-ts/grader/go
   only:
     - master
+  when: manual
   script:
     - git remote rm public || true
     - git remote add -f public https://prime:${CI_PUSH_TOKEN}@gitlab.com/slon/shad-go.git
