@@ -67,6 +67,13 @@ func TestEncode_Stress(t *testing.T) {
 	wg.Wait()
 }
 
+func TestEncode_Compression(t *testing.T) {
+	buf := new(bytes.Buffer)
+	err := gzep.Encode(bytes.Repeat([]byte{0x1f}, 1000), buf)
+	require.NoError(t, err)
+	require.Less(t, buf.Len(), 1000)
+}
+
 func decode(r io.Reader) ([]byte, error) {
 	rr, err := gzip.NewReader(r)
 	if err != nil {
