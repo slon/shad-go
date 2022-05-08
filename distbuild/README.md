@@ -93,8 +93,8 @@ type Job struct {
 - [`distbuild/pkg/filecache`](./pkg/filecache) - кеш файлов и протокол передачи файлов между компонентами.
 - [`distbuild/pkg/scheduler`](./pkg/scheduler) - планировщик с эвристикой локальности.
 
-После того, как все кубики будут готовы, нужно будет соединить их вместе, реализовав `distbuild/pkg/worker`,
-`distbuild/pkg/client` и `distbuild/pkg/dist`. Код в этих пакетах нужно отлаживать на
+После того, как все кубики будут готовы, нужно будет соединить их вместе, реализовав [`distbuild/pkg/worker`](./pkg/worker),
+[`distbuild/pkg/client`](./pkg/client) и [`distbuild/pkg/dist`](./pkg/dist). Код в этих пакетах нужно отлаживать на
 интеграционных тестах в [`distbuild/disttest`](../disttest).
 
 Код тестов в этом задании менять нельзя. Это значит, что вы не можете менять интерфейсы в тех местах, где
