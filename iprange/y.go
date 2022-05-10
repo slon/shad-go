@@ -44,6 +44,7 @@ var ipToknames = [...]string{
 }
 var ipStatenames = [...]string{}
 
+// nolint
 const ipEofCode = 1
 const ipErrCode = 2
 const ipInitialStackSize = 16
@@ -166,6 +167,7 @@ type ipParserImpl struct {
 	char  int
 }
 
+// nolint
 func (p *ipParserImpl) Lookahead() int {
 	return p.char
 }

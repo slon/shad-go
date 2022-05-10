@@ -22,6 +22,7 @@ func (a asc) Less(i, j int) bool {
 	bigi := big.NewInt(0).SetBytes(a[i])
 	bigj := big.NewInt(0).SetBytes(a[j])
 
+	// nolint
 	if bigi.Cmp(bigj) == -1 {
 		return true
 	}

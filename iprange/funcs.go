@@ -25,6 +25,7 @@ func streamRange(lower, upper net.IP) chan net.IP {
 		upper32 := binary.BigEndian.Uint32([]byte(upper))
 		diff := upper32 - lower32
 
+		// nolint
 		if diff < 0 {
 			panic("Lower address is actually higher than upper address.")
 		}
