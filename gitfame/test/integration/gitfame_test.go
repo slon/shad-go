@@ -54,7 +54,7 @@ func TestGitFame(t *testing.T) {
 			headRef := GetHEADRef(t, dir)
 
 			cmd := exec.Command(binary, args...)
-			cmd.Stderr = ioutil.Discard
+			cmd.Stderr = os.Stderr
 
 			output, err := cmd.Output()
 			if !tc.Error {
