@@ -4,6 +4,7 @@
 
 ```sh
 git clone https://gitlab.com/slon/shad-go.git
+cd shad-go
 go test ./sum/...
 ```
 
