@@ -1,5 +1,5 @@
 grade:
-  image: eu.gcr.io/shad-ts/grader/go
+  image: cr.yandex/crp9onavos88ug32d5r2/grader/go
   variables:
     DOCKER_HOST: tcp://docker:2375/
     DOCKER_TLS_CERTDIR: ""

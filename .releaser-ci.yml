@@ -1,5 +1,5 @@
 check:
-  image: eu.gcr.io/shad-ts/grader/go-build
+  image: cr.yandex/crp9onavos88ug32d5r2/grader/go-build
   variables:
     DOCKER_HOST: tcp://docker:2375/
     DOCKER_TLS_CERTDIR: ""
@@ -19,8 +19,8 @@ rebuild-base-image:
     - docker
   when: manual
   script:
-    - docker build -f build.docker -t eu.gcr.io/shad-ts/grader/go-build .
-    - docker push eu.gcr.io/shad-ts/grader/go-build:latest
+    - docker build -f build.docker -t cr.yandex/crp9onavos88ug32d5r2/grader/go-build .
+    - docker push cr.yandex/crp9onavos88ug32d5r2/grader/go-build:latest
 
 deploy:
   only:
@@ -28,9 +28,9 @@ deploy:
   tags:
     - docker
   script:
-    - docker pull eu.gcr.io/shad-ts/grader/go-build:latest
-    - docker build -f testenv.docker -t eu.gcr.io/shad-ts/grader/go .
-    - docker push eu.gcr.io/shad-ts/grader/go:latest
+    - docker pull cr.yandex/crp9onavos88ug32d5r2/grader/go-build:latest
+    - docker build -f testenv.docker -t cr.yandex/crp9onavos88ug32d5r2/grader/go .
+    - docker push cr.yandex/crp9onavos88ug32d5r2/grader/go:latest
 
 build-slides:
   only:
@@ -38,12 +38,12 @@ build-slides:
   tags:
     - docker
   script:
-    - docker build lectures -t eu.gcr.io/shad-ts/go-lectures
-    - docker push eu.gcr.io/shad-ts/go-lectures
+    - docker build lectures -t cr.yandex/crp9onavos88ug32d5r2/go-lectures
+    - docker push cr.yandex/crp9onavos88ug32d5r2/go-lectures
 
 push-to-public:
   # stage: .post
-  image: eu.gcr.io/shad-ts/grader/go
+  image: cr.yandex/crp9onavos88ug32d5r2/grader/go
   only:
     - master
   when: manual
@@ -67,5 +67,5 @@ deploy-slides:
   script:
     - docker stop -t0 go-lectures || true
     - docker rm go-lectures || true
-    - docker pull eu.gcr.io/shad-ts/go-lectures
-    - docker run -p 3999:3999 -d --name go-lectures --restart=always eu.gcr.io/shad-ts/go-lectures
+    - docker pull cr.yandex/crp9onavos88ug32d5r2/go-lectures
+    - docker run -p 3999:3999 -d --name go-lectures --restart=always cr.yandex/crp9onavos88ug32d5r2/go-lectures

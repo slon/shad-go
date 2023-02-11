@@ -1,4 +1,4 @@
-FROM eu.gcr.io/shad-ts/grader/go-build:latest
+FROM cr.yandex/crp9onavos88ug32d5r2/grader/go-build:latest
 
 COPY . /opt/shad
 
