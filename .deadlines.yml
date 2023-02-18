@@ -172,22 +172,22 @@
 #     - task: ciletters
 #       score: 100
 
-# - group:    Basics
-#   start:    17-02-2022 18:00
-#   deadline: 06-03-2022 23:59
-#   tasks:
-#     - task: hotelbusiness
-#       score: 100
-#     - task: hogwarts
-#       score: 100
-#     - task: utf8
-#       score: 100
-#     - task: varfmt
-#       score: 100
-#     - task: speller
-#       score: 100
-#     - task: forth
-#       score: 100
+- group:    Basics
+  start:    18-02-2023 16:00
+  deadline: 25-02-2023 23:59
+  tasks:
+    - task: hotelbusiness
+      score: 100
+    - task: hogwarts
+      score: 100
+    - task: utf8
+      score: 100
+    - task: varfmt
+      score: 100
+    - task: speller
+      score: 100
+    - task: forth
+      score: 100
 
 - group:    Hello World
   start:    11-02-2023 18:00
