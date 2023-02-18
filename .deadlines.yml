@@ -174,7 +174,7 @@
 
 - group:    Basics
   start:    18-02-2023 16:00
-  deadline: 25-02-2023 23:59
+  deadline: 28-02-2023 23:59
   tasks:
     - task: hotelbusiness
       score: 100
