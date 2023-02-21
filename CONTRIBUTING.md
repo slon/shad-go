@@ -15,3 +15,31 @@
    ![](docs/edit-and-fork.png)
 3. Внесите изменения в файл. Нажмите "Commit Changes" внизу страницы.
 4. Добавьте описание вашего изменения. Нажмите "Submit Merge Request".
+
+## Продвинутые исправления
+
+Для многофайловых исправлений можно сначала сделать исправление локально:
+
+1. Создайте форк https://gitlab.com/slon/shad-go аналогично тому, что выше.
+
+2. Закоммитьте все локальные изменения, которые вы не хотите добавлять в репозиторий курса. 
+
+3. Создайте новую локальную ветку со свежей версией кода из репозитория курса:
+   ```
+   git fetch origin
+   git checkout origin/master -b newbranchforupdate
+   ```
+   
+4. Внесите локальные изменения и запушьте их в свой форк на [gitlab.com](https://gitlab.com/) (не в `student`), например
+   ```
+   git add .
+   git commit -m "Update tests"
+   git push https://gitlab.com/%USERNAME%/shad-go/
+   ```
+
+5. В своём форке выберите созданную ветку и создайте Merge Request в репозиторий курса. Обычно GitLab подсказывает недавно запушенную ветку и предлагает создать для неё MR.
+
+![](docs/create-mr.png)
+
+   На странице c формой нового Merge Request убедитесь, что ветвь назначения — `slon/shad-go:master`. Нажмите кнопку "Create Merge Request".
+![](docs/create-mr-form.png)
