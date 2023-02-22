@@ -15,5 +15,5 @@ func NoContext(ctx context.Context, db *sql.DB) {
 	defer c.Close()
 
 	// Потенциально вечный Ping
-	_ = c.Ping()
+	_ = db.Ping()
 }
