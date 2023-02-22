@@ -64,7 +64,4 @@ deploy-slides:
   tags:
     - web
   script:
-    - docker stop -t0 go-lectures || true
-    - docker rm go-lectures || true
-    - docker pull cr.yandex/crp9onavos88ug32d5r2/go-lectures
-    - docker run -p 3999:3999 -d --name go-lectures --restart=always cr.yandex/crp9onavos88ug32d5r2/go-lectures
+    - cd /srv/manytask/go && docker compose up -d
