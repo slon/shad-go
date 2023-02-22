@@ -2,9 +2,9 @@ package otp
 
 import (
 	"bytes"
+	"crypto/rand"
 	"io"
 	"io/ioutil"
-	"math/rand"
 	"testing"
 	"testing/iotest"
 
@@ -36,8 +36,8 @@ var (
 )
 
 func init() {
-	rand.Read(plaintext)
-	rand.Read(randomBytes)
+	_, _ = rand.Read(plaintext)
+	_, _ = rand.Read(randomBytes)
 
 	copy(plaintextBackup, plaintext)
 
