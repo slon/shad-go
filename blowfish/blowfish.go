@@ -3,6 +3,7 @@
 package blowfish
 
 // #cgo pkg-config: libcrypto
+// #cgo CFLAGS: -Wno-deprecated-declarations
 // #include <openssl/blowfish.h>
 import "C"
 
