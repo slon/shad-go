@@ -255,12 +255,8 @@ func runTests(testDir, privateRepo, problem string) error {
 	}
 
 	coverageReq := getCoverageRequirements(path.Join(privateRepo, problem))
-	coveragePackages := []string{}
 	if coverageReq.Enabled {
 		log.Printf("required coverage: %.2f%%", coverageReq.Percent)
-		for _, pkg := range coverageReq.Packages {
-			coveragePackages = append(coveragePackages, path.Join(moduleImportPath, problem, pkg))
-		}
 	}
 
 	binariesJSON, _ := json.Marshal(binaries)
@@ -271,7 +267,11 @@ func runTests(testDir, privateRepo, problem string) error {
 
 		cmd := []string{"test", "-mod", "readonly", "-tags", "private", "-c", "-o", testPath, testPkg}
 		if coverageReq.Enabled {
-			cmd = append(cmd, "-cover", "-coverpkg", strings.Join(coveragePackages, ","))
+			pkgs := make([]string, len(coverageReq.Packages))
+			for i, pkg := range coverageReq.Packages {
+				pkgs[i] = path.Join(moduleImportPath, problem, pkg)
+			}
+			cmd = append(cmd, "-cover", "-coverpkg", strings.Join(pkgs, ","))
 		}
 		if err := runGo(cmd...); err != nil {
 			return fmt.Errorf("error building test in %s: %w", testPkg, err)
@@ -378,26 +378,7 @@ func runTests(testDir, privateRepo, problem string) error {
 	if coverageReq.Enabled {
 		log.Printf("checking coverage is at least %.2f%%...", coverageReq.Percent)
 
-		// For some reason, this command will record all coverage blocks in coverpkg,
-		// even if no test binaries depend on given package.
-		// Hacky way to record all the code present in problem definition.
-		targetProfile := path.Join(os.TempDir(), randomName())
-		coverCmd := exec.Command("go",
-			"test",
-			"-coverpkg", strings.Join(coveragePackages, ","),
-			"-coverprofile", targetProfile,
-			"-run", "^$",
-			"./...",
-		)
-		coverCmd.Env = append(os.Environ(), "GOFLAGS=")
-		coverCmd.Dir = path.Join(privateRepo, problem)
-		coverCmd.Stderr = os.Stderr
-		log.Printf("> %s", strings.Join(coverCmd.Args, " "))
-		if err := coverCmd.Run(); err != nil {
-			return fmt.Errorf("error getting target coverage profile: %w", err)
-		}
-
-		percent, err := calCoverage(targetProfile, coverProfiles)
+		percent, err := calCoverage(coverProfiles)
 		if err != nil {
 			return err
 		}

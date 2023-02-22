@@ -83,34 +83,15 @@ func searchCoverageComment(fname string) (*CoverageRequirements, error) {
 	return &CoverageRequirements{}, nil
 }
 
-// calCoverage calculates coverage percent of code blocks recorded in targetProfile
-// by given coverage profiles.
-func calCoverage(targetProfile string, fileNames []string) (float64, error) {
-	type key struct {
+// calCoverage calculates coverage percent for given coverage profile.
+func calCoverage(fileNames []string) (float64, error) {
+	type block struct {
 		fileName            string
 		startLine, startCol int
 		endLine, endCol     int
 		numStmt             int
 	}
-	newKey := func(p *cover.Profile, b cover.ProfileBlock) key {
-		return key{
-			p.FileName,
-			b.StartLine, b.StartCol,
-			b.EndLine, b.EndCol,
-			b.NumStmt,
-		}
-	}
-
-	executed := map[key]bool{}
-	targetProfiles, err := cover.ParseProfiles(targetProfile)
-	if err != nil {
-		return 0.0, fmt.Errorf("cannot parse target profile %s: %w", targetProfile, err)
-	}
-	for _, p := range targetProfiles {
-		for _, b := range p.Blocks {
-			executed[newKey(p, b)] = false
-		}
-	}
+	counts := map[block]int{}
 
 	for _, f := range fileNames {
 		profiles, err := cover.ParseProfiles(f)
@@ -120,19 +101,21 @@ func calCoverage(targetProfile string, fileNames []string) (float64, error) {
 
 		for _, p := range profiles {
 			for _, b := range p.Blocks {
-				k := newKey(p, b)
-				if _, ok := executed[k]; ok && b.Count > 0 {
-					executed[k] = true
-				}
+				counts[block{
+					p.FileName,
+					b.StartLine, b.StartCol,
+					b.EndLine, b.EndCol,
+					b.NumStmt,
+				}] += b.Count
 			}
 		}
 	}
 
 	var total, covered int
-	for k, e := range executed {
-		total += k.numStmt
-		if e {
-			covered += k.numStmt
+	for b, count := range counts {
+		total += b.numStmt
+		if count > 0 {
+			covered += b.numStmt
 		}
 	}
 
