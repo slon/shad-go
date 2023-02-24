@@ -244,6 +244,11 @@ var testCases = []testCase{
 		input:       []string{": SWAP DUP Dup dup ;", "1 swap"},
 		expected:    []int{1, 1, 1, 1},
 	},
+	{
+		description: "redefine of builtin after define user function on it",
+		input:       []string{": foo dup ;", ": dup 1 ;", "2 foo"},
+		expected:    []int{2, 2},
+	},
 }
 
 func TestEval(t *testing.T) {
