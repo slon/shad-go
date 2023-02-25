@@ -157,20 +157,20 @@
 #     - task: ratelimit
 #       score: 100
 
-# - group:    Interfaces
-#   start:    24-02-2022 18:00
-#   deadline: 13-03-2022 23:59
-#   tasks:
-#     - task: otp
-#       score: 100
-#     - task: lrucache
-#       score: 100
-#     - task: externalsort
-#       score: 100
-#     - task: retryupdate
-#       score: 100
-#     - task: ciletters
-#       score: 100
+- group:    Interfaces
+  start:    25-02-2023 16:30
+  deadline: 07-03-2023 23:59
+  tasks:
+    - task: otp
+      score: 100
+    - task: lrucache
+      score: 100
+    - task: externalsort
+      score: 100
+    - task: retryupdate
+      score: 100
+    - task: ciletters
+      score: 100
 
 - group:    Basics
   start:    18-02-2023 16:00
