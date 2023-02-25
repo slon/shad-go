@@ -171,13 +171,13 @@ Methods
 
 * Interfaces
 
-  func Fprintf(w io.Writer, format string, args ...interface{}) (int, error)
+  func Fprintf(w io.Writer, format string, args ...any) (int, error)
 
-  func Printf(format string, args ...interface{}) (int, error) {
+  func Printf(format string, args ...any) (int, error) {
       return Fprintf(os.Stdout, format, args...)
   }
 
-  func Sprintf(format string, args ...interface{}) string {
+  func Sprintf(format string, args ...any) string {
       var buf bytes.Buffer
       Fprintf(&buf, format, args...)
       return buf.String()
@@ -262,14 +262,18 @@ Methods
   var _ fmt.Stringer = &s // OK
   var _ fmt.Stringer = s // compile error: IntSet lacks String method
 
-* interface{}
+* any
 
-  var any interface{}
-  any = true
-  any = 12.34
-  any = "hello"
-  any = map[string]int{"one": 1}
-  any = new(bytes.Buffer)
+  type any = interface{}
+
+- `any` - это alias для `interface{}`
+
+  var v any
+  v = true
+  v = 12.34
+  v = "hello"
+  v = map[string]int{"one": 1}
+  v = new(bytes.Buffer)
 
 * Interface satisfaction
 
@@ -283,7 +287,7 @@ Methods
   w = new(bytes.Buffer)
   w = nil
 
-  var x interface{} = time.Now()
+  var x any = time.Now()
 
 * Nil pointer
 
@@ -342,7 +346,7 @@ Check type
 
 * Type switches
 
-  func sqlQuote(x interface{}) string {
+  func sqlQuote(x any) string {
       if x == nil {
           return "NULL"
       } else if _, ok := x.(int); ok {
@@ -375,12 +379,12 @@ Check type
 
 * Type switch
 
-  func sqlQuote(x interface{}) string {
+  func sqlQuote(x any) string {
       switch v := x.(type) {
       case nil:
           return "NULL"
       case int, uint:
-          return fmt.Sprintf("%d", v) // v has type interface{} here.
+          return fmt.Sprintf("%d", v) // v has type any here.
       case bool:
           if v {
               return "TRUE"
