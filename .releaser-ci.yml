@@ -64,4 +64,5 @@ deploy-slides:
   tags:
     - web
   script:
+    - docker pull cr.yandex/crp9onavos88ug32d5r2/go-lectures
     - cd /srv/manytask/go && docker compose up -d
