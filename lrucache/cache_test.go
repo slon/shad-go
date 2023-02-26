@@ -29,6 +29,29 @@ func TestCache_update(t *testing.T) {
 	require.Equal(t, 2, v)
 }
 
+func TestCache_Get(t *testing.T) {
+	c := New(5)
+
+	for i := 0; i < 5; i++ {
+		c.Set(i, i)
+	}
+
+	c.Get(0)
+	c.Get(1)
+
+	c.Set(5, 5)
+	c.Set(6, 6)
+
+	var keys, values []int
+	c.Range(func(key, value int) bool {
+		keys = append(keys, key)
+		values = append(values, value)
+		return true
+	})
+	require.Equal(t, []int{4, 0, 1, 5, 6}, keys)
+	require.Equal(t, []int{4, 0, 1, 5, 6}, values)
+}
+
 func TestCache_Clear(t *testing.T) {
 	c := New(5)
 
