@@ -1,10 +1,12 @@
 package shopfront_test
 
 import (
+	"context"
 	"os"
 	"os/exec"
 	"time"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/stretchr/testify/require"
 
 	"gitlab.com/slon/shad-go/tools/testtool"
@@ -36,22 +38,39 @@ func StartRedis(tb testingTB) string {
 	cmd.Stderr = os.Stderr
 
 	require.NoError(tb, cmd.Start())
+	tb.Cleanup(func() {
+		_ = cmd.Process.Kill()
+	})
 
 	finished := make(chan error, 1)
 	go func() {
 		finished <- cmd.Wait()
 	}()
 
-	select {
-	case err := <-finished:
-		tb.Fatalf("redis server terminated: %v", err)
+	redisAddress := "localhost:" + port
+	startTimeout := time.After(time.Second * 5)
 
-	case <-time.After(time.Second / 2):
+loop:
+	for {
+		select {
+		case err := <-finished:
+			tb.Fatalf("redis server terminated: %v", err)
+
+		case <-startTimeout:
+			tb.Fatalf("redis not started after timeout")
+
+		default:
+			time.Sleep(time.Millisecond * 50)
+
+			rdb := redis.NewClient(&redis.Options{Addr: redisAddress})
+			status := rdb.Ping(context.Background())
+			_ = rdb.Close()
+
+			if status.Err() == nil {
+				break loop
+			}
+		}
 	}
 
-	tb.Cleanup(func() {
-		_ = cmd.Process.Kill()
-	})
-
-	return "localhost:" + port
+	return redisAddress
 }
