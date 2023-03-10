@@ -64,7 +64,7 @@ push-to-github:
     - master
   script:
     - testtool list-private-files > /tmp/private_files.txt
-    - git filter-repo --paths-from-file /tmp/private_files.txt --invert-path
+    - git filter-repo --force --paths-from-file /tmp/private_files.txt --invert-path
     - git checkout -b main
     - git remote add -f github https://prime:${CI_PUSH_TOKEN}@gitlab.com/slon/shad-go.git
     - echo $GITHUB_PUSH_KEY | base64 -d > private.key
