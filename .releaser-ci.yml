@@ -69,8 +69,8 @@ push-to-github:
     - git branch -D main || true
     - git checkout -b main
     - git remote rm github || true
-    - env GIT_SSH_COMMAND="ssh -i ${PWD}/private.key" git remote add -f github git@github.com:slon/shad-go.git
-    - env GIT_SSH_COMMAND="ssh -i ${PWD}/private.key" git push github main
+    - env GIT_SSH_COMMAND="ssh -i ${PWD}/private.key -o StrictHostKeyChecking=no" git remote add -f github git@github.com:slon/shad-go.git
+    - env GIT_SSH_COMMAND="ssh -i ${PWD}/private.key -o StrictHostKeyChecking=no" git push github main
 
 deploy-slides:
   stage: .post
