@@ -175,6 +175,10 @@ export PATH=$GOPATH/bin:$PATH
 
 После этого `gitfame` будет доступен всюду.
 
+### Code review comments
+
+Прочитайте и исправьте [распространённые ошибки](../docs/gitfame_review_comments.md).
+
 ### Ненавязчивые предложения
 
 #### Project layout
