@@ -57,6 +57,19 @@ push-to-public:
     - testtool export --push --move-to-master=false
     - curl -F token=$TESTER_TOKEN https://go.manytask.org/api/sync_task_columns
 
+push-to-github:
+  stage: .post
+  image: cr.yandex/crp9onavos88ug32d5r2/grader/go
+  only:
+    - master
+  script:
+    - testtool list-private-files > /tmp/private_files.txt
+    - git filter-repo --paths-from-file /tmp/private_files.txt --invert-path
+    - git checkout -b main
+    - git remote add -f github https://prime:${CI_PUSH_TOKEN}@gitlab.com/slon/shad-go.git
+    - echo $GITHUB_PUSH_KEY | base64 -d > private.key
+    - env GIT_SSH_COMMAND="ssh -i ${PWD}/private.key" git push github main
+
 deploy-slides:
   stage: .post
   only:
