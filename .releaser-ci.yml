@@ -65,11 +65,11 @@ push-to-github:
   script:
     - testtool list-private-files > /tmp/private_files.txt
     - git filter-repo --force --paths-from-file /tmp/private_files.txt --invert-path
+    - echo $GITHUB_PUSH_KEY | base64 -d > private.key
     - git branch -D main || true
     - git checkout -b main
     - git remote rm github || true
-    - git remote add -f github git@github.com:slon/shad-go.git
-    - echo $GITHUB_PUSH_KEY | base64 -d > private.key
+    - env GIT_SSH_COMMAND="ssh -i ${PWD}/private.key" git remote add -f github git@github.com:slon/shad-go.git
     - env GIT_SSH_COMMAND="ssh -i ${PWD}/private.key" git push github main
 
 deploy-slides:
