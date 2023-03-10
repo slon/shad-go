@@ -58,7 +58,7 @@ push-to-public:
     - curl -F token=$TESTER_TOKEN https://go.manytask.org/api/sync_task_columns
 
 push-to-github:
-  stage: .post
+#  stage: .post
   image: cr.yandex/crp9onavos88ug32d5r2/grader/go
   only:
     - master
@@ -70,7 +70,7 @@ push-to-github:
     - git checkout -b main
     - git remote rm github || true
     - env GIT_SSH_COMMAND="ssh -i ${PWD}/private.key -o StrictHostKeyChecking=no" git remote add -f github git@github.com:slon/shad-go.git
-    - env GIT_SSH_COMMAND="ssh -i ${PWD}/private.key -o StrictHostKeyChecking=no" git push github main
+    - env GIT_SSH_COMMAND="ssh -i ${PWD}/private.key -o StrictHostKeyChecking=no" git push -f github main
 
 deploy-slides:
   stage: .post
