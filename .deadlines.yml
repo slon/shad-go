@@ -7,13 +7,6 @@
 #     - task: gzep
 #       score: 100
 
-# - group:    Bonus
-#   start:    14-04-2022 17:59
-#   deadline: 22-05-2022 23:59
-#   tasks:
-#     - task: iprange
-#       score: 100
-
 # - group:    "[HW] Dist Build"
 #   start:    23-04-2022 18:00
 #   deadline: 15-05-2022 23:59
@@ -120,18 +113,20 @@
 #     - task: pubsub
 #       score: 300
 
-# - group:    Testing
-#   start:    10-03-2022 20:00
-#   deadline: 29-03-2022 23:59
-#   tasks:
-#     - task: testequal
-#       score: 100
-#     - task: fileleak
-#       score: 100
-#     - task: tabletest
-#       score: 100
-#     - task: tparallel
-#       score: 200
+- group:    Testing
+  start:    11-03-2023 13:00
+  deadline: 21-03-2023 23:59
+  tasks:
+    - task: testequal
+      score: 100
+    - task: fileleak
+      score: 100
+    - task: tabletest
+      score: 100
+    - task: tparallel
+      score: 200
+    - task: iprange
+      score: 100
 
 - group:    "[HW] Gitfame"
   start:    04-03-2023 16:30
