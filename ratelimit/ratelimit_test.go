@@ -55,6 +55,24 @@ func TestSimpleLimitCancel(t *testing.T) {
 	require.Equal(t, context.DeadlineExceeded, err)
 }
 
+func TestAcquireAfterDelay(t *testing.T) {
+	defer goleak.VerifyNone(t)
+
+	e := 2
+	N := 5
+	limit := NewLimiter(N, time.Second)
+	defer limit.Stop()
+
+	for epoch := 0; epoch < e; epoch++ {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		for i := 0; i < N; i++ {
+			require.NoError(t, limit.Acquire(ctx))
+		}
+		cancel()
+		time.Sleep(time.Second * 2)
+	}
+}
+
 func TestAcquireAfterStopped(t *testing.T) {
 	defer goleak.VerifyNone(t)
 
