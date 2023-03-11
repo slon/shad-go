@@ -329,6 +329,57 @@ Good example
       }
   }
 
+* Fuzzing
+
+  func Reverse(s string) string {
+      b := []byte(s)
+      for i, j := 0, len(b)-1; i < len(b)/2; i, j = i+1, j-1 {
+          b[i], b[j] = b[j], b[i]
+      }
+      return string(b)
+  }
+
+* Fuzzing
+
+  func FuzzReverse(f *testing.F) {
+      testcases := []string{"Hello, world", " ", "!12345"}
+      for _, tc := range testcases {
+          f.Add(tc)  // Use f.Add to provide a seed corpus
+      }
+      f.Fuzz(func(t *testing.T, orig string) {
+          rev := Reverse(orig)
+          doubleRev := Reverse(rev)
+          if orig != doubleRev {
+              t.Errorf("Before: %q, after: %q", orig, doubleRev)
+          }
+          if utf8.ValidString(orig) && !utf8.ValidString(rev) {
+              t.Errorf("Reverse produced invalid UTF-8 string %q", rev)
+          }
+      })
+  }
+
+* Fuzzing
+
+  go test -fuzz=Fuzz
+  fuzz: elapsed: 0s, gathering baseline coverage: 0/3 completed
+  fuzz: elapsed: 0s, gathering baseline coverage: 3/3 completed, now fuzzing with 8 workers
+  fuzz: minimizing 38-byte failing input file...
+  --- FAIL: FuzzReverse (0.01s)
+      --- FAIL: FuzzReverse (0.00s)
+          reverse_test.go:20: Reverse produced invalid UTF-8 string "\x9c\xdd"
+
+      Failing input written to testdata/fuzz/FuzzReverse/af69258a12129d6cbba438df5d5f25ba0ec050461c116f777e77ea7c9a0d217a
+      To re-run:
+      go test -run=FuzzReverse/af69258a12129d6cbba438df5d5f25ba0ec050461c116f777e77ea7c9a0d217a
+  FAIL
+  exit status 1
+  FAIL    example/fuzz  0.030s
+
+Что сломало реализацию?
+
+  go test fuzz v1
+  string("泃")
+
 * Parallel tests
 
   func TestA(t *testing.T) {
