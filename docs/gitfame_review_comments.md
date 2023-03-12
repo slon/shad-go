@@ -230,7 +230,7 @@ cmd.Dir = repository
 Для однородных переменных и констант нет необходимости писать `var` перед каждой строкой
 
 Вместо
-```
+```golang
 var flagRepo = flag.String("repository", ".", "repo")
 var flagRev = flag.String("revision", "HEAD", "revision")
 ```
@@ -241,4 +241,23 @@ var (
 	flagRepo = flag.String("repository", ".", "repo")
 	flagRev = flag.String("revision", "HEAD", "revision")
 )
+```
+
+## Вывод результатов
+
+Вместо
+```
+os.Stdout.Write(bytes)
+fmt.Println()
+```
+
+или
+
+```golang
+os.Stdout.Write(fmt.Sprintf("%s\n"), string(bytes))
+```
+
+Используйте более читаемое однострочное
+```golang
+fmt.Println(string(bytes))
 ```
