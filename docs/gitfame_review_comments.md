@@ -160,6 +160,29 @@ Authors := make([]string)
 authors := make([]string)
 ```
 
+### Аббревиатуры должны писаться в single-case
+
+В том числе и конкатенации аббревиатур.
+
+https://github.com/golang/go/wiki/CodeReviewComments#initialisms
+
+
+Неправильно:
+```
+JsonLines
+Sha1
+printCsv
+XMLHttpRequest
+```
+
+Правильно:
+```
+JSONLines
+SHA1
+printCSV
+XMLHTTPRequest
+```
+
 ## Работа с language_extensions.json
 
 Некоторые решения читают файл с экстеншионами по относительному пути.
