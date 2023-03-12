@@ -243,8 +243,18 @@ func runTests(testDir, privateRepo, problem string) error {
 		raceBinaries = make(map[string]string)
 	)
 
+	coverageReq := getCoverageRequirements(path.Join(privateRepo, problem))
+	if coverageReq.Enabled {
+		log.Printf("required coverage: %.2f%%", coverageReq.Percent)
+	}
+
+	testListDir := testDir
+	if !coverageReq.Enabled {
+		testListDir = privateRepo
+	}
+
 	//binPkgs, testPkgs := listTestsAndBinaries(filepath.Join(testDir, problem), []string{"-tags", "private", "-mod", "readonly"}) // todo return readonly
-	binPkgs, testPkgs := listTestsAndBinaries(filepath.Join(testDir, problem), []string{"-tags", "private"})
+	binPkgs, testPkgs := listTestsAndBinaries(filepath.Join(testListDir, problem), []string{"-tags", "private"})
 	for binaryPkg := range binPkgs {
 		binPath := filepath.Join(binCache, randomName())
 		binaries[binaryPkg] = binPath
@@ -252,11 +262,6 @@ func runTests(testDir, privateRepo, problem string) error {
 		if err := runGo("build", "-mod", "readonly", "-tags", "private", "-o", binPath, binaryPkg); err != nil {
 			return fmt.Errorf("error building binary in %s: %w", binaryPkg, err)
 		}
-	}
-
-	coverageReq := getCoverageRequirements(path.Join(privateRepo, problem))
-	if coverageReq.Enabled {
-		log.Printf("required coverage: %.2f%%", coverageReq.Percent)
 	}
 
 	binariesJSON, _ := json.Marshal(binaries)
