@@ -189,13 +189,33 @@ var file []byte
 После работы утилиты пользователь ожидает, что он останется в той же директории, в которй запускал утилиту.
 
 Неправильно:
-```
+```golang
 err := os.Chdir(repository)
 cmd := exec.Command("git", "blame", "--porcelain", revision, "--", file)
 ```
 
 Правильно:
-```
+```golang
 cmd := exec.Command("git", "blame", "--porcelain", revision, "--", file)
 cmd.Dir = repository
+```
+
+## Стиль
+
+### NIT Используйте общие var и const декларации
+
+Для однородных переменных и констант нет необходимости писать `var` перед каждой строкой
+
+Вместо
+```
+var flagRepo = flag.String("repository", ".", "repo")
+var flagRev = flag.String("revision", "HEAD", "revision")
+```
+
+Можно написать
+```golang
+var (
+	flagRepo = flag.String("repository", ".", "repo")
+	flagRev = flag.String("revision", "HEAD", "revision")
+)
 ```
