@@ -42,7 +42,7 @@ func doTestSubmission(t *testing.T, studentRepo, privateRepo, problem string) er
 		go func() {
 			s := bufio.NewScanner(pr)
 			for s.Scan() {
-				io.WriteString(oldF, fmt.Sprintf("%s%s\n", prefix, s.Text()))
+				_, _ = io.WriteString(oldF, fmt.Sprintf("%s%s\n", prefix, s.Text()))
 			}
 		}()
 
