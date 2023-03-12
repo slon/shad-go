@@ -284,3 +284,58 @@ for _, file := range files {
 Прочитайте [пост в go блоге](https://go.dev/blog/pipelines) про типичные pipeline паттерны.
 
 Можно сделать одного producer'а workload'а, который будет писать файлы для обработки в канал фиксированного размера, а `n` worker'ов будут читать из этого общего канала и обрабатывать файлы.
+
+## User experience
+
+### Не нужно паниковать на невалидном input'е
+
+Пользователь утилиты не очень хочет видеть stacktrace, если он неправильно указал путь до репозитория.
+
+Вместо
+```golang
+files, err := git.ListFiles(*repository, *revision)
+if err != nil {
+	panic(err)
+}
+```
+
+Стоит написать человеческую ошибку:
+```golang
+files, err := git.ListFiles(*repository, *revision)
+if err != nil {
+	_, _ = fmt.Fprintf(os.Stderr, "File listing failed: %s", err)
+	os.Exit(1)
+}
+```
+
+### NIT Не печатать ненужную информацию в логах
+
+При использовании стандартного пакета log в log message добавится время.
+
+Возможно, эта информация польователю не очень нужна.
+
+Вместо
+```golang
+files, err := git.ListFiles(*repository, *revision)
+if err != nil {
+	log.Fatalf("File listing failed: %s", err)
+}
+```
+
+который напечатает что-то вроде:
+```
+2023/03/12 21:26:15 File listing failed: path not found
+```
+
+Можно написать
+```golang
+files, err := git.ListFiles(*repository, *revision)
+if err != nil {
+	_, _ = fmt.Fprintf(os.Stderr, "File listing failed: %s", err)
+	os.Exit(1)
+}
+```
+
+Либо можно сконфигурировать log так, чтобы он не печатал лишнего.
+
+Если вы печатает прогресс по мере обработки файлов, то время в логе может быть уместно. Ещё лучше прогрессбар рисовать.
