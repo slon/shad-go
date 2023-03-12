@@ -182,3 +182,20 @@ var file []byte
 
 Нужно вкомпилить все зависимости в утилиту, например, с помощью embed.
 
+## Работа с `os.Exec`
+
+Нельзя делать `os.Chdir`.
+
+После работы утилиты пользователь ожидает, что он останется в той же директории, в которй запускал утилиту.
+
+Неправильно:
+```
+err := os.Chdir(repository)
+cmd := exec.Command("git", "blame", "--porcelain", revision, "--", file)
+```
+
+Правильно:
+```
+cmd := exec.Command("git", "blame", "--porcelain", revision, "--", file)
+cmd.Dir = repository
+```
