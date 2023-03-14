@@ -33,6 +33,8 @@ BenchmarkSprintf/big-4              	   12006	    108144 ns/op	   16392 B/op	   
 PASS
 ```
 
+Для поиска лишних аллокаций используйте [`pprof`](../docs/allocation_profiling.md).
+
 ### Примеры
 
 Как запустить все тесты и бенчмарки:
