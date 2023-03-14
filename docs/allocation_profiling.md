@@ -4,7 +4,7 @@
 
 Сперва нужно запустить бенчмарк с профайлером
 ```
-✗ go test -v -run=^$ -bench=BenchmarkSprintf -tags private,solution -memprofile=mem.out ./varfmt/...
+✗ go test -v -run=^$ -bench=BenchmarkSprintf -memprofile=mem.out ./varfmt/...
 goos: linux
 goarch: amd64
 pkg: gitlab.com/slon/shad-go/varfmt
