@@ -183,6 +183,18 @@ printCSV
 XMLHTTPRequest
 ```
 
+### Имена файлов должны быть в snake case
+
+Неправильно:
+```
+listFiles.go
+```
+
+Правильно:
+```
+list_files.go
+```
+
 ## Работа с language_extensions.json
 
 Некоторые решения читают файл с экстеншионами по относительному пути.
