@@ -372,6 +372,10 @@ Concurrency with Shared Memory
   ctx, cancel := context.WithCancel(ctx)
   defer cancel()
 
+  // manual cancel with explicit cause
+  ctx, cancel := context.WithCancelCause(ctx)
+  defer cancel(fmt.Errorf("job not needed"))
+
   // cancel by timeout
   ctx, cancel := context.WithTimeout(ctx, 100*time.Millisecond)
   defer cancel()

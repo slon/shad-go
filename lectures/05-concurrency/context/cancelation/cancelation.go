@@ -35,7 +35,7 @@ func doSlowJob(ctx context.Context) error {
 	for {
 		select {
 		case <-ctx.Done():
-			return ctx.Err()
+			return context.Cause(ctx)
 		default:
 			// perform a portion of slow job
 			time.Sleep(1 * time.Second)
