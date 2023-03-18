@@ -140,7 +140,7 @@ func testSubmission(studentRepo, privateRepo, problem string) error {
 
 // copyDir recursively copies src directory to dst.
 func copyDir(baseDir, src, dst string) {
-	_, err := os.Stat(src)
+	_, err := os.Stat(filepath.Join(baseDir, src))
 	if os.IsNotExist(err) {
 		return
 	}
