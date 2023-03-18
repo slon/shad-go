@@ -100,18 +100,18 @@
 #     - task: coverme
 #       score: 300
 
-# - group:    Concurrency with shared memory
-#   start:    17-03-2022 23:59
-#   deadline: 03-04-2022 23:59
-#   tasks:
-#     - task: dupcall
-#       score: 200
-#     - task: keylock
-#       score: 200
-#     - task: batcher
-#       score: 200
-#     - task: pubsub
-#       score: 300
+- group:    Concurrency with shared memory
+  start:    18-03-2023 15:59
+  deadline: 29-03-2023 23:59
+  tasks:
+    - task: dupcall
+      score: 200
+    - task: keylock
+      score: 200
+    - task: batcher
+      score: 200
+    - task: pubsub
+      score: 300
 
 - group:    Testing
   start:    11-03-2023 13:00
