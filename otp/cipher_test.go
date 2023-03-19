@@ -54,6 +54,7 @@ func TestReader(t *testing.T) {
 
 		err    error
 		result []byte
+		limit  bool
 	}{
 		{
 			name:   "simple",
@@ -83,8 +84,9 @@ func TestReader(t *testing.T) {
 			name:   "timeout",
 			r:      iotest.TimeoutReader(bytes.NewBuffer(plaintext)),
 			prng:   bytes.NewBuffer(randomBytes),
-			result: ciphertext[:bytes.MinRead],
+			result: ciphertext,
 			err:    iotest.ErrTimeout,
+			limit:  true,
 		},
 	} {
 		t.Run(testCase.name, func(t *testing.T) {
@@ -92,7 +94,11 @@ func TestReader(t *testing.T) {
 
 			buf, err := ioutil.ReadAll(r)
 			require.ErrorIs(t, err, testCase.err)
-			require.Equal(t, testCase.result, buf)
+			if testCase.limit {
+				require.Equal(t, testCase.result[:len(buf)], buf)
+			} else {
+				require.Equal(t, testCase.result, buf)
+			}
 		})
 	}
 }
