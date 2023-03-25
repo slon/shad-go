@@ -160,6 +160,10 @@ http
 
 * Полезные библиотеки и фреймворки
 
+Клиент:
+
+.link https://github.com/go-resty/resty
+
 Роутеры:
 
 .link https://github.com/go-chi/chi
