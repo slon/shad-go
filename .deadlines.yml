@@ -87,7 +87,7 @@
 
 - group:    HTTP
   start:    25-03-2023 16:00
-  deadline: 05-04-2022 23:59
+  deadline: 05-04-2023 23:59
   tasks:
     - task: urlshortener
       score: 100
