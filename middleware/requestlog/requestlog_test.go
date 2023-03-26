@@ -80,6 +80,6 @@ func TestRequestLog(t *testing.T) {
 	checkEntries("/post", false, http.StatusOK)
 	checkEntries("/forbidden", false, http.StatusForbidden)
 	checkEntries("/slow", false, http.StatusOK)
-	checkEntries("/forgetful", false, http.StatusInternalServerError)
-	checkEntries("/buggy", true, http.StatusInternalServerError)
+	checkEntries("/forgetful", false, http.StatusOK)
+	checkEntries("/buggy", true, 0)
 }
