@@ -25,33 +25,36 @@ func TestKeyLock_Simple(t *testing.T) {
 
 	l := keylock.New()
 
-	canceled, unlock := l.LockKeys([]string{"a", "b"}, nil)
+	canceled, unlock0 := l.LockKeys([]string{"a", "b"}, nil)
 	require.False(t, canceled)
 
 	canceled, _ = l.LockKeys([]string{"", "b", "c"}, timeout(time.Millisecond*10))
 	require.True(t, canceled)
 
-	unlock()
+	unlock0()
 
-	canceled, _ = l.LockKeys([]string{"", "b", "c"}, nil)
+	canceled, unlock1 := l.LockKeys([]string{"", "b", "c"}, nil)
 	require.False(t, canceled)
+	unlock1()
 }
 
 func TestKeyLock_Progress(t *testing.T) {
 	defer goleak.VerifyNone(t)
 	l := keylock.New()
 
-	canceled, unlock := l.LockKeys([]string{"a", "b"}, nil)
+	canceled, unlock0 := l.LockKeys([]string{"a", "b"}, nil)
 	require.False(t, canceled)
-	defer unlock()
+	defer unlock0()
 
 	go func() {
-		_, _ = l.LockKeys([]string{"b", "c"}, nil)
+		_, unlock := l.LockKeys([]string{"b", "c"}, nil)
+		unlock()
 	}()
 
 	time.Sleep(time.Millisecond * 10)
-	canceled, _ = l.LockKeys([]string{"d"}, nil)
+	canceled, unlock1 := l.LockKeys([]string{"d"}, nil)
 	require.False(t, canceled)
+	unlock1()
 }
 
 func TestKeyLock_DeadlockFree(t *testing.T) {
