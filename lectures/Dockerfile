@@ -1,6 +1,6 @@
 FROM golang:1.20-alpine
 
-RUN CGO_ENABLED=0 go install golang.org/x/tools/cmd/present@latest
+RUN CGO_ENABLED=0 go install golang.org/x/tools/cmd/present@@v0.6.0
 
 COPY . /lectures
 
