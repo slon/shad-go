@@ -63,15 +63,6 @@
 #       watch:
 #         - distbuild/pkg/filecache
 
-# - group:    Generics
-#   start:    08-04-2022 21:00
-#   deadline: 24-04-2022 23:59
-#   tasks:
-#     - task: genericsum
-#       score: 100
-#     - task: treeiter
-#       score: 100
-
 # - group:    SQL
 #   start:    31-03-2022 18:00
 #   deadline: 17-04-2022 23:59
@@ -84,6 +75,17 @@
 #       score: 200
 #     - task: shopfront
 #       score: 100
+
+- group:    Generics
+  start:    01-04-2022 21:00
+  deadline: 11-04-2022 23:59
+  tasks:
+    - task: genericsum
+      score: 100
+    - task: treeiter
+      score: 100
+    - task: coverme
+      score: 300
 
 - group:    HTTP
   start:    25-03-2023 16:00
@@ -99,8 +101,6 @@
       score: 200
     - task: firewall
       score: 200
-    - task: coverme
-      score: 300
 
 - group:    Concurrency with shared memory
   start:    18-03-2023 15:59
