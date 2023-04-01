@@ -77,8 +77,8 @@
 #       score: 100
 
 - group:    Generics
-  start:    01-04-2022 21:00
-  deadline: 11-04-2022 23:59
+  start:    01-04-2023 21:00
+  deadline: 11-04-2023 23:59
   tasks:
     - task: genericsum
       score: 100
