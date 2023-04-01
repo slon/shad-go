@@ -1,11 +1,11 @@
-generics
+Generics
 Лекция 8
 
 Арсений Балобанов
 
 * Generics
 
-* New language features
+* Generics features
 
 - Type parameters for functions and types
 - Type sets
@@ -59,7 +59,7 @@ A type parameter list
   }
 
 - The constraint is an interface, but the actual type argument can be any type that implements that interface.
-- The scope of a type parameter starts at the opening "[" and ends at the end of the generic type or function declaration
+- The scope of a type parameter starts at the opening "[" and ends at the end of the generic type or function.
 
 * Using generic Sort
 
@@ -92,7 +92,7 @@ What happens when we call Sort?
 
 - Instantiate book-specific function
 
-  #Sort[book] | (list []book)
+  Sort[book] | (list []book)
 
 * Type-checking a generic call
 
@@ -113,6 +113,10 @@ Invocation (as usual)
 
 any stands for "no constraint" (same as "interface{}")
 
+Moreover,
+
+  type any = interface{}
+
 * Sort, decomposed
 
   type Lesser[T any] interface{
@@ -121,7 +125,7 @@ any stands for "no constraint" (same as "interface{}")
 
   func Sort[Elem Lesser[Elem]](list []Elem)
 
-* Problems
+* Problem
 
 what we want
 
@@ -135,17 +139,34 @@ what we could do
 
   func (x myInt) Less(y myInt) bool { return x < y }
 
+but what if ...
+
+* Problem
+
+there is one nice solution
+
+  // orderedSlice is an internal type that implements sort.Interface.
+  // The Less method uses the < operator. The Ordered type constraint
+  // ensures that T has a < operator.
+  type orderedSlice[T constraints.Ordered] []T
+
+  func (s orderedSlice[T]) Len() int           { return len(s) }
+  func (s orderedSlice[T]) Less(i, j int) bool { return s[i] < s[j] }
+  func (s orderedSlice[T]) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
+
+  func Sort[T constraints.Ordered](s []T) {
+  	sort.Sort(orderedSlice[T](s))
+  }
+
 * min
 
 .play -edit min/basic/min.go /^func min/,/^}/
 
 * Generic min
 
-.play -edit min/basic/min.go /^func min/,/^}/
-
 .play -edit min/generic/min.go /^func min/,/^}/
 
-* Calling generic min
+calling generic min
 
   m := min[int](1, 2)
 
@@ -156,7 +177,7 @@ what we could do
 
 * Generic type
 
-  type Tree[T interface{}] struct {
+  type Tree[T any] struct {
   	left, right *Tree[T]
   	data T
   }
@@ -175,9 +196,9 @@ what we could do
 
   func min[T constraints.Ordered](x, y T) T {
 
-- constraints.Ordered defines a set of values T can have
+- constraints.Ordered defines a set of types T can be
 
-* constaints.Ordered
+* constraints.Ordered
 
   // Ordered is a constraint that permits any ordered type: any type
   // that supports the operators < <= >= >.
@@ -190,7 +211,7 @@ what we could do
 - The < operator is supported by every type in this subset
 - ~T means with underlying type T
 
-* constaints
+* constraints
 
   type Signed interface {
   	~int | ~int8 | ~int16 | ~int32 | ~int64
@@ -212,7 +233,22 @@ what we could do
   	~complex64 | ~complex128
   }
 
-* Constaints & type sets
+* comparable
+
+built-in identifier for anything that can be compared via ==
+
+  func SetFrom[T comparable](s []T) map[T]struct{} {
+  	m := make(map[T]struct{}, len(s))
+  	for _, v := range s {
+  		m[v] = struct{}{}
+  	}
+  	return m
+  }
+
+since go 1.20 comparable also allows interfaces
+
+
+* Constraints & type sets
 
   [T aConstraint]
 
@@ -220,7 +256,24 @@ what we could do
 - interface has a type set
 - type set defines the types that are permissible
 
-* Constaint literals
+* Constraints & type sets
+
+  type OrderedStringer interface {
+  	constraints.Ordered  // Type set
+  	fmt.Stringer         // And stringer as well
+  }
+
+  type Int int
+  func (i Int) String() string { return strconv.Itoa(int(i)) }
+
+  func MaxString[T OrderedStringer](a, b T) string {
+  	if a > b {
+  		return a.String()
+  	}
+  	return b.String()
+  }
+
+* Constraint literals
 
   [S interface{~[]E}, E interface{}]
 
@@ -228,14 +281,14 @@ what we could do
 
   [S ~[]E, E interface{}]
 
-- any is a new predeclared identifier — an alias for interface{} in a constraint
+- any is a predeclared identifier — an alias for interface{} in a constraint
 
   [S ~[]E, E any]
 
 * Type inference
 
 - Type inference is complicated but usage is simple
-- Programms that don't need type arguments today won't need them tomorrow
+- Programs that don't need type arguments today won't need them tomorrow
 
 * Scale
 
@@ -301,8 +354,8 @@ Why don't we need explicit type parameters?
 
   Scale(p, 2)
 
-- p is []Point => S is Point
-- 2 is untyped constant => no info
+- p is Point => S is Point
+- 2 is untyped constant => E is numeric
 
 * Constraint type inference
 
@@ -336,13 +389,94 @@ Why don't we need explicit type parameters?
 
 or with inlined constraint
 
-  func foo[T any, PT interface{*T}](p PT)
+  func f[T any, PT interface{*T}](p PT)
+
+* Output type instantiation
+
+  func CallJSONRPC[Output any](method string) (Output, error) {
+  	var output Output
+
+  	resBytes, err := doCall(method)
+  	if err != nil {
+  		return output, err
+  	}
+
+  	err = json.Unmarshal(resBytes, &output)
+  	return output, err
+  }
+
+now we don't need to write boilerplate for unmarshalling
+
+  res, err := CallJSONRPC[BatchReadResponse]("batch_read")
+
+but no type inference in this case
 
 * When to use generics
 
 - Improved static type safety.
 - More efficient memory use.
 - (Significantly) better performance.
+
+* When not to use generics
+
+we can write
+
+  func Concat[T fmt.Stringer](a, b T) string {
+  	return a.String() + b.String()
+  }
+
+but why not just
+
+  func Concat(a, b fmt.Stringer) string {
+  	return a.String() + b.String()
+  }
+
+P.S. are these functions equivalent?
+
+- Type parameter be replaced by simple interface
+
+* When not to use generics
+
+.play skip/skip.go
+
+just skip this slide...
+
+* Some problems
+
+  func Smallest[E ~[]T, T constraints.Ordered](e E) (T, error) {
+  	if len(e) == 0 {
+  		var zero T
+  		return zero, errors.New("empty slice provided")
+  	}
+
+  	s := e[0]
+  	for _, v := range e[1:] {
+  		is v < s {
+  			s = v
+  		}
+  	}
+  	return s, nil
+  }
+
+- No way to inline zero value
+
+* Some problems
+
+  func Mul[T string | int](t T, cnt int) T {
+  	switch v := any(t).(type) {
+  	case string:
+  		v = strings.Repeat(v, cnt)
+  		return *(*T)(unsafe.Pointer(&v))
+  	case int:
+  		v *= cnt
+  		return *(*T)(unsafe.Pointer(&v))
+  	}
+  	panic("impossible type")
+  }
+
+- No way to determine the instantiated type statically
+- No function overloading
+- No way to express convertibility
 
 * Summary
 
@@ -362,6 +496,6 @@ Use
 
 * Ссылки
 
-.link https://go.googlesource.com/proposal/+/refs/heads/master/design/go2draft-contracts.md - generics design draft
+.link https://go.googlesource.com/proposal/+/refs/heads/master/design/43651-type-parameters.md - generics design proposal
 .link https://blog.golang.org/why-generics - The Go Blog - Why Generics?
 .link https://www.youtube.com/watch?v=TborQFPY2IM - GopherCon 2020, Robert Griesemer - Typing [Generic] Go
