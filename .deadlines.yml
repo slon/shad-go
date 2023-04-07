@@ -64,17 +64,17 @@
 #         - distbuild/pkg/filecache
 
 # - group:    SQL
-#   start:    31-03-2022 18:00
-#   deadline: 17-04-2022 23:59
+#   start:    08-04-2023 16:00
+#   deadline: 18-04-2023 23:59
 #   tasks:
-#     - task: wscat
-#       score: 200
 #     - task: dao
 #       score: 100
 #     - task: ledger
 #       score: 200
 #     - task: shopfront
 #       score: 100
+#     - task: wscat
+#       score: 200
 
 - group:    Generics
   start:    01-04-2023 16:00
