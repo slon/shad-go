@@ -6,11 +6,14 @@ import (
 
 	"github.com/go-redis/redis/v8"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/goleak"
 
 	"gitlab.com/slon/shad-go/shopfront"
 )
 
 func TestShopfront(t *testing.T) {
+	goleak.VerifyNone(t)
+
 	rdb := redis.NewClient(&redis.Options{
 		Addr: StartRedis(t),
 	})

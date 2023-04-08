@@ -9,12 +9,15 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
+	"go.uber.org/goleak"
 
 	"gitlab.com/slon/shad-go/ledger"
 	"gitlab.com/slon/shad-go/pgfixture"
 )
 
 func TestLedger(t *testing.T) {
+	goleak.VerifyNone(t)
+
 	dsn := pgfixture.Start(t)
 
 	ctx := context.Background()

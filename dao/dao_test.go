@@ -7,11 +7,13 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"go.uber.org/goleak"
 
 	"gitlab.com/slon/shad-go/pgfixture"
 )
 
 func TestDao(t *testing.T) {
+	goleak.VerifyNone(t)
 	dsn := pgfixture.Start(t)
 
 	ctx := context.Background()
