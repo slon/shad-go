@@ -1,0 +1,30 @@
+version: '3'
+services:
+  pg:
+    build: ./postgres/
+    environment:
+      POSTGRES_DB: test
+      POSTGRES_USER: gopher
+      POSTGRES_PASSWORD: pass
+    ports:
+      - 5432:5432
+
+  redis:
+    image: "redis:alpine"
+    hostname: redis
+    ports:
+      - "6379:6379"
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - 9090:9090
+
+  grafana:
+    image: grafana/grafana:latest
+    environment:
+      - GF_SECURITY_ADMIN_USER=gopher
+      - GF_SECURITY_ADMIN_PASSWORD=pass
+      - GF_USERS_ALLOW_SIGN_UP=false
+    ports:
+      - 3000:3000
