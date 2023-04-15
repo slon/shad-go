@@ -33,19 +33,6 @@
 #     - task: blowfish
 #       score: 100
 
-# - group:    Reflect
-#   start:    14-04-2022 17:59
-#   deadline: 28-04-2022 23:59
-#   tasks:
-#     - task: reversemap
-#       score: 100
-#     - task: jsonlist
-#       score: 100
-#     - task: jsonrpc
-#       score: 100
-#     - task: structtags
-#       score: 100
-
 # - group:    "[HW] Dist Build Blocks"
 #   start:    14-04-2022 17:59
 #   deadline: 28-04-2022 23:59
@@ -62,6 +49,19 @@
 #       score: 100
 #       watch:
 #         - distbuild/pkg/filecache
+
+- group:    Reflect
+  start:    15-04-2023 16:00
+  deadline: 25-04-2023 23:59
+  tasks:
+    - task: reversemap
+      score: 100
+    - task: jsonlist
+      score: 100
+    - task: jsonrpc
+      score: 100
+    - task: structtags
+      score: 100
 
 - group:    SQL
   start:    08-04-2023 16:00
