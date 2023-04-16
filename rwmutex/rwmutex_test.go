@@ -97,6 +97,23 @@ func HammerRWMutex(gomaxprocs, numReaders, numIterations int) {
 	}
 }
 
+func TestRWMutexReadWrite(t *testing.T) {
+	timeout := time.After(5 * time.Second)
+	done := make(chan bool)
+	go func() {
+		rwm := New()
+		rwm.RLock()
+		rwm.Lock()
+		done <- true
+	}()
+
+	select {
+	case <-timeout:
+	case <-done:
+		t.Fatal("Test finished, must be deadlock")
+	}
+}
+
 func TestRWMutex(t *testing.T) {
 	defer runtime.GOMAXPROCS(runtime.GOMAXPROCS(-1))
 	n := 1000
