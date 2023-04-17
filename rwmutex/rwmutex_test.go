@@ -5,6 +5,7 @@ import (
 	"runtime"
 	"sync/atomic"
 	"testing"
+	"time"
 )
 
 func parallelReader(m *RWMutex, clocked, cunlock, cdone chan bool) {
@@ -98,7 +99,6 @@ func HammerRWMutex(gomaxprocs, numReaders, numIterations int) {
 }
 
 func TestRWMutexReadWrite(t *testing.T) {
-	timeout := time.After(5 * time.Second)
 	done := make(chan bool)
 	go func() {
 		rwm := New()
@@ -108,7 +108,7 @@ func TestRWMutexReadWrite(t *testing.T) {
 	}()
 
 	select {
-	case <-timeout:
+	case <-time.After(time.Second):
 	case <-done:
 		t.Fatal("Test finished, must be deadlock")
 	}
