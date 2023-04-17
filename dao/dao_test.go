@@ -13,7 +13,7 @@ import (
 )
 
 func TestDao(t *testing.T) {
-	goleak.VerifyNone(t)
+	t.Cleanup(func() { goleak.VerifyNone(t) })
 	dsn := pgfixture.Start(t)
 
 	ctx := context.Background()
