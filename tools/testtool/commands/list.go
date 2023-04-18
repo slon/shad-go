@@ -1,8 +1,11 @@
 package commands
 
 import (
+	"bytes"
+	"io/fs"
 	"log"
 	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 
@@ -82,6 +85,28 @@ func listPrivateFiles(rootPackage string) []string {
 		if _, isPublic := allFiles[f]; !isPublic {
 			files = append(files, f)
 		}
+	}
+
+	if err := filepath.WalkDir(rootPackage, func(path string, d fs.DirEntry, err error) error {
+		if strings.HasSuffix(path, ".proto") {
+			content, err := os.ReadFile(path)
+			if err != nil {
+				return err
+			}
+
+			if bytes.Contains(content, []byte("//go:build solution")) {
+				absPath, err := filepath.Abs(path)
+				if err != nil {
+					return err
+				}
+
+				files = append(files, absPath)
+			}
+		}
+
+		return nil
+	}); err != nil {
+		log.Fatalf("filewalk failed: %v", err)
 	}
 
 	sort.Strings(files)
