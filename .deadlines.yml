@@ -1,3 +1,10 @@
+- group:    Bonus
+  start:    11-02-2023 18:00
+  deadline: 29-05-2023 23:59
+  tasks:
+    - task: consistenthash
+      score: 200
+
 # - group:    Analysis
 #   start:    05-05-2022 18:00
 #   deadline: 15-05-2022 23:59
