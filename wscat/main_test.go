@@ -132,7 +132,7 @@ func TestWScat(t *testing.T) {
 	}
 
 	// give client time to make a request
-	time.Sleep(time.Millisecond * 200)
+	time.Sleep(time.Second)
 	stop()
 
 	require.Equal(t, bytes.Join(in, nil), bytes.Join(received, nil))
