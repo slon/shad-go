@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	pingPeriod = time.Millisecond * 10
+	pingPeriod = time.Millisecond * 5
 	waitPeriod = pingPeriod * 20
 )
 
