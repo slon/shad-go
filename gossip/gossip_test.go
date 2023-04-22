@@ -16,7 +16,7 @@ import (
 
 const (
 	pingPeriod = time.Millisecond * 10
-	waitPeriod = pingPeriod * 10
+	waitPeriod = pingPeriod * 20
 )
 
 type env struct {
