@@ -33,15 +33,6 @@
 #       watch:
 #         - distbuild/pkg/scheduler
 
-# - group:    Low level
-#   start:    21-04-2022 18:00
-#   deadline: 02-05-2022 23:59
-#   tasks:
-#     - task: illegal
-#       score: 100
-#     - task: blowfish
-#       score: 100
-
 # - group:    "[HW] Dist Build Blocks"
 #   start:    14-04-2022 17:59
 #   deadline: 28-04-2022 23:59
@@ -58,6 +49,15 @@
 #       score: 100
 #       watch:
 #         - distbuild/pkg/filecache
+
+- group:    Low level
+  start:    22-04-2023 16:00
+  deadline: 03-05-2023 23:59
+  tasks:
+    - task: illegal
+      score: 100
+    - task: blowfish
+      score: 100
 
 - group:    Reflect
   start:    15-04-2023 16:00
