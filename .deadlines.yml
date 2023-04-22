@@ -4,6 +4,8 @@
   tasks:
     - task: consistenthash
       score: 200
+    - task: gossip
+      score: 300
 
 # - group:    Analysis
 #   start:    05-05-2022 18:00
