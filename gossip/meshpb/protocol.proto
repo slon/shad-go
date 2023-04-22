@@ -1,0 +1,13 @@
+//go:build !solution
+
+syntax = "proto3";
+
+option go_package = "gitlab.com/slon/shad-go/gossip/meshpb";
+
+// PeerMeta is arbitary message that is propageted with peer gossip.
+message PeerMeta {
+  string name = 1;
+}
+
+service GossipService {
+}
