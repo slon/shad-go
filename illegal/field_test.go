@@ -17,3 +17,11 @@ func TestIllegalField(t *testing.T) {
 
 	assert.Equal(t, "10 foo", s.String())
 }
+
+func TestIllegalWrongFieldType(t *testing.T) {
+	var s internal.Struct
+
+	assert.Panics(t, func() {
+		illegal.SetPrivateField(&s, "a", "1234")
+	})
+}
