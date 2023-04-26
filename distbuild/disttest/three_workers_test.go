@@ -5,9 +5,9 @@ import (
 	"os"
 	"sync"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"gitlab.com/slon/shad-go/distbuild/pkg/build"
 )
@@ -28,8 +28,6 @@ func TestArtifactTransferBetweenWorkers(t *testing.T) {
 
 	var wg sync.WaitGroup
 	wg.Add(3)
-
-	startTime := time.Now()
 
 	for i := 0; i < 3; i++ {
 		depJobID := build.ID{'b', byte(i)}
@@ -59,6 +57,9 @@ func TestArtifactTransferBetweenWorkers(t *testing.T) {
 
 	wg.Wait()
 
-	testDuration := time.Since(startTime)
-	assert.True(t, testDuration < time.Second*5/2, "test duration should be less than 2.5 seconds")
+	for _, cache := range env.WorkerCache {
+		_, unlock, err := cache.Get(baseJob.ID)
+		require.NoError(t, err)
+		defer unlock()
+	}
 }

@@ -36,10 +36,6 @@ func (c *Scheduler) LocateArtifact(id build.ID) (api.WorkerID, bool) {
 	panic("implement me")
 }
 
-func (c *Scheduler) RegisterWorker(workerID api.WorkerID) {
-	panic("implement me")
-}
-
 func (c *Scheduler) OnJobComplete(workerID api.WorkerID, jobID build.ID, res *api.JobResult) bool {
 	panic("implement me")
 }

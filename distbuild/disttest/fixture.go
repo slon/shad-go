@@ -37,6 +37,7 @@ type env struct {
 	Client      *client.Client
 	Coordinator *dist.Coordinator
 	Workers     []*worker.Worker
+	WorkerCache []*artifact.Cache
 
 	HTTP *http.Server
 }
@@ -140,6 +141,7 @@ func newEnv(t *testing.T, config *Config) (e *env, cancel func()) {
 		)
 
 		env.Workers = append(env.Workers, w)
+		env.WorkerCache = append(env.WorkerCache, artifacts)
 
 		router.Handle(workerPrefix+"/", http.StripPrefix(workerPrefix, w))
 	}

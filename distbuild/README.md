@@ -96,7 +96,7 @@ type Job struct {
 
 После того, как все кубики будут готовы, нужно будет соединить их вместе, реализовав [`distbuild/pkg/worker`](./pkg/worker),
 [`distbuild/pkg/client`](./pkg/client) и [`distbuild/pkg/dist`](./pkg/dist). Код в этих пакетах нужно отлаживать на
-интеграционных тестах в [`distbuild/disttest`](../disttest).
+интеграционных тестах в [`distbuild/disttest`](./disttest).
 
 Код тестов в этом задании менять нельзя. Это значит, что вы не можете менять интерфейсы в тех местах, где
 код покрыт тестами.
@@ -105,28 +105,25 @@ type Job struct {
   <summary markdown="span">Сколько кода нужно написать?</summary>
   
   ```
-prime@bee ~/C/shad-go> find distbuild -iname '*.go' | grep -v test | grep -v mock | grep -v pkg/build | xargs wc -l
-   23 distbuild/pkg/worker/state.go
-  111 distbuild/pkg/worker/worker.go
-   45 distbuild/pkg/worker/download.go
-  281 distbuild/pkg/worker/job.go
-   69 distbuild/pkg/api/heartbeat.go
-  121 distbuild/pkg/api/build_client.go
-   53 distbuild/pkg/api/build.go
-   60 distbuild/pkg/api/heartbeat_handler.go
-  142 distbuild/pkg/api/build_handler.go
-   56 distbuild/pkg/api/heartbeat_client.go
-  288 distbuild/pkg/scheduler/scheduler.go
-  119 distbuild/pkg/dist/build.go
-  120 distbuild/pkg/dist/coordinator.go
-   98 distbuild/pkg/tarstream/stream.go
-   42 distbuild/pkg/artifact/client.go
-  191 distbuild/pkg/artifact/cache.go
-   54 distbuild/pkg/artifact/handler.go
-  124 distbuild/pkg/client/build.go
-   83 distbuild/pkg/filecache/client.go
-   99 distbuild/pkg/filecache/handler.go
-  111 distbuild/pkg/filecache/filecache.go
- 2290 total
+prime@fedora ~/C/s/distbuild (master)> find -iname '*_solution.go' | grep -v scheduler_solution| xargs wc -l
+  123 ./pkg/api/build_client_solution.go
+  140 ./pkg/api/build_handler_solution.go
+   58 ./pkg/api/heartbeat_client_solution.go
+   62 ./pkg/api/heartbeat_handler_solution.go
+    5 ./pkg/artifact/cache_solution.go
+   44 ./pkg/artifact/client_solution.go
+   56 ./pkg/artifact/handler_solution.go
+  126 ./pkg/client/build_solution.go
+  121 ./pkg/dist/build_solution.go
+  122 ./pkg/dist/coordinator_solution.go
+   85 ./pkg/filecache/client_solution.go
+    5 ./pkg/filecache/filecache_solution.go
+  101 ./pkg/filecache/handler_solution.go
+    5 ./pkg/tarstream/stream_solution.go
+   47 ./pkg/worker/download_solution.go
+  283 ./pkg/worker/job_solution.go
+   25 ./pkg/worker/state_solution.go
+  113 ./pkg/worker/worker_solution.go
+ 1521 total
   ```
 </details>
