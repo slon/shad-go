@@ -29,16 +29,12 @@ func newEnv(t *testing.T) *env {
 	mux := http.NewServeMux()
 
 	cache := newCache(t)
-	defer func() {
-		if cache != nil {
-			cache.cleanup()
-		}
-	}()
 
 	handler := filecache.NewHandler(l, cache.Cache)
 	handler.Register(mux)
 
 	server := httptest.NewServer(mux)
+	t.Cleanup(server.Close)
 
 	client := filecache.NewClient(l, server.URL)
 
@@ -48,19 +44,11 @@ func newEnv(t *testing.T) *env {
 		client: client,
 	}
 
-	cache = nil
 	return env
-}
-
-func (e *env) stop() {
-	e.server.Close()
-	e.cache.cleanup()
 }
 
 func TestFileUpload(t *testing.T) {
 	env := newEnv(t)
-	defer env.stop()
-
 	content := bytes.Repeat([]byte("foobar"), 1024*1024)
 
 	tmpFilePath := filepath.Join(env.cache.tmpDir, "foo.txt")
@@ -115,10 +103,8 @@ func TestFileUpload(t *testing.T) {
 
 func TestFileDownload(t *testing.T) {
 	env := newEnv(t)
-	defer env.stop()
 
 	localCache := newCache(t)
-	defer localCache.cleanup()
 
 	id := build.ID{0x01}
 

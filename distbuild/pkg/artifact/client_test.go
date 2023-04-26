@@ -1,4 +1,4 @@
-package artifacttest
+package artifact_test
 
 import (
 	"context"
@@ -17,9 +17,7 @@ import (
 
 func TestArtifactTransfer(t *testing.T) {
 	remoteCache := newTestCache(t)
-	defer remoteCache.cleanup()
 	localCache := newTestCache(t)
-	defer localCache.cleanup()
 
 	id := build.ID{0x01}
 

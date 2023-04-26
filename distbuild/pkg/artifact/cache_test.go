@@ -1,4 +1,4 @@
-package artifacttest
+package artifact_test
 
 import (
 	"errors"
@@ -32,12 +32,13 @@ func newTestCache(t *testing.T) *testCache {
 	}
 	require.NoError(t, err)
 
-	return &testCache{Cache: cache, tmpDir: tmpDir}
+	c := &testCache{Cache: cache, tmpDir: tmpDir}
+	t.Cleanup(c.cleanup)
+	return c
 }
 
 func TestCache(t *testing.T) {
 	c := newTestCache(t)
-	defer c.cleanup()
 
 	idA := build.ID{'a'}
 
@@ -73,7 +74,6 @@ func TestCache(t *testing.T) {
 
 func TestAbortWrite(t *testing.T) {
 	c := newTestCache(t)
-	defer c.cleanup()
 
 	idA := build.ID{'a'}
 
@@ -87,7 +87,6 @@ func TestAbortWrite(t *testing.T) {
 
 func TestArtifactExists(t *testing.T) {
 	c := newTestCache(t)
-	defer c.cleanup()
 
 	idA := build.ID{'a'}
 

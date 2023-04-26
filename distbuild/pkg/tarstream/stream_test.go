@@ -1,4 +1,4 @@
-package tarstreamtest
+package tarstream_test
 
 import (
 	"bytes"

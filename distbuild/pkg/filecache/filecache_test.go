@@ -24,7 +24,9 @@ func newCache(t *testing.T) *testCache {
 	c, err := filecache.New(tmpDir)
 	require.NoError(t, err)
 
-	return &testCache{Cache: c, tmpDir: tmpDir}
+	cc := &testCache{Cache: c, tmpDir: tmpDir}
+	t.Cleanup(cc.cleanup)
+	return cc
 }
 
 func (c *testCache) cleanup() {
