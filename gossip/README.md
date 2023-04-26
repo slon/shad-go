@@ -48,10 +48,10 @@ protoc-gen-go-grpc --help
 
 Описание protobuf сообщений и сервисов находится в файле `meshpb/protocol.proto`
 
-Команда для генерации записана в `Makefile`. Чтобы запустить её, перейдите в директорию `servicemesh` и выполните команду `make`.
+Команда для генерации записана в `Makefile`. Чтобы запустить её, перейдите в директорию `gossip` и выполните команду `make`.
 
 ```
-prime@fedora ~/C/shad-go (master)> cd servicemesh/
-prime@fedora ~/C/s/servicemesh (master)> make
+prime@fedora ~/C/shad-go (master)> cd gossip/
+prime@fedora ~/C/s/gossip (master)> make
 protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative meshpb/protocol.proto
 ```
