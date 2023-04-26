@@ -6,6 +6,10 @@
       score: 200
     - task: gossip
       score: 300
+    - task: smartsched
+      score: 200
+      watch:
+        - distbuild/pkg/scheduler
 
 # - group:    Analysis
 #   start:    05-05-2022 18:00
@@ -16,39 +20,12 @@
 #     - task: gzep
 #       score: 100
 
-# - group:    "[HW] Dist Build"
-#   start:    23-04-2022 18:00
-#   deadline: 15-05-2022 23:59
-#   tasks:
-#     - task: disttest
-#       score: 0
-#       watch:
-#         - distbuild
-#     - task: distbuild
-#       score: 100
-#       watch:
-#         - distbuild
-#     - task: smartsched
-#       score: 200
-#       watch:
-#         - distbuild/pkg/scheduler
-
-# - group:    "[HW] Dist Build Blocks"
-#   start:    14-04-2022 17:59
-#   deadline: 28-04-2022 23:59
-#   tasks:
-#     - task: tarstreamtest
-#       score: 100
-#       watch:
-#         - distbuild/pkg/tarstream
-#     - task: artifacttest
-#       score: 100
-#       watch:
-#         - distbuild/pkg/artifact
-#     - task: filecachetest
-#       score: 100
-#       watch:
-#         - distbuild/pkg/filecache
+- group:    "[HW] Dist Build"
+  start:    26-04-2023 12:00
+  deadline: 20-05-2023 23:59
+  tasks:
+    - task: distbuild
+      score: 0
 
 - group:    Low level
   start:    22-04-2023 16:00
