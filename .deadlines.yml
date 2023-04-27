@@ -10,6 +10,8 @@
       score: 200
       watch:
         - distbuild/pkg/scheduler
+    - task: wasm
+      score: 300
 
 # - group:    Analysis
 #   start:    05-05-2022 18:00

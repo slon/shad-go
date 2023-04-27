@@ -109,6 +109,22 @@ func listPrivateFiles(rootPackage string) []string {
 		log.Fatalf("filewalk failed: %v", err)
 	}
 
+	config, err := os.ReadFile(".private")
+	if err != nil && !os.IsNotExist(err) {
+		log.Fatalf("failed: %v", err)
+	}
+
+	for _, line := range strings.Split(string(config), "\n") {
+		line = strings.Trim(line, " ")
+		if line != "" {
+			fname, _ := filepath.Abs(line)
+			_, err := os.Stat(fname)
+			if err == nil {
+				files = append(files, fname)
+			}
+		}
+	}
+
 	sort.Strings(files)
 	return files
 }
