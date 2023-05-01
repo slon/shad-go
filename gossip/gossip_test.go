@@ -95,9 +95,9 @@ func TestGossip_TwoPeers(t *testing.T) {
 	require.Contains(t, members1, peer0.Addr())
 	require.Contains(t, members1, peer1.Addr())
 
-	peer1.UpdateMeta(&meshpb.PeerMeta{Name: "bob"})
+	peer0.UpdateMeta(&meshpb.PeerMeta{Name: "bob"})
 	time.Sleep(waitPeriod)
-	require.Equal(t, "bob", peer0.GetMembers()[peer1.Addr()].Name)
+	require.Equal(t, "bob", peer1.GetMembers()[peer0.Addr()].Name)
 
 	peer1.UpdateMeta(&meshpb.PeerMeta{Name: "sam"})
 	time.Sleep(waitPeriod)
