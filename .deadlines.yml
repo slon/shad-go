@@ -24,7 +24,7 @@
 
 - group:    "[HW] Dist Build"
   start:    26-04-2023 12:00
-  deadline: 20-05-2023 23:59
+  deadline: 21-05-2023 23:59
   tasks:
     - task: distbuild
       score: 0
