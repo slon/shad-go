@@ -21,14 +21,14 @@
 
 Типы
 
-  int int8 int16 int32 int64
+  any comparable int int8 int16 int32 int64
   uint uint8 uint16 uint32 uint64 uintptr
   float32 float64 complex128 complex64
   bool byte rune string error
 
 Функции
 
-  make len cap new append copy close delete
+  min max make len cap new append clear copy close delete
   complex real imag
   panic recover
 
@@ -105,7 +105,7 @@
 
 * new
 
-`new(T)` создаёт новую переменную с типом `T`.
+`new(T)` создаёт новую переменную с типом `*T`.
 
   func newInt() *int {
       return new(int)
@@ -125,6 +125,9 @@
   p := new(struct{})
   q := new(struct{})
   fmt.Println(p == q) // "true" or "false", depending on implementation
+
+  a := [1_000_000_000]struct{}{}
+  fmt.Println(unsafe.Sizeof(a)) // 0
 
 * variable lifetime
 
@@ -146,11 +149,17 @@
       *y = 1
   }
 
+.link https://habr.com/ru/companies/oleg-bunin/articles/676332/ Алгоритм для определения стек или куча для переменной
+
 * type declaration
 
   type name underlying-type
 
 .play tempconv0/conv.go
+
+- type alias
+
+  type name = another-type
 
 * packages
 
@@ -170,9 +179,11 @@
 
 * package initialization
 
-  var a = b + c // a initialized third, to 3
-  var b = f()   // b initialized second, to 2, by calling f
-  var c = 1     // c initialized first, to 1
+  var (
+      a = b + c // a initialized third, to 3
+      b = f()   // b initialized second, to 2, by calling f
+      c = 1     // c initialized first, to 1
+  )
 
   func f() int { return c + 1 }
 
@@ -295,7 +306,7 @@
 
 * bytes.Buffer
 
-  func intsToString(values []int) string {
+  func intsToBytes(values []int) []byte] {
       var buf bytes.Buffer
       buf.WriteByte('[')
       for i, v := range values {
@@ -305,7 +316,7 @@
           fmt.Fprintf(&buf, "%d", v)
       }
       buf.WriteByte(']')
-      return buf.String()
+      return buf.Bytes()
   }
 
 * constants
@@ -375,6 +386,13 @@
   s := make([]int, 10)
   s = s[:0]
   s = s[:10]
+  s = s[:5:5]
+  s = s[:10] // panic
+
+- make эквивалентен следующему коду
+
+  a := [10]int{}
+  s := a[:]
 
 * slices
 
@@ -388,11 +406,11 @@
 * slices
 
   var a, b []string
-  fmt.Println(a == b)
+  // a == nil && b == nil
+  fmt.Println(a == b) // invalid operation: a == b (slice can only be compared to nil)
 
   var c []int
   d := []int{}
-  fmt.Println(c != d)
 
   // c == nil && d != nil
   // len(c) == 0 && len(d) == 0
@@ -411,6 +429,8 @@
   var a, b []int
   a = append(a, b...)
 
+  sCopy := append([]int(nil), s...) // use slices.Clone instead
+
 * stack
 
   stack = append(stack, v) // push v
@@ -418,6 +438,17 @@
   top := stack[len(stack)-1] // top of stack
 
   stack = stack[:len(stack)-1] // pop
+
+* queue
+
+  queue = append(stack, v) // push v
+
+  front := queue[0] // front of queue
+
+  queue = queue[1:] // pop
+
+- O(1) амортизированное время всех операций
+- Не очень эффективно по числу аллокаций
 
 * copy
 
@@ -450,6 +481,8 @@
   ages["bob"] += 1
   ages["bob"]++
   _ = &ages["bob"] // compile error: cannot take address of map element
+
+  clear(ages)
 
 * maps
 

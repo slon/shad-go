@@ -11,7 +11,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 )
@@ -58,7 +57,7 @@ func walkDir(dir string, fileSizes chan<- int64) {
 
 // dirents returns the entries of directory dir.
 func dirents(dir string) []os.FileInfo {
-	entries, err := ioutil.ReadDir(dir)
+	entries, err := os.ReadDir(dir)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "du1: %v\n", err)
 		return nil

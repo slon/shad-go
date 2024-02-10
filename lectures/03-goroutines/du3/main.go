@@ -13,7 +13,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sync"
@@ -22,7 +21,7 @@ import (
 
 var vFlag = flag.Bool("v", false, "show verbose progress messages")
 
-//!+
+// !+
 func main() {
 	// ...determine roots...
 
@@ -82,7 +81,7 @@ func printDiskUsage(nfiles, nbytes int64) {
 
 // walkDir recursively walks the file tree rooted at dir
 // and sends the size of each found file on fileSizes.
-//!+walkDir
+// !+walkDir
 func walkDir(dir string, n *sync.WaitGroup, fileSizes chan<- int64) {
 	defer n.Done()
 	for _, entry := range dirents(dir) {
@@ -98,7 +97,7 @@ func walkDir(dir string, n *sync.WaitGroup, fileSizes chan<- int64) {
 
 //!-walkDir
 
-//!+sema
+// !+sema
 // sema is a counting semaphore for limiting concurrency in dirents.
 var sema = make(chan struct{}, 20)
 
@@ -109,7 +108,7 @@ func dirents(dir string) []os.FileInfo {
 	// ...
 	//!-sema
 
-	entries, err := ioutil.ReadDir(dir)
+	entries, err := os.ReadDir(dir)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "du: %v\n", err)
 		return nil
