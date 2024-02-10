@@ -441,7 +441,7 @@
 
 * queue
 
-  queue = append(stack, v) // push v
+  queue = append(queue, v) // push v
 
   front := queue[0] // front of queue
 
