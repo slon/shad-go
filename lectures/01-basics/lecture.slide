@@ -306,7 +306,7 @@
 
 * bytes.Buffer
 
-  func intsToBytes(values []int) []byte] {
+  func intsToBytes(values []int) []byte {
       var buf bytes.Buffer
       buf.WriteByte('[')
       for i, v := range values {
