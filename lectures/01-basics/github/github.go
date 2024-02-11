@@ -3,6 +3,7 @@ package github
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -22,6 +23,10 @@ func SearchIssues(terms []string) (*IssuesSearchResult, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
+		// The default HTTP client's Transport may not
+		// reuse HTTP/1.x "keep-alive" TCP connections if the Body is
+		// not read to completion and closed.
+		io.Copy(io.Discard, resp.Body)
 		return nil, fmt.Errorf("search query failed: %s", resp.Status)
 	}
 

@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"sync"
 )
@@ -25,7 +24,7 @@ func main() {
 				return
 			}
 			defer resp.Body.Close()
-			_, _ = io.Copy(ioutil.Discard, resp.Body)
+			_, _ = io.Copy(io.Discard, resp.Body)
 			fmt.Printf("%s - %d\n", url, resp.StatusCode)
 		}(url)
 	}

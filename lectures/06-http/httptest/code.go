@@ -2,7 +2,7 @@ package httptest
 
 import (
 	"context"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strconv"
 )
@@ -31,7 +31,7 @@ func (c *APIClient) GetReposCount(ctx context.Context, userID string) (int, erro
 		return 0, err
 	}
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return 0, err
 	}
