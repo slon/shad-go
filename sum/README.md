@@ -54,3 +54,4 @@
 8. Посмотрите как проходит тестирование, пройдя по ссылке Submits со страницы https://go.manytask.org/
 
 9. Убедитесь, что ваша оценка появилась в [таблице](https://docs.google.com/spreadsheets/d/1rTqdHu2AJtdCeFp_iLKsKVk848Wddh2rW0nOmO6Y528).
+
