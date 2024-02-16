@@ -1,0 +1,39 @@
+version: 1
+
+
+settings:  # required
+  course_name: go
+
+  gitlab_base_url: https://gitlab.manytask.org
+  public_repo: go/public-2024-spring
+  students_group: go/students-2024-spring
+
+
+ui:
+  task_url_template: https://github.com/slon/shad-go/tree/main/$TASK_NAME
+
+  # optional, any number of links
+  links:
+    # "TG Channel": https://t.me/+Tk8VTMAk5Tlp7Txm
+    "TG Chat": https://t.me/+Tk8VTMAk5Tlp7Txm
+    "LMS": https://lk.yandexdataschool.ru/
+    "Contribute Manytask": https://github.com/manytask
+
+
+deadlines:
+  timezone: Europe/Moscow
+
+  deadlines: hard # hard/interpolate
+  # max_submissions: 10  # optional
+  # submission_penalty: 0.1  # optional
+
+  schedule:
+    - group: test
+      start: 2024-01-01 18:00
+      steps:
+        0.5: 2024-03-01 18:00
+      end: 2024-05-01 23:59
+      enabled: true
+      tasks:
+        - task: sum
+          score: 100
