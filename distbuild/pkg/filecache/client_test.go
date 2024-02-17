@@ -3,9 +3,9 @@ package filecache_test
 import (
 	"bytes"
 	"context"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"path/filepath"
 	"sync"
 	"testing"
@@ -52,7 +52,7 @@ func TestFileUpload(t *testing.T) {
 	content := bytes.Repeat([]byte("foobar"), 1024*1024)
 
 	tmpFilePath := filepath.Join(env.cache.tmpDir, "foo.txt")
-	require.NoError(t, ioutil.WriteFile(tmpFilePath, content, 0666))
+	require.NoError(t, os.WriteFile(tmpFilePath, content, 0666))
 
 	ctx := context.Background()
 
@@ -65,7 +65,7 @@ func TestFileUpload(t *testing.T) {
 		require.NoError(t, err)
 		defer unlock()
 
-		actualContent, err := ioutil.ReadFile(path)
+		actualContent, err := os.ReadFile(path)
 		require.NoError(t, err)
 		require.Equal(t, content, actualContent)
 	})
@@ -123,7 +123,7 @@ func TestFileDownload(t *testing.T) {
 	require.NoError(t, err)
 	defer unlock()
 
-	content, err := ioutil.ReadFile(path)
+	content, err := os.ReadFile(path)
 	require.NoError(t, err)
 	require.Equal(t, []byte("foobar"), content)
 }

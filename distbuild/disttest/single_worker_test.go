@@ -2,7 +2,8 @@ package disttest
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -40,7 +41,7 @@ func TestJobCaching(t *testing.T) {
 	env, cancel := newEnv(t, singleWorkerConfig)
 	defer cancel()
 
-	tmpFile, err := ioutil.TempFile("", "")
+	tmpFile, err := os.CreateTemp("", "")
 	require.NoError(t, err)
 
 	graph := build.Graph{
@@ -62,12 +63,12 @@ func TestJobCaching(t *testing.T) {
 	assert.Len(t, recorder.Jobs, 1)
 	assert.Equal(t, &JobResult{Stdout: "OK\n", Code: new(int)}, recorder.Jobs[build.ID{'a'}])
 
-	require.NoError(t, ioutil.WriteFile(tmpFile.Name(), []byte("NOTOK\n"), 0666))
+	require.NoError(t, os.WriteFile(tmpFile.Name(), []byte("NOTOK\n"), 0666))
 
 	// Second build must get results from cache.
 	require.NoError(t, env.Client.Build(env.Ctx, graph, NewRecorder()))
 
-	output, err := ioutil.ReadAll(tmpFile)
+	output, err := io.ReadAll(tmpFile)
 	require.NoError(t, err)
 	require.Equal(t, []byte("NOTOK\n"), output)
 }

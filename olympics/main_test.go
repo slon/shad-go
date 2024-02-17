@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"os/exec"
@@ -73,7 +72,7 @@ func TestServer_valid(t *testing.T) {
 	for _, e := range []string{"athlete-info", "top-athletes-in-sport", "top-countries-in-year"} {
 		t.Run(e, func(t *testing.T) {
 			testDir := path.Join("./testdata", "tests", e)
-			files, err := ioutil.ReadDir(testDir)
+			files, err := os.ReadDir(testDir)
 			require.NoError(t, err)
 
 			for _, f := range files {
@@ -85,10 +84,10 @@ func TestServer_valid(t *testing.T) {
 				}
 
 				t.Run(f.Name(), func(t *testing.T) {
-					in, err := ioutil.ReadFile(path.Join(testDir, f.Name(), "in.json"))
+					in, err := os.ReadFile(path.Join(testDir, f.Name(), "in.json"))
 					require.NoError(t, err)
 
-					out, err := ioutil.ReadFile(path.Join(testDir, f.Name(), "out.json"))
+					out, err := os.ReadFile(path.Join(testDir, f.Name(), "out.json"))
 					require.NoError(t, err)
 
 					var values map[string]interface{}

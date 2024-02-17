@@ -6,7 +6,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -90,7 +89,7 @@ func problemDirExists(repo, problem string) bool {
 
 func testSubmission(studentRepo, privateRepo, problem string) error {
 	// Create temp directory to store all files required to test the solution.
-	tmpRepo, err := ioutil.TempDir("/tmp", problem+"-")
+	tmpRepo, err := os.MkdirTemp("/tmp", problem+"-")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -209,7 +208,7 @@ func runLinter(testDir, problem string) error {
 
 // runTests runs all tests in directory with race detector.
 func runTests(testDir, privateRepo, problem string) error {
-	binCache, err := ioutil.TempDir("/tmp", "bincache")
+	binCache, err := os.MkdirTemp("/tmp", "bincache")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -218,7 +217,7 @@ func runTests(testDir, privateRepo, problem string) error {
 	}
 
 	var goCache string
-	goCache, err = ioutil.TempDir("/tmp", "gocache")
+	goCache, err = os.MkdirTemp("/tmp", "gocache")
 	if err != nil {
 		log.Fatal(err)
 	}

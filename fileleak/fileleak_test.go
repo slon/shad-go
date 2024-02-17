@@ -3,7 +3,6 @@ package fileleak_test
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"os"
 	"syscall"
@@ -75,7 +74,7 @@ func TestFileLeak_ReopenFile(t *testing.T) {
 	checkLeak(t, true, func() {
 		_ = f.Close()
 
-		ff, err := ioutil.TempFile("", "")
+		ff, err := os.CreateTemp("", "")
 		require.NoError(t, err)
 		f = ff
 	})

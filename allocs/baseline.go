@@ -5,7 +5,6 @@ package allocs
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"sort"
 	"strings"
 )
@@ -24,7 +23,7 @@ func NewBaselineCounter() Counter {
 }
 
 func (c BaselineCounter) Count(r io.Reader) error {
-	data, err := ioutil.ReadAll(r)
+	data, err := os.ReadAll(r)
 	if err != nil {
 		return err
 	}

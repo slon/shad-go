@@ -2,7 +2,6 @@ package filecache_test
 
 import (
 	"errors"
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -18,7 +17,7 @@ type testCache struct {
 }
 
 func newCache(t *testing.T) *testCache {
-	tmpDir, err := ioutil.TempDir("", "filecache")
+	tmpDir, err := os.MkdirTemp("", "filecache")
 	require.NoError(t, err)
 
 	c, err := filecache.New(tmpDir)
@@ -54,7 +53,7 @@ func TestFileCache(t *testing.T) {
 	require.NoError(t, err)
 	defer unlock()
 
-	content, err := ioutil.ReadFile(path)
+	content, err := os.ReadFile(path)
 	require.NoError(t, err)
 	require.Equal(t, []byte("foo bar"), content)
 }

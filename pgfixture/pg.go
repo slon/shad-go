@@ -2,7 +2,6 @@ package pgfixture
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -24,7 +23,7 @@ func lookPath(t *testing.T, name string) string {
 
 	const ubuntuPostgres = "/usr/lib/postgresql"
 
-	if dirs, err := ioutil.ReadDir(ubuntuPostgres); err == nil {
+	if dirs, err := os.ReadDir(ubuntuPostgres); err == nil {
 		for _, d := range dirs {
 			path := filepath.Join(ubuntuPostgres, d.Name(), "bin", name)
 

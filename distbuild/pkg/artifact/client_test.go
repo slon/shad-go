@@ -2,9 +2,9 @@ package artifact_test
 
 import (
 	"context"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"path/filepath"
 	"testing"
 
@@ -23,7 +23,7 @@ func TestArtifactTransfer(t *testing.T) {
 
 	dir, commit, _, err := remoteCache.Create(id)
 	require.NoError(t, err)
-	require.NoError(t, ioutil.WriteFile(filepath.Join(dir, "a.txt"), []byte("foobar"), 0777))
+	require.NoError(t, os.WriteFile(filepath.Join(dir, "a.txt"), []byte("foobar"), 0777))
 	require.NoError(t, commit())
 
 	l := zaptest.NewLogger(t)
@@ -42,7 +42,7 @@ func TestArtifactTransfer(t *testing.T) {
 	require.NoError(t, err)
 	defer unlock()
 
-	content, err := ioutil.ReadFile(filepath.Join(dir, "a.txt"))
+	content, err := os.ReadFile(filepath.Join(dir, "a.txt"))
 	require.NoError(t, err)
 	require.Equal(t, []byte("foobar"), content)
 

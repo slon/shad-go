@@ -5,7 +5,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -28,7 +27,7 @@ func NewBinCache() (BinCache, CloseFunc) {
 		return newCIBuildCache(), func() {}
 	}
 
-	dir, err := ioutil.TempDir("", "bincache-")
+	dir, err := os.MkdirTemp("", "bincache-")
 	if err != nil {
 		log.Fatalf("unable to create temp dir: %s", err)
 	}

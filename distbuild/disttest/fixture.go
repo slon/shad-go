@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"net/url"
@@ -62,7 +61,7 @@ func newEnv(t *testing.T, config *Config) (e *env, cancel func()) {
 
 	if err = os.MkdirAll(rootDir, 0777); err != nil {
 		if errors.Is(err, os.ErrPermission) {
-			rootDir, err = ioutil.TempDir("", "")
+			rootDir, err = os.MkdirTemp("", "")
 			require.NoError(t, err)
 		} else {
 			require.NoError(t, err)

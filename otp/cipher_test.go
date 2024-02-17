@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/rand"
 	"io"
-	"io/ioutil"
 	"testing"
 	"testing/iotest"
 
@@ -92,7 +91,7 @@ func TestReader(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			r := NewReader(testCase.r, testCase.prng)
 
-			buf, err := ioutil.ReadAll(r)
+			buf, err := io.ReadAll(r)
 			require.ErrorIs(t, err, testCase.err)
 			if testCase.limit {
 				require.Equal(t, testCase.result[:len(buf)], buf)

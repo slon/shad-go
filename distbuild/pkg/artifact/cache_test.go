@@ -2,7 +2,6 @@ package artifact_test
 
 import (
 	"errors"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -23,7 +22,7 @@ func (c *testCache) cleanup() {
 }
 
 func newTestCache(t *testing.T) *testCache {
-	tmpDir, err := ioutil.TempDir("", "")
+	tmpDir, err := os.MkdirTemp("", "")
 	require.NoError(t, err)
 
 	cache, err := artifact.NewCache(tmpDir)

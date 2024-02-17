@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -36,7 +35,7 @@ func storeConfig(t *testing.T, conf string) (filename string, cleanup func()) {
 	t.Helper()
 
 	filename = path.Join(os.TempDir(), testtool.RandomName()+".yaml")
-	err := ioutil.WriteFile(filename, []byte(conf), 0777)
+	err := os.WriteFile(filename, []byte(conf), 0777)
 	require.NoError(t, err)
 
 	cleanup = func() { _ = os.Remove(filename) }

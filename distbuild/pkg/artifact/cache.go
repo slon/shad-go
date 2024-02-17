@@ -4,7 +4,6 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sync"
@@ -110,13 +109,13 @@ func (c *Cache) writeUnlock(id build.ID) {
 }
 
 func (c *Cache) Range(artifactFn func(artifact build.ID) error) error {
-	shards, err := ioutil.ReadDir(c.cacheDir)
+	shards, err := os.ReadDir(c.cacheDir)
 	if err != nil {
 		return err
 	}
 
 	for _, shard := range shards {
-		dirs, err := ioutil.ReadDir(filepath.Join(c.cacheDir, shard.Name()))
+		dirs, err := os.ReadDir(filepath.Join(c.cacheDir, shard.Name()))
 		if err != nil {
 			return err
 		}

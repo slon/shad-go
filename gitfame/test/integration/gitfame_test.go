@@ -2,7 +2,6 @@ package integration
 
 import (
 	"bytes"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
@@ -43,7 +42,7 @@ func TestGitFame(t *testing.T) {
 		tc := ReadTestCase(t, filepath.Join(testsDir, dir))
 
 		t.Run(dir+"/"+tc.Name, func(t *testing.T) {
-			dir, err := ioutil.TempDir("", "gitfame-")
+			dir, err := os.MkdirTemp("", "gitfame-")
 			require.NoError(t, err)
 			defer func() { _ = os.RemoveAll(dir) }()
 
@@ -75,7 +74,7 @@ func TestGitFame(t *testing.T) {
 func ListTestDirs(t *testing.T, path string) []string {
 	t.Helper()
 
-	files, err := ioutil.ReadDir(path)
+	files, err := os.ReadDir(path)
 	require.NoError(t, err)
 
 	var names []string
@@ -109,7 +108,7 @@ func ReadTestCase(t *testing.T, path string) *TestCase {
 
 	desc := ReadTestDescription(t, path)
 
-	expected, err := ioutil.ReadFile(filepath.Join(path, "expected.out"))
+	expected, err := os.ReadFile(filepath.Join(path, "expected.out"))
 	require.NoError(t, err)
 
 	return &TestCase{TestDescription: desc, Expected: expected}
@@ -126,7 +125,7 @@ type TestDescription struct {
 func ReadTestDescription(t *testing.T, path string) *TestDescription {
 	t.Helper()
 
-	data, err := ioutil.ReadFile(filepath.Join(path, "description.yaml"))
+	data, err := os.ReadFile(filepath.Join(path, "description.yaml"))
 	require.NoError(t, err)
 
 	var desc TestDescription

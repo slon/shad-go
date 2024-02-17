@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"image"
 	"image/png"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -125,7 +124,7 @@ func TestDigitalClock_valid(t *testing.T) {
 	port, stop := startServer(t)
 	defer stop()
 
-	files, err := ioutil.ReadDir("./testdata")
+	files, err := os.ReadDir("./testdata")
 	require.NoError(t, err)
 
 	c := &http.Client{Timeout: time.Second * 10}
