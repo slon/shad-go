@@ -244,7 +244,7 @@ Pointers
 
   var s string
   p := &s
-  s2 = *p
+  s2 := *p
 
   var p Point
   p.X = 1
