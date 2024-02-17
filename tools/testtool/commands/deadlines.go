@@ -2,38 +2,27 @@ package commands
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"sort"
 	"strings"
-	"time"
 
 	"gopkg.in/yaml.v2"
 )
 
-const timeFormat = "02-01-2006 15:04"
-
 type (
 	Task struct {
 		Name  string   `yaml:"task"`
-		Score int      `yaml:"score"`
 		Watch []string `yaml:"watch"`
 	}
 
 	Group struct {
-		Name     string `yaml:"group"`
-		Start    string `yaml:"start"`
-		Deadline string `yaml:"deadline"`
-		Tasks    []Task `yaml:"tasks"`
+		Name  string `yaml:"group"`
+		Tasks []Task `yaml:"tasks"`
 	}
 
 	Deadlines []Group
 )
-
-func (g Group) IsOpen() bool {
-	t, _ := time.Parse(timeFormat, g.Start)
-	return time.Until(t) < 0
-}
 
 func (d Deadlines) Tasks() []*Task {
 	var tasks []*Task
@@ -58,26 +47,22 @@ func (d Deadlines) FindTask(name string) (*Group, *Task) {
 }
 
 func loadDeadlines(filename string) (Deadlines, error) {
-	b, err := ioutil.ReadFile(filename)
+	b, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
 
-	var d Deadlines
-	if err := yaml.Unmarshal(b, &d); err != nil {
+	var m struct {
+		Deadlines struct {
+			Schedule Deadlines `yaml:"schedule"`
+		} `yaml:"deadlines"`
+	}
+
+	if err := yaml.Unmarshal(b, &m); err != nil {
 		return nil, fmt.Errorf("error reading deadlines: %w", err)
 	}
 
-	for _, g := range d {
-		if _, err := time.Parse(timeFormat, g.Start); err != nil {
-			return nil, fmt.Errorf("invalid time format in task %q: %w", g.Name, err)
-		}
-
-		if _, err := time.Parse(timeFormat, g.Deadline); err != nil {
-			return nil, fmt.Errorf("invalid time format in task %q: %w", g.Name, err)
-		}
-	}
-
+	d := m.Deadlines.Schedule
 	return d, nil
 }
 

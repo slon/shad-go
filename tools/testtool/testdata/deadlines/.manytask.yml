@@ -1,0 +1,14 @@
+
+deadlines:
+  schedule:
+    - group:    "[HW] Dist Build Blocks"
+      tasks:
+        - task: tarstreamtest
+          score: 100
+          watch:
+            - distbuild/pkg/tarstream
+
+    - group:    Hello World
+      tasks:
+        - task: sum
+          score: 100

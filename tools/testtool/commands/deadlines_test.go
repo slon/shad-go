@@ -7,7 +7,7 @@ import (
 )
 
 func TestDeadlines(t *testing.T) {
-	d, err := loadDeadlines("../../../.deadlines.yml")
+	d, err := loadDeadlines("../../../.manytask.yml")
 	require.NoError(t, err)
 	require.NotEmpty(t, d)
 
@@ -25,13 +25,13 @@ func TestDetectChange(t *testing.T) {
 	}{
 		{
 			name:         "sum", // Original deadlines file with sum task.
-			deadlines:    "../../../.deadlines.yml",
+			deadlines:    "../../../.manytask.yml",
 			changedFiles: []string{"sum/sum.go", "testtool/foo.go", "README.md"},
 			changedTasks: []string{"sum"},
 		},
 		{
 			name:      "tarstreamtest", // Deadlines file with tarstreamtest task.
-			deadlines: "../testdata/deadlines/.deadlines.yml",
+			deadlines: "../testdata/deadlines/.manytask.yml",
 			changedFiles: []string{
 				"sum/sum.go",
 				"testtool/foo.go",

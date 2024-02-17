@@ -12,7 +12,7 @@ import (
 
 const (
 	privateRepoRoot = "/opt/shad"
-	deadlinesYML    = ".deadlines.yml"
+	manytaskYML     = ".manytask.yml"
 )
 
 func grade() error {
@@ -25,7 +25,7 @@ func grade() error {
 		return err
 	}
 
-	deadlines, err := loadDeadlines(filepath.Join(privateRepoRoot, deadlinesYML))
+	deadlines, err := loadDeadlines(filepath.Join(privateRepoRoot, manytaskYML))
 	if err != nil {
 		return err
 	}
@@ -35,11 +35,6 @@ func grade() error {
 
 	var failed bool
 	for _, task := range changedTasks {
-		group, _ := deadlines.FindTask(task)
-		if !group.IsOpen() {
-			log.Printf("skipping task %s: not released yet", task)
-		}
-
 		log.Printf("testing task %s", task)
 
 		var testFailed bool
