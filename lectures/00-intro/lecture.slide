@@ -11,8 +11,7 @@
 
 * Ссылки
 
-.link https://wiki.yandex.ru/shad/groups/2018/Semester4/GoLang/ Вики страница
-.link https://gitlab.com/slon/shad-go Репозиторий
+.link https://github.com/slon/shad-go Репозиторий
 .link https://t.me/joinchat/BjrYSxdPJGtJdd1pae08Zg Чат курса в телеграме
 [[https://p.go.manytask.org]] - эти слайды.
 
@@ -21,7 +20,7 @@
 - 12+ занятий
 - Семинарские задания после каждой лекции. *Дедлайн*10*дней.*
 - 4 _больших_ домашних задания. *Дедлайн*3*недели.*
-- Критерий оценки: *TODO*.
+- Критерий оценки: *В*LMS* (>N домашек и >X% за семинары).
 
 * Hello world
 
@@ -36,6 +35,19 @@ Garbage Collected
 Systems
 
 Language
+
+* История
+
+- 2009 go public announcement
+- 2012 go 1.0
+- 2008 github launch
+- 2011 C++11
+- 2011 pip initial release
+- 2010 npm first release
+- 2009 nodejs first release
+- 2008 python3
+- 2006 rust project started
+- 2015 rust 1.0
 
 * Современный мир
 
