@@ -1,11 +1,5 @@
 grade:
-  image: cr.yandex/crp9onavos88ug32d5r2/grader/go
-  variables:
-    DOCKER_HOST: tcp://docker:2375/
-    DOCKER_TLS_CERTDIR: ""
-    APP_HOST: docker
-    #  services:
-    #- docker:dind
+  image: gitlab.manytask.org:5050/go/public-2024-spring
   script:
     - testtool grade
   timeout: 10 minutes
