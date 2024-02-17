@@ -1,6 +1,6 @@
 module gitlab.com/slon/shad-go
 
-go 1.22
+go 1.22.0
 
 require (
 	github.com/go-redis/redis/v8 v8.11.5
