@@ -22,24 +22,24 @@ rebuild-base-image:
     - docker build -f build.docker -t cr.yandex/crp9onavos88ug32d5r2/grader/go-build .
     - docker push cr.yandex/crp9onavos88ug32d5r2/grader/go-build:latest
 
-deploy:
-  only:
-    - master
-  tags:
-    - docker
-  script:
-    - docker pull cr.yandex/crp9onavos88ug32d5r2/grader/go-build:latest
-    - docker build -f testenv.docker -t cr.yandex/crp9onavos88ug32d5r2/grader/go .
-    - docker push cr.yandex/crp9onavos88ug32d5r2/grader/go:latest
+# deploy:
+#   only:
+#     - master
+#   tags:
+#     - docker
+#   script:
+#     - docker pull cr.yandex/crp9onavos88ug32d5r2/grader/go-build:latest
+#     - docker build -f testenv.docker -t cr.yandex/crp9onavos88ug32d5r2/grader/go .
+#     - docker push cr.yandex/crp9onavos88ug32d5r2/grader/go:latest
 
-build-slides:
-  only:
-    - master
-  tags:
-    - docker
-  script:
-    - docker build lectures -t cr.yandex/crp9onavos88ug32d5r2/go-lectures
-    - docker push cr.yandex/crp9onavos88ug32d5r2/go-lectures
+# build-slides:
+#   only:
+#     - master
+#   tags:
+#     - docker
+#   script:
+#     - docker build lectures -t cr.yandex/crp9onavos88ug32d5r2/go-lectures
+#     - docker push cr.yandex/crp9onavos88ug32d5r2/go-lectures
 
 push-to-public:
   stage: .post
