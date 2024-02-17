@@ -1,11 +1,5 @@
 check:
-  image: cr.yandex/crp9onavos88ug32d5r2/grader/go-build
-  variables:
-    DOCKER_HOST: tcp://docker:2375/
-    DOCKER_TLS_CERTDIR: ""
-    APP_HOST: docker
-    #  services:
-    #- docker:dind
+  image: gitlab.manytask.org:5050/go/public-2024-spring/go-build
   script:
     - golangci-lint run --build-tags private,solution ./...
       #- go test -v -tags private,solution ./...
@@ -19,47 +13,51 @@ rebuild-base-image:
     - docker
   when: manual
   script:
-    - docker build -f build.docker -t cr.yandex/crp9onavos88ug32d5r2/grader/go-build .
-    - docker push cr.yandex/crp9onavos88ug32d5r2/grader/go-build:latest
+    - docker build -f build.docker -t gitlab.manytask.org:5050/go/public-2024-spring/go-build .
+    - docker push gitlab.manytask.org:5050/go/public-2024-spring/go-build:latest
 
-# deploy:
-#   only:
-#     - master
-#   tags:
-#     - docker
-#   script:
-#     - docker pull cr.yandex/crp9onavos88ug32d5r2/grader/go-build:latest
-#     - docker build -f testenv.docker -t cr.yandex/crp9onavos88ug32d5r2/grader/go .
-#     - docker push cr.yandex/crp9onavos88ug32d5r2/grader/go:latest
+deploy:
+  only:
+    - master
+  tags:
+    - docker
+  script:
+    - docker pull gitlab.manytask.org:5050/go/public-2024-spring/build:latest
+    - docker build -f testenv.docker -t gitlab.manytask.org:5050/go/public-2024-spring .
+    - docker push gitlab.manytask.org:5050/go/public-2024-spring:latest
 
-# build-slides:
-#   only:
-#     - master
-#   tags:
-#     - docker
-#   script:
-#     - docker build lectures -t cr.yandex/crp9onavos88ug32d5r2/go-lectures
-#     - docker push cr.yandex/crp9onavos88ug32d5r2/go-lectures
+build-slides:
+  only:
+    - master
+  tags:
+    - docker
+  script:
+    - docker build lectures -t gitlab.manytask.org:5050/go/public-2024-spring/lectures
+    - docker push gitlab.manytask.org:5050/go/public-2024-spring/lectures
 
-push-to-public:
-  stage: .post
-  image: cr.yandex/crp9onavos88ug32d5r2/grader/go
+update-config:
   only:
     - master
   script:
-    - git remote rm public || true
-    - git remote add -f public https://prime:${CI_PUSH_TOKEN}@gitlab.com/slon/shad-go.git
-    - git config --global user.email 'prime@yandex-team.ru'
-    - git config --global user.name 'Fedor Korotkiy'
-    - git fetch public
-    - git branch -D public || true
-    - git branch public public/master
-    - testtool export --push --move-to-master=false
-    - curl -F token=$TESTER_TOKEN https://go.manytask.org/api/sync_task_columns
+    - >
+      curl -v --fail --silent -X POST \
+        -H "Authorization: Bearer $TESTER_TOKEN" \
+        -H "Content-type: application/x-yaml" \
+        --data-binary "@.manytask.yml" \
+        https://go.manytask.org/api/update_config
+    - >
+      curl -v --fail --silent -X POST \
+        -H "Authorization: Bearer $TESTER_TOKEN" \
+        https://go.manytask.org/api/update_cache
 
-push-to-github:
+push-to-public:
   stage: .post
-  image: cr.yandex/crp9onavos88ug32d5r2/grader/go
+  image: gitlab.manytask.org:5050/go/public-2024-spring
+  parallel:
+    matrix:
+      - REMOTE:
+        - git@github.com:slon/shad-go.git
+        - git@gitlab.manytask.org:go/public-2024-spring.git
   only:
     - master
   script:
@@ -69,7 +67,7 @@ push-to-github:
     - git branch -D main || true
     - git checkout -b main
     - git remote rm github || true
-    - env GIT_SSH_COMMAND="ssh -i ${PWD}/private.key -o StrictHostKeyChecking=no" git remote add -f github git@github.com:slon/shad-go.git
+    - env GIT_SSH_COMMAND="ssh -i ${PWD}/private.key -o StrictHostKeyChecking=no" git remote add -f github $REMOTE
     - env GIT_SSH_COMMAND="ssh -i ${PWD}/private.key -o StrictHostKeyChecking=no" git push github main
 
 deploy-slides:
@@ -79,5 +77,5 @@ deploy-slides:
   tags:
     - web
   script:
-    - docker pull cr.yandex/crp9onavos88ug32d5r2/go-lectures
+    - docker pull gitlab.manytask.org:5050/go/public-2024-spring/lectures
     - cd /srv/manytask/go && docker compose up -d
