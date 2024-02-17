@@ -1,4 +1,6 @@
 grade:
+  tags:
+    - experimental
   image: gitlab.manytask.org:5050/go/public-2024-spring
   script:
     - testtool grade
