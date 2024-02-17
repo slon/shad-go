@@ -1,5 +1,5 @@
 check:
-  image: gitlab.manytask.org:5050/go/public-2024-spring/go-build
+  image: gitlab.manytask.org:5050/go/public-2024-spring/build
   script:
     - golangci-lint run --build-tags private,solution ./...
       #- go test -v -tags private,solution ./...
@@ -13,8 +13,8 @@ rebuild-base-image:
     - docker
   when: manual
   script:
-    - docker build -f build.docker -t gitlab.manytask.org:5050/go/public-2024-spring/go-build .
-    - docker push gitlab.manytask.org:5050/go/public-2024-spring/go-build:latest
+    - docker build -f build.docker -t gitlab.manytask.org:5050/go/public-2024-spring/build .
+    - docker push gitlab.manytask.org:5050/go/public-2024-spring/build:latest
 
 deploy:
   only:

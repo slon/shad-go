@@ -1,4 +1,4 @@
-FROM cr.yandex/crp9onavos88ug32d5r2/grader/go-build:latest
+FROM gitlab.manytask.org:5050/go/public-2024-spring/build:latest
 
 COPY . /opt/shad
 
