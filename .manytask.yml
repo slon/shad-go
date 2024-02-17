@@ -28,12 +28,20 @@ deadlines:
   # submission_penalty: 0.1  # optional
 
   schedule:
-    - group: test
+    - group: Hello World
       start: 2024-01-01 18:00
       steps:
-        0.5: 2024-03-01 18:00
+        0.3: 2024-02-27 23:59
       end: 2024-05-01 23:59
       enabled: true
       tasks:
-        - task: sum
-          score: 100
+      - task: sum
+        score: 100
+      - task: tour0
+        score: 100
+      - task: wordcount
+        score: 100
+      - task: urlfetch
+        score: 100
+      - task: fetchall
+        score: 100
