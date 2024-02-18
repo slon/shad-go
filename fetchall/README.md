@@ -53,5 +53,5 @@ golangci-lint -v run ./fetchall/...
 1. Чтение аргументов командной строки: https://gobyexample.com/command-line-arguments
 2. HTTP запрос: https://golang.org/pkg/net/http/
 3. Запуск горутин: https://gobyexample.com/goroutines
-4. Ожидание завершения горутин: https://gobyexample.com/channels
+4. Ожидание завершения горутин: https://gobyexample.com/waitgroups
 4. Замер времени: https://golang.org/pkg/time/#Since
