@@ -23,7 +23,7 @@ func NewBaselineCounter() Counter {
 }
 
 func (c BaselineCounter) Count(r io.Reader) error {
-	data, err := os.ReadAll(r)
+	data, err := io.ReadAll(r)
 	if err != nil {
 		return err
 	}
