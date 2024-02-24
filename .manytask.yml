@@ -188,7 +188,7 @@ deadlines:
     #       score: 100
 
     - group: Basics
-      start: 2024-02-25 13:00
+      start: 2024-02-24 13:00
       steps:
         0.3: 2024-03-05 23:59
       end: 2024-06-01 23:59
