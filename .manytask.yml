@@ -187,22 +187,24 @@ deadlines:
     #     - task: ciletters
     #       score: 100
 
-    # - group:    Basics
-    #   start:    18-02-2023 16:00
-    #   end: 28-02-2023 23:59
-    #   tasks:
-    #     - task: hotelbusiness
-    #       score: 100
-    #     - task: hogwarts
-    #       score: 100
-    #     - task: utf8
-    #       score: 100
-    #     - task: varfmt
-    #       score: 100
-    #     - task: speller
-    #       score: 100
-    #     - task: forth
-    #       score: 100
+    - group: Basics
+      start: 2024-02-25 13:00
+      steps:
+        0.3: 2024-03-05 23:59
+      end: 2024-06-01 23:59
+      tasks:
+        - task: hotelbusiness
+          score: 100
+        - task: hogwarts
+          score: 100
+        - task: utf8
+          score: 100
+        - task: varfmt
+          score: 100
+        - task: speller
+          score: 100
+        - task: forth
+          score: 100
 
     - group: Hello World
       start: 2024-01-01 18:00
