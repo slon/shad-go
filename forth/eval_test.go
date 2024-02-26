@@ -100,6 +100,11 @@ var testCases = []testCase{
 		expected:    []int{2},
 	},
 	{
+		description: "add non-empty stack",
+		input:       []string{"1 2 3 +"},
+		expected:    []int{1, 5},
+	},
+	{
 		description: "dup",
 		input:       []string{"1 dup"},
 		expected:    []int{1, 1},
