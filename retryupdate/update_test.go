@@ -124,7 +124,7 @@ func TestUpdateFnError(t *testing.T) {
 			Return(&kvapi.GetResponse{Value: V3, Version: UUID0}, nil),
 	)
 
-	require.Equal(t, errUpdate, retryupdate.UpdateValue(c, K0, updateFn))
+	require.ErrorIs(t, retryupdate.UpdateValue(c, K0, updateFn), errUpdate)
 }
 func TestCreateKey(t *testing.T) {
 	ctrl := gomock.NewController(t)
@@ -177,7 +177,7 @@ func TestFailOnAuthErrorInGet(t *testing.T) {
 			Return(nil, errGetAuth),
 	)
 
-	require.Equal(t, errGetAuth, retryupdate.UpdateValue(c, K0, updateFn))
+	require.ErrorIs(t, retryupdate.UpdateValue(c, K0, updateFn), errGetAuth)
 }
 
 func TestFailOnAuthErrorInSet(t *testing.T) {
@@ -195,7 +195,7 @@ func TestFailOnAuthErrorInSet(t *testing.T) {
 			Return(nil, errSetAuth),
 	)
 
-	require.Equal(t, errSetAuth, retryupdate.UpdateValue(c, K0, updateFn))
+	require.ErrorIs(t, retryupdate.UpdateValue(c, K0, updateFn), errSetAuth)
 }
 
 func TestRetryGetError(t *testing.T) {
