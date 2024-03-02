@@ -162,10 +162,10 @@ Methods
 
 Сетеры/гетеры для простых типов не приветствуются.
 
-  type Point { x, y int }
+  type Point struct { x, y int }
 
-  func (p *Point) X() int { return x }
-  func (p *Point) Y() int { return y }
+  func (p *Point) X() int { return p.x }
+  func (p *Point) Y() int { return p.y }
   func (p *Point) SetX(x int) { p.x = x }
   func (p *Point) SetY(y int) { p.y = y }
 
