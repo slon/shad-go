@@ -244,6 +244,12 @@ Methods
       Closer
   }
 
+* Interface embedding in struct
+
+.play interfaces/embed.go
+
+.link https://pkg.go.dev/github.com/go-chi/chi/v5/middleware#WrapResponseWriter Daily-life example
+
 * Interface satisfaction
 
   var w io.Writer
