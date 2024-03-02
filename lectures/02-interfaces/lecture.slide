@@ -164,8 +164,8 @@ Methods
 
   type Point { x, y int }
 
-  func (p *Point) X() int { return x }
-  func (p *Point) Y() int { return y }
+  func (p *Point) X() int { return p.x }
+  func (p *Point) Y() int { return p.y }
   func (p *Point) SetX(x int) { p.x = x }
   func (p *Point) SetY(y int) { p.y = y }
 
