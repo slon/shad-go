@@ -60,6 +60,8 @@ func doTestSubmission(t *testing.T, studentRepo, privateRepo, problem string) er
 }
 
 func Test_testSubmission_correct(t *testing.T) {
+	t.Parallel()
+
 	testDirs, err := listDirs("../testdata/submissions/correct")
 	require.NoError(t, err)
 
@@ -68,6 +70,8 @@ func Test_testSubmission_correct(t *testing.T) {
 		require.NoError(t, err)
 		problem := path.Base(absDir)
 		t.Run(problem, func(t *testing.T) {
+			t.Parallel()
+
 			studentRepo := path.Join(absDir, "student")
 			privateRepo := path.Join(absDir, "private")
 
@@ -77,6 +81,8 @@ func Test_testSubmission_correct(t *testing.T) {
 }
 
 func Test_testSubmission_incorrect(t *testing.T) {
+	t.Parallel()
+
 	testDirs, err := listDirs("../testdata/submissions/incorrect")
 	require.NoError(t, err)
 
@@ -86,6 +92,8 @@ func Test_testSubmission_incorrect(t *testing.T) {
 
 		problem := path.Base(absDir)
 		t.Run(problem, func(t *testing.T) {
+			t.Parallel()
+
 			studentRepo := path.Join(absDir, "student")
 			privateRepo := path.Join(absDir, "private")
 
