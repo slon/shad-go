@@ -1,10 +1,7 @@
 package commands
 
 import (
-	"bufio"
 	"errors"
-	"fmt"
-	"io"
 	"os"
 	"path"
 	"path/filepath"
@@ -31,30 +28,30 @@ func listDirs(dir string) ([]string, error) {
 }
 
 func doTestSubmission(t *testing.T, studentRepo, privateRepo, problem string) error {
-	annotate := func(prefix string, f **os.File) func() {
-		pr, pw, err := os.Pipe()
-		require.NoError(t, err)
+	// annotate := func(prefix string, f **os.File) func() {
+	// 	pr, pw, err := os.Pipe()
+	// 	require.NoError(t, err)
 
-		oldF := *f
-		*f = pw
+	// 	oldF := *f
+	// 	*f = pw
 
-		go func() {
-			s := bufio.NewScanner(pr)
-			for s.Scan() {
-				_, _ = io.WriteString(oldF, fmt.Sprintf("%s%s\n", prefix, s.Text()))
-			}
-		}()
+	// 	go func() {
+	// 		s := bufio.NewScanner(pr)
+	// 		for s.Scan() {
+	// 			_, _ = io.WriteString(oldF, fmt.Sprintf("%s%s\n", prefix, s.Text()))
+	// 		}
+	// 	}()
 
-		return func() {
-			pw.Close()
-			*f = oldF
-		}
-	}
+	// 	return func() {
+	// 		pw.Close()
+	// 		*f = oldF
+	// 	}
+	// }
 
-	t.Logf("=== testing started ===")
-	defer annotate(">>> STDOUT >>>", &os.Stdout)()
-	defer annotate(">>> STDERR >>>", &os.Stderr)()
-	defer t.Logf("=== testing finished ===")
+	// t.Logf("=== testing started ===")
+	// defer annotate(">>> STDOUT >>>", &os.Stdout)()
+	// defer annotate(">>> STDERR >>>", &os.Stderr)()
+	// defer t.Logf("=== testing finished ===")
 
 	return testSubmission(studentRepo, privateRepo, problem)
 }
