@@ -148,3 +148,13 @@ func TestWriterError(t *testing.T) {
 	require.Equal(t, 512, n)
 	require.Equal(t, out.buf.Bytes(), ciphertext[:512])
 }
+
+type panicReader struct{}
+
+func (panicReader) Read([]byte) (int, error) {
+	panic("read called")
+}
+
+func TestNewReaderNotReading(t *testing.T) {
+	_ = NewReader(panicReader{}, panicReader{})
+}

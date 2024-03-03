@@ -21,5 +21,6 @@ func NewWriter(w io.Writer, prng io.Reader) io.Writer
 ## Замечания
  - Прочитайте контракт [io.Reader](https://golang.org/pkg/io/#Reader) и [io.Writer](https://golang.org/pkg/io/#Writer) в документации.
  - То что шифр работает с одним байтом, не значит что нужно передавать в Read() слайс размера 1.
+ - Функция `NewReader` не должна ничего читать из `r` и `prgn`.
  - Подумайте, почему потоковый шифр в стандартной библиотеке имеет интерфейс [cipher.Stream](https://golang.org/pkg/crypto/cipher/#Stream), а не `io.Reader` как у нас.
  - Для отладки вы можете использовать `iotest.NewReadLogger` и `iotest.NewWriteLogger` из пакета [iotest](https://golang.org/pkg/testing/iotest/).
