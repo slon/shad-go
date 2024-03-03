@@ -3,19 +3,5 @@ services:
   present:
     build:
       context: .
-    container_name: present
-    logging: &default_logging
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "5"
-    restart: unless-stopped
     ports:
       - "127.0.0.1:8080:8080"
-    entrypoint: |
-      /go/bin/present
-      -base /go/pkg/mod/golang.org/x/tools@v0.6.0/cmd/present
-      -http :8080
-      -orighost 127.0.0.1
-      -use_playground
-      -play=0
