@@ -97,7 +97,6 @@ func updateFn(oldValue *string) (string, error) {
 
 func TestSimpleUpdate(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
 	c := NewMockClient(ctrl)
 	gomock.InOrder(
@@ -115,7 +114,6 @@ func TestSimpleUpdate(t *testing.T) {
 
 func TestUpdateFnError(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
 	c := NewMockClient(ctrl)
 	gomock.InOrder(
@@ -128,7 +126,6 @@ func TestUpdateFnError(t *testing.T) {
 }
 func TestCreateKey(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
 	c := NewMockClient(ctrl)
 	gomock.InOrder(
@@ -146,7 +143,6 @@ func TestCreateKey(t *testing.T) {
 
 func TestKeyVanished(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
 	c := NewMockClient(ctrl)
 	gomock.InOrder(
@@ -168,7 +164,6 @@ func TestKeyVanished(t *testing.T) {
 
 func TestFailOnAuthErrorInGet(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
 	c := NewMockClient(ctrl)
 	gomock.InOrder(
@@ -182,7 +177,6 @@ func TestFailOnAuthErrorInGet(t *testing.T) {
 
 func TestFailOnAuthErrorInSet(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
 	c := NewMockClient(ctrl)
 	gomock.InOrder(
@@ -200,7 +194,6 @@ func TestFailOnAuthErrorInSet(t *testing.T) {
 
 func TestRetryGetError(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
 	c := NewMockClient(ctrl)
 	gomock.InOrder(
@@ -226,7 +219,6 @@ func TestRetryGetError(t *testing.T) {
 
 func TestRetrySetError(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
 	c := NewMockClient(ctrl)
 	gomock.InOrder(
@@ -248,7 +240,6 @@ func TestRetrySetError(t *testing.T) {
 
 func TestRetrySetConflict(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
 	c := NewMockClient(ctrl)
 	gomock.InOrder(
@@ -278,7 +269,6 @@ func TestRetrySetConflict(t *testing.T) {
 
 func TestRetrySetFalseConflict(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
 	conflictErr := &kvapi.ConflictError{ProvidedVersion: UUID0}
 
