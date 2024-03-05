@@ -192,7 +192,7 @@ deadlines:
     - group: Basics
       start: 2024-02-24 13:00
       steps:
-        0.3: 2024-03-05 23:59
+        0.3: 2024-03-06 06:00
       end: 2024-06-01 23:59
       tasks:
         - task: hotelbusiness
