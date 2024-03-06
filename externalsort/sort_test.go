@@ -34,6 +34,32 @@ func TestMerge(t *testing.T) {
 2
 `,
 		},
+		{
+			name: "with empty lines",
+			in: []string{`
+0`, `
+
+1
+1
+1`, `
+
+
+0
+2`},
+			out: `
+
+
+
+
+
+0
+0
+1
+1
+1
+2
+`,
+		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			out := &bytes.Buffer{}
