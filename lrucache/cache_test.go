@@ -165,7 +165,7 @@ func TestCache_eviction(t *testing.T) {
 
 			var keys, values []int
 			c.Range(func(key, value int) bool {
-				require.Equal(t, keyToValue[key], value)
+				require.Equal(t, keyToValue[key], value, "Key %d has a mismatched value", key)
 				keys = append(keys, key)
 				values = append(values, value)
 				return true
