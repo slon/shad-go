@@ -124,6 +124,7 @@ func TestUpdateFnError(t *testing.T) {
 
 	require.ErrorIs(t, retryupdate.UpdateValue(c, K0, updateFn), errUpdate)
 }
+
 func TestCreateKey(t *testing.T) {
 	ctrl := gomock.NewController(t)
 
