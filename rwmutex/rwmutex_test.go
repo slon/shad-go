@@ -133,6 +133,7 @@ func TestRWMutex(t *testing.T) {
 }
 
 func TestWriteWriteReadDeadlock(t *testing.T) {
+	defer runtime.GOMAXPROCS(runtime.GOMAXPROCS(-1))
 	runtime.GOMAXPROCS(2)
 	// Number of active readers + 10000 * number of active writers.
 	var activity int32
