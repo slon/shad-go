@@ -148,14 +148,14 @@ deadlines:
     #     - task: iprange
     #       score: 100
 
-    # - group:    "[HW] Gitfame"
-    #   start:    04-03-2023 16:30
-    #   end: 19-03-2023 23:59
-    #   tasks:
-    #   - task: gitfame
-    #     score: 0
+    - group: "[HW] Gitfame"
+      start: 2024-03-09 13:00
+      end: 2024-03-23 23:59
+      tasks:
+      - task: gitfame
+        score: 0
 
-    - group:    Goroutines
+    - group: Goroutines
       start: 2024-03-03 13:00
       steps:
         0.3: 2024-03-19 23:59
