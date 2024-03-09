@@ -190,6 +190,9 @@ deadlines:
           score: 100
         - task: ciletters
           score: 100
+        - task: yamlembed
+          is_bonus: true
+          score: 100
 
     - group: Basics
       start: 2024-02-24 13:00
