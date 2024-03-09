@@ -28,10 +28,13 @@ deadlines:
   # submission_penalty: 0.1  # optional
 
   schedule:
-    # - group:    Bonus
-    #   start:    11-02-2023 18:00
-    #   end: 29-05-2023 23:59
-    #   tasks:
+    - group:    Bonus
+      start: 2024-03-03 13:00
+      end: 2024-06-01 23:59
+      tasks:
+        - task: yamlembed
+          is_bonus: true
+          score: 100
     #     - task: consistenthash
     #       score: 200
     #     - task: gossip
@@ -189,9 +192,6 @@ deadlines:
         - task: externalsort
           score: 100
         - task: ciletters
-          score: 100
-        - task: yamlembed
-          is_bonus: true
           score: 100
 
     - group: Basics
