@@ -155,22 +155,24 @@ deadlines:
     #   - task: gitfame
     #     score: 0
 
-    # - group:    Goroutines
-    #   start:    04-03-2023 16:30
-    #   end: 14-03-2023 23:59
-    #   tasks:
-    #     - task: tour1
-    #       score: 100
-    #     - task: once
-    #       score: 100
-    #     - task: rwmutex
-    #       score: 100
-    #     - task: waitgroup
-    #       score: 100
-    #     - task: cond
-    #       score: 100
-    #     - task: ratelimit
-    #       score: 100
+    - group:    Goroutines
+      start: 2024-03-03 13:00
+      steps:
+        0.3: 2024-03-19 23:59
+      end: 2024-06-01 23:59
+      tasks:
+        - task: tour1
+          score: 100
+        - task: once
+          score: 100
+        - task: rwmutex
+          score: 100
+        - task: waitgroup
+          score: 100
+        - task: cond
+          score: 100
+        - task: ratelimit
+          score: 100
 
     - group: Interfaces
       start: 2024-03-02 13:00
