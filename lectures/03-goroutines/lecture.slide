@@ -14,9 +14,11 @@
 
 * Clock Server
 
-  Для проверки работоспособности можно выполнить в unix-консоли команду `nc localhost 8000`
-
 .play clock1/main.go /func main()/,/^}/
+
+Для проверки работоспособности можно выполнить в unix-консоли команду:
+
+  nc localhost 8000
 
 * Clock Handler
 
