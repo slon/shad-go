@@ -36,7 +36,7 @@
    ```
    git add .
    git commit -m "Update tests"
-   git push https://gitlab.com/%USERNAME%/shad-go/
+   git push https://github.com/%USERNAME%/shad-go/
    ```
 
 5. В своём форке выберите созданную ветку и создайте Pull Request в репозиторий курса. Обычно Github подсказывает недавно запушенную ветку и предлагает создать для неё PR.
