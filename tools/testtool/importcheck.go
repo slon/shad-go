@@ -5,18 +5,13 @@ import (
 	"go/token"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"testing"
 )
 
 // CheckForbiddenImport checks that the project does not use forbidden imports.
 func CheckForbiddenImport(t *testing.T, forbiddenPackage string) {
-	_, filename, _, ok := runtime.Caller(1)
-	if !ok {
-		t.Fatalf("Cannot get current file path")
-	}
-	srcDir := filepath.Dir(filename)
+	srcDir := "."
 
 	err := filepath.Walk(srcDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -26,6 +21,8 @@ func CheckForbiddenImport(t *testing.T, forbiddenPackage string) {
 		if info.IsDir() || !strings.HasSuffix(path, ".go") || strings.HasSuffix(path, "_test.go") {
 			return nil
 		}
+
+		t.Logf("checking imports in file %s", path)
 
 		fset := token.NewFileSet()
 		node, err := parser.ParseFile(fset, path, nil, parser.ImportsOnly)
