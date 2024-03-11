@@ -1,6 +1,12 @@
 package cond
 
 import (
+	"go/parser"
+	"go/token"
+	"os"
+	"path/filepath"
+	"runtime"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -180,5 +186,43 @@ func TestCondSignalStealing(t *testing.T) {
 		done = true
 		m.Unlock()
 		cond.Broadcast()
+	}
+}
+
+func TestNoSyncPackageImported(t *testing.T) {
+	_, filename, _, ok := runtime.Caller(0)
+	if !ok {
+		t.Fatalf("Cannot get current file path")
+	}
+	srcDir := filepath.Dir(filename)
+
+	err := filepath.Walk(srcDir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if info.IsDir() || !strings.HasSuffix(path, ".go") || strings.HasSuffix(path, "_test.go") {
+			return nil
+		}
+
+		fset := token.NewFileSet()
+		node, err := parser.ParseFile(fset, path, nil, parser.ImportsOnly)
+		if err != nil {
+			return err
+		}
+
+		for _, imp := range node.Imports {
+			importPath := strings.Trim(imp.Path.Value, `"`)
+			if strings.Contains(importPath, "sync") {
+				position := fset.Position(imp.Path.Pos())
+				t.Errorf("Forbidden sync package import found in %s at line %d", path, position.Line)
+			}
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		t.Errorf("Failed to walk through the source directory: %v", err)
 	}
 }
