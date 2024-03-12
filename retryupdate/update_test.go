@@ -80,6 +80,8 @@ func SetRequest(k, v string, oldVersion uuid.UUID, saveUUID ...*uuid.UUID) gomoc
 	return m
 }
 
+// imitation of the client's sequence of actions: accepts the old key value
+// and returns a new value with which the key needs to be updated.
 func updateFn(oldValue *string) (string, error) {
 	switch {
 	case oldValue == nil:
