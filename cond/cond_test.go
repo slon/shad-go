@@ -1,6 +1,7 @@
 package cond
 
 import (
+	"gitlab.com/slon/shad-go/tools/testtool"
 	"sync"
 	"testing"
 	"time"
@@ -181,4 +182,8 @@ func TestCondSignalStealing(t *testing.T) {
 		m.Unlock()
 		cond.Broadcast()
 	}
+}
+
+func TestNoSyncPackageImported(t *testing.T) {
+	testtool.CheckForbiddenImport(t, "sync")
 }

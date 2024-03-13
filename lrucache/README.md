@@ -17,7 +17,7 @@ LRU cache - это key-value storage фиксированного размера
 func New(cap int) Cache
 ```
 
-## Ссылки
-
-1. container/list: https://golang.org/pkg/container/list/
-2. wiki: https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_recently_used_(LRU)
+## Замечания
+  - При создании хеш-таблицы в go можно указывать capacity.
+  - Алгоритм LRU описан на [wiki](https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_recently_used_(LRU))
+  - Для списка можно использовать [container/list](https://golang.org/pkg/container/list/)

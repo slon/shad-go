@@ -162,10 +162,10 @@ Methods
 
 Сетеры/гетеры для простых типов не приветствуются.
 
-  type Point { x, y int }
+  type Point struct { x, y int }
 
-  func (p *Point) X() int { return x }
-  func (p *Point) Y() int { return y }
+  func (p *Point) X() int { return p.x }
+  func (p *Point) Y() int { return p.y }
   func (p *Point) SetX(x int) { p.x = x }
   func (p *Point) SetY(y int) { p.y = y }
 
@@ -243,6 +243,12 @@ Methods
       Writer
       Closer
   }
+
+* Interface embedding in struct
+
+.play interfaces/embed.go
+
+.link https://pkg.go.dev/github.com/go-chi/chi/v5/middleware#WrapResponseWriter Daily-life example
 
 * Interface satisfaction
 

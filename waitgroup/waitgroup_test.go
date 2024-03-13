@@ -1,6 +1,7 @@
 package waitgroup
 
 import (
+	"gitlab.com/slon/shad-go/tools/testtool"
 	"sync/atomic"
 	"testing"
 )
@@ -78,4 +79,8 @@ func TestWaitGroupRace(t *testing.T) {
 			t.Fatal("Spurious wakeup from Wait")
 		}
 	}
+}
+
+func TestNoSyncPackageImported(t *testing.T) {
+	testtool.CheckForbiddenImport(t, "sync")
 }

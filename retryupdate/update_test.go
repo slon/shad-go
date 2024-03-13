@@ -97,7 +97,6 @@ func updateFn(oldValue *string) (string, error) {
 
 func TestSimpleUpdate(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
 	c := NewMockClient(ctrl)
 	gomock.InOrder(
@@ -115,7 +114,6 @@ func TestSimpleUpdate(t *testing.T) {
 
 func TestUpdateFnError(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
 	c := NewMockClient(ctrl)
 	gomock.InOrder(
@@ -124,11 +122,11 @@ func TestUpdateFnError(t *testing.T) {
 			Return(&kvapi.GetResponse{Value: V3, Version: UUID0}, nil),
 	)
 
-	require.Equal(t, errUpdate, retryupdate.UpdateValue(c, K0, updateFn))
+	require.ErrorIs(t, retryupdate.UpdateValue(c, K0, updateFn), errUpdate)
 }
+
 func TestCreateKey(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
 	c := NewMockClient(ctrl)
 	gomock.InOrder(
@@ -146,7 +144,6 @@ func TestCreateKey(t *testing.T) {
 
 func TestKeyVanished(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
 	c := NewMockClient(ctrl)
 	gomock.InOrder(
@@ -168,7 +165,6 @@ func TestKeyVanished(t *testing.T) {
 
 func TestFailOnAuthErrorInGet(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
 	c := NewMockClient(ctrl)
 	gomock.InOrder(
@@ -177,12 +173,11 @@ func TestFailOnAuthErrorInGet(t *testing.T) {
 			Return(nil, errGetAuth),
 	)
 
-	require.Equal(t, errGetAuth, retryupdate.UpdateValue(c, K0, updateFn))
+	require.ErrorIs(t, retryupdate.UpdateValue(c, K0, updateFn), errGetAuth)
 }
 
 func TestFailOnAuthErrorInSet(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
 	c := NewMockClient(ctrl)
 	gomock.InOrder(
@@ -195,12 +190,11 @@ func TestFailOnAuthErrorInSet(t *testing.T) {
 			Return(nil, errSetAuth),
 	)
 
-	require.Equal(t, errSetAuth, retryupdate.UpdateValue(c, K0, updateFn))
+	require.ErrorIs(t, retryupdate.UpdateValue(c, K0, updateFn), errSetAuth)
 }
 
 func TestRetryGetError(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
 	c := NewMockClient(ctrl)
 	gomock.InOrder(
@@ -226,7 +220,6 @@ func TestRetryGetError(t *testing.T) {
 
 func TestRetrySetError(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
 	c := NewMockClient(ctrl)
 	gomock.InOrder(
@@ -248,7 +241,6 @@ func TestRetrySetError(t *testing.T) {
 
 func TestRetrySetConflict(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
 	c := NewMockClient(ctrl)
 	gomock.InOrder(
@@ -278,7 +270,6 @@ func TestRetrySetConflict(t *testing.T) {
 
 func TestRetrySetFalseConflict(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
 	conflictErr := &kvapi.ConflictError{ProvidedVersion: UUID0}
 

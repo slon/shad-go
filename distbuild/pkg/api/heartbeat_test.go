@@ -20,7 +20,6 @@ import (
 
 func TestHeartbeat(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
 	l := zaptest.NewLogger(t)
 	m := mock.NewMockHeartbeatService(ctrl)

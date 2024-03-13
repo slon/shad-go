@@ -9,8 +9,6 @@ import (
 func TestFoo(t *testing.T) {
 	ctrl := gomock.NewController(t)
 
-	defer ctrl.Finish() // Assert that Bar() is invoked.
-
 	m := NewMockFoo(ctrl)
 
 	// Asserts that the first and only call to Bar() is passed 99.

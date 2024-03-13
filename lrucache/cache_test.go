@@ -76,6 +76,37 @@ func TestCache_Clear(t *testing.T) {
 	require.Equal(t, []int{4, 3, 2, 1, 0}, values)
 }
 
+func TestCache_Clear_logic(t *testing.T) {
+	c := New(5)
+
+	for i := 0; i < 10; i++ {
+		c.Set(i, i)
+	}
+
+	c.Clear()
+
+	for i := 0; i < 10; i++ {
+		_, ok := c.Get(i)
+		require.False(t, ok)
+	}
+
+	c.Clear()
+
+	for i := 3; i >= 0; i-- {
+		c.Set(i, i)
+	}
+
+	var keys, values []int
+	c.Range(func(key, value int) bool {
+		keys = append(keys, key)
+		values = append(values, value)
+		return true
+	})
+
+	require.Equal(t, []int{3, 2, 1, 0}, keys)
+	require.Equal(t, []int{3, 2, 1, 0}, values)
+}
+
 func TestCache_Range(t *testing.T) {
 	c := New(5)
 
@@ -134,7 +165,7 @@ func TestCache_eviction(t *testing.T) {
 
 			var keys, values []int
 			c.Range(func(key, value int) bool {
-				require.Equal(t, keyToValue[key], value)
+				require.Equal(t, keyToValue[key], value, "Key %d has a mismatched value", key)
 				keys = append(keys, key)
 				values = append(values, value)
 				return true

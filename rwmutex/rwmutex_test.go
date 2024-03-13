@@ -2,6 +2,7 @@ package rwmutex
 
 import (
 	"fmt"
+	"gitlab.com/slon/shad-go/tools/testtool"
 	"runtime"
 	"sync/atomic"
 	"testing"
@@ -130,4 +131,27 @@ func TestRWMutex(t *testing.T) {
 	HammerRWMutex(10, 3, n)
 	HammerRWMutex(10, 10, n)
 	HammerRWMutex(10, 5, n)
+}
+
+func TestWriteWriteReadDeadlock(t *testing.T) {
+	defer runtime.GOMAXPROCS(runtime.GOMAXPROCS(-1))
+	runtime.GOMAXPROCS(2)
+	// Number of active readers + 10000 * number of active writers.
+	var activity int32
+	rwm := New()
+	cdone := make(chan bool, 3)
+
+	for i := 0; i < 2e6; i++ {
+		go writer(rwm, 1, &activity, cdone)
+		go writer(rwm, 1, &activity, cdone)
+		go reader(rwm, 1, &activity, cdone)
+		<-cdone
+		<-cdone
+		<-cdone
+	}
+
+}
+
+func TestNoSyncPackageImported(t *testing.T) {
+	testtool.CheckForbiddenImport(t, "sync")
 }

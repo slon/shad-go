@@ -1,6 +1,7 @@
 package once
 
 import (
+	"gitlab.com/slon/shad-go/tools/testtool"
 	"testing"
 )
 
@@ -58,4 +59,8 @@ func TestOnceManyTimes(t *testing.T) {
 	for i := 0; i < N; i++ {
 		TestOnce(t)
 	}
+}
+
+func TestNoSyncPackageImported(t *testing.T) {
+	testtool.CheckForbiddenImport(t, "sync")
 }

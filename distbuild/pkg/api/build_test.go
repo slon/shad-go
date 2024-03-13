@@ -28,7 +28,6 @@ type env struct {
 
 func (e *env) stop() {
 	e.server.Close()
-	e.ctrl.Finish()
 }
 
 func newEnv(t *testing.T) (*env, func()) {
