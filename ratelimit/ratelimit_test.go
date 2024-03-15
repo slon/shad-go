@@ -58,15 +58,20 @@ func TestSimpleLimitCancel(t *testing.T) {
 func TestAllWaiting(t *testing.T) {
 	defer goleak.VerifyNone(t)
 
+	const (
+		N        = 2
+		interval = 100 * time.Millisecond
+	)
+
 	start := time.Now()
-	limit := NewLimiter(1, time.Millisecond)
+	limit := NewLimiter(1, interval)
 	defer limit.Stop()
 
-	require.NoError(t, limit.Acquire(context.Background()))
-	require.NoError(t, limit.Acquire(context.Background()))
-	require.NoError(t, limit.Acquire(context.Background()))
+	for i := 0; i <= N; i++ {
+		require.NoError(t, limit.Acquire(context.Background()))
+	}
 
-	require.GreaterOrEqual(t, time.Since(start), 2*time.Millisecond)
+	require.GreaterOrEqual(t, time.Since(start), N*interval)
 }
 
 func TestAcquireAfterDelay(t *testing.T) {
