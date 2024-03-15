@@ -42,17 +42,27 @@ func TestWaitGroup(t *testing.T) {
 	}
 }
 
-func TestWaitGroupMisuse(t *testing.T) {
-	defer func() {
-		err := recover()
-		if err != "negative WaitGroup counter" {
-			t.Fatalf("Unexpected panic: %#v", err)
-		}
-	}()
+func recoverFromNegativeCounterPanic(t *testing.T) {
+	err := recover()
+	if err != "negative WaitGroup counter" {
+		t.Fatalf("Unexpected panic: %#v", err)
+	}
+}
+
+func TestWaitGroupDoneMisuse(t *testing.T) {
+	defer recoverFromNegativeCounterPanic(t)
 	wg := New()
 	wg.Add(1)
 	wg.Done()
 	wg.Done()
+	t.Fatal("Should panic")
+}
+
+func TestWaitGroupAddMisuse(t *testing.T) {
+	defer recoverFromNegativeCounterPanic(t)
+	wg := New()
+	wg.Add(1)
+	wg.Add(-2)
 	t.Fatal("Should panic")
 }
 
