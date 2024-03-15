@@ -197,32 +197,3 @@ func TestStressNoBlocking(t *testing.T) {
 
 	require.NoError(t, eg.Wait())
 }
-
-func BenchmarkNoBlocking(b *testing.B) {
-	b.ReportAllocs()
-	b.SetBytes(1)
-
-	limit := NewLimiter(1, 0)
-	defer limit.Stop()
-
-	ctx := context.Background()
-
-	b.RunParallel(func(pb *testing.PB) {
-		for pb.Next() {
-			if err := limit.Acquire(ctx); err != nil {
-				b.Errorf("acquire failed: %v", err)
-			}
-		}
-	})
-}
-
-func BenchmarkReferenceMutex(b *testing.B) {
-	var mu sync.Mutex
-
-	var j int
-	for i := 0; i < b.N; i++ {
-		mu.Lock()
-		j++
-		mu.Unlock()
-	}
-}
