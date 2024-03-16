@@ -129,20 +129,6 @@ deadlines:
     #     - task: pubsub
     #       score: 300
 
-    # - group:    Testing
-    #   start:    11-03-2023 13:00
-    #   end: 21-03-2023 23:59
-    #   tasks:
-    #     - task: testequal
-    #       score: 100
-    #     - task: fileleak
-    #       score: 100
-    #     - task: tabletest
-    #       score: 100
-    #     - task: tparallel
-    #       score: 200
-    #     - task: iprange
-    #       score: 100
     - group: Hello World
       start: 2024-01-01 18:00
       steps:
@@ -222,6 +208,21 @@ deadlines:
       tasks:
       - task: gitfame
         score: 0
+
+    - group: Testing
+      start: 2024-03-16 13:00
+      end: 2024-06-01 23:59
+      tasks:
+        - task: testequal
+          score: 100
+        - task: fileleak
+          score: 100
+        - task: tabletest
+          score: 100
+        - task: tparallel
+          score: 200
+        - task: iprange
+          score: 100
 
     - group:    Bonus
       start: 2024-03-03 13:00
