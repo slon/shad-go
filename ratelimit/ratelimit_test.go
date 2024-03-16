@@ -28,7 +28,9 @@ func TestNoRateLimit(t *testing.T) {
 func TestBlockedRateLimit(t *testing.T) {
 	defer goleak.VerifyNone(t)
 
-	limit := NewLimiter(1, time.Minute)
+	interval := 10 * time.Second
+	started := time.Now()
+	limit := NewLimiter(1, interval)
 	defer limit.Stop()
 
 	require.NoError(t, limit.Acquire(context.Background()))
@@ -38,12 +40,15 @@ func TestBlockedRateLimit(t *testing.T) {
 
 	err := limit.Acquire(ctx)
 	require.Equal(t, context.DeadlineExceeded, err)
+	require.Less(t, time.Since(started), interval)
 }
 
 func TestSimpleLimitCancel(t *testing.T) {
 	defer goleak.VerifyNone(t)
 
-	limit := NewLimiter(1, time.Minute)
+	interval := 10 * time.Second
+	started := time.Now()
+	limit := NewLimiter(1, interval)
 	defer limit.Stop()
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond)
@@ -53,6 +58,7 @@ func TestSimpleLimitCancel(t *testing.T) {
 
 	err := limit.Acquire(ctx)
 	require.Equal(t, context.DeadlineExceeded, err)
+	require.Less(t, time.Since(started), interval)
 }
 
 func TestAllWaiting(t *testing.T) {
