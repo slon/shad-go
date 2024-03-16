@@ -211,6 +211,8 @@ deadlines:
 
     - group: Testing
       start: 2024-03-16 13:00
+      steps:
+        0.3: 2024-03-26 23:59
       end: 2024-06-01 23:59
       tasks:
         - task: testequal
