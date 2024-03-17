@@ -95,6 +95,7 @@ func TestWaitGroupRace(t *testing.T) {
 func TestWaitGroupNoBusyWait(t *testing.T) {
 	wg := New()
 	wg.Add(1)
+	defer wg.Done()
 
 	for i := 0; i < 10; i++ {
 		go func() {

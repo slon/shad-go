@@ -11,6 +11,8 @@ import (
 )
 
 func VerifyNoBusyGoroutines(t *testing.T) {
+	time.Sleep(time.Millisecond * 100)
+
 	for i := 0; i < 100; i++ {
 		time.Sleep(time.Millisecond)
 
@@ -27,6 +29,7 @@ func VerifyNoBusyGoroutines(t *testing.T) {
 
 		busy := bytes.Count(stacks, []byte("[running]"))
 		busy += bytes.Count(stacks, []byte("[runnable]"))
+		busy += bytes.Count(stacks, []byte("[sleep]"))
 
 		if !assert.Less(t, busy, 2) {
 			_, _ = os.Stderr.Write(stacks)

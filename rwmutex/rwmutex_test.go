@@ -2,11 +2,12 @@ package rwmutex
 
 import (
 	"fmt"
-	"gitlab.com/slon/shad-go/tools/testtool"
 	"runtime"
 	"sync/atomic"
 	"testing"
 	"time"
+
+	"gitlab.com/slon/shad-go/tools/testtool"
 )
 
 func parallelReader(m *RWMutex, clocked, cunlock, cdone chan bool) {
@@ -150,6 +151,36 @@ func TestWriteWriteReadDeadlock(t *testing.T) {
 		<-cdone
 	}
 
+}
+
+func TestNoBusyWaitInRlock(t *testing.T) {
+	rwm := New()
+	rwm.Lock()
+	defer rwm.Unlock()
+
+	for i := 0; i < 100; i++ {
+		go func() {
+			rwm.RLock()
+			defer rwm.RUnlock()
+		}()
+	}
+
+	testtool.VerifyNoBusyGoroutines(t)
+}
+
+func TestNoBusyWaitInlock(t *testing.T) {
+	rwm := New()
+	rwm.RLock()
+	defer rwm.RUnlock()
+
+	for i := 0; i < 100; i++ {
+		go func() {
+			rwm.Lock()
+			defer rwm.Unlock()
+		}()
+	}
+
+	testtool.VerifyNoBusyGoroutines(t)
 }
 
 func TestNoSyncPackageImported(t *testing.T) {
