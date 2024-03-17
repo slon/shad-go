@@ -329,7 +329,12 @@ func runTests(testDir, privateRepo, problem string) error {
 		}
 
 		{
-			cmd := exec.Command(raceBinaries[testPkg], "-test.bench=.")
+			args := []string{
+				"-test.bench=.",
+				"-test.timeout=1m",
+			}
+
+			cmd := exec.Command(raceBinaries[testPkg], args...)
 			if currentUserIsRoot() {
 				if err := sandbox(cmd); err != nil {
 					log.Fatal(err)
@@ -353,7 +358,13 @@ func runTests(testDir, privateRepo, problem string) error {
 		}
 
 		{
-			benchCmd := exec.Command(testBinary, "-test.bench=.", "-test.run=^$")
+			args := []string{
+				"-test.timeout=1m",
+				"-test.bench=.",
+				"-test.run=^$",
+			}
+
+			benchCmd := exec.Command(testBinary, args...)
 			if currentUserIsRoot() {
 				if err := sandbox(benchCmd); err != nil {
 					log.Fatal(err)
@@ -372,6 +383,7 @@ func runTests(testDir, privateRepo, problem string) error {
 			benchCmd.Stdout = &buf
 			benchCmd.Stderr = os.Stderr
 
+			log.Printf("> %s", strings.Join(benchCmd.Args, " "))
 			if err := benchCmd.Run(); err != nil {
 				return &TestFailedError{E: err}
 			}
