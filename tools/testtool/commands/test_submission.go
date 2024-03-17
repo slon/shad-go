@@ -296,11 +296,16 @@ func runTests(testDir, privateRepo, problem string) error {
 		coverProfile := path.Join(os.TempDir(), randomName())
 
 		{
-			cmd := exec.Command(testBinary)
+			args := []string{
+				"-test.timeout=1m",
+			}
+
 			if coverageReq.Enabled {
-				cmd = exec.Command(testBinary, "-test.coverprofile", coverProfile)
+				args = append(args, "-test.coverprofile", coverProfile)
 				coverProfiles = append(coverProfiles, coverProfile)
 			}
+
+			cmd := exec.Command(testBinary, args...)
 			if currentUserIsRoot() {
 				if err := sandbox(cmd); err != nil {
 					log.Fatal(err)
