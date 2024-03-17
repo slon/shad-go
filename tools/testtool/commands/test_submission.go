@@ -322,6 +322,7 @@ func runTests(testDir, privateRepo, problem string) error {
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 
+			log.Printf("> %s", strings.Join(cmd.Args, " "))
 			if err := cmd.Run(); err != nil {
 				return &TestFailedError{E: err}
 			}
@@ -345,6 +346,7 @@ func runTests(testDir, privateRepo, problem string) error {
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 
+			log.Printf("> %s", strings.Join(cmd.Args, " "))
 			if err := cmd.Run(); err != nil {
 				return &TestFailedError{E: err}
 			}
