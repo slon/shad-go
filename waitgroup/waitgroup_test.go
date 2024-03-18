@@ -59,7 +59,7 @@ func TestNoop(t *testing.T) {
 		wg1.Done()
 	}()
 	wg1.Wait()
-	
+
 	wg1.Wait()
 }
 
