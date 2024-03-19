@@ -133,8 +133,8 @@ Concurrency with Shared Memory
 
   func Deposit(amount int) {
       mu.Lock()
-      balance = balance + amount
-      mu.Unlock()
+      defer mu.Unlock()
+      balance += amount
   }
 
   func Balance() int {
