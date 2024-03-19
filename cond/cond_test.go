@@ -43,6 +43,30 @@ func TestCondSignal(t *testing.T) {
 		n--
 	}
 	c.Signal()
+	c.Signal() // Checks if empty signals are not deadlocking
+
+	go func() {
+		m.Lock()
+		running <- true
+		c.Wait()  // Checks if will wait after emtpy signal
+		awake <- true
+		m.Unlock()
+
+	}()
+
+	<-running
+
+	select {
+	case <-awake:
+		t.Fatal("goroutine not asleep")
+	default:
+	}
+	m.Lock()
+	c.Signal()
+	m.Unlock()
+	<-awake // Will deadlock if no goroutine wakes up
+
+
 }
 
 func TestCondSignalGenerations(t *testing.T) {
