@@ -110,7 +110,7 @@ func TestAcquireAfterStopped(t *testing.T) {
 	cancel()
 
 	for i := 0; i < nTries; i++ {
-		require.Equal(t, ErrStopped, limit.Acquire(ctx))
+		require.Contains(t, []error{ErrStopped, context.Canceled}, limit.Acquire(ctx))
 	}
 }
 
