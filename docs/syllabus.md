@@ -48,7 +48,7 @@
     Low-level programming. unsafe. Package binary. bytes.Buffer. cgo, syscall.
 
 11. Архитектура GC. Write barrier. Stack growth. GC pause. GOGC. sync.Pool. Шедулер
-    горутин. GOMACPROCS. Утечка тредов.
+    горутин. GOMAXPROCS. Утечка тредов.
 
 12. Go tooling. pprof. CPU and Memory profiling. Кросс-компиляция. GOOS, GOARCH. CGO_ENABLED=0.
     Build tags. go modules. godoc. Code generation.
