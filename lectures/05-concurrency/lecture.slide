@@ -397,9 +397,12 @@ Concurrency with Shared Memory
 
 По соглашению `Context` всегда передается первым параметром в функции, обычно именуясь `ctx`.
 
-  database/sql.(*DB).QueryContext(ctx context.Context, query string, args ...interface{}) (*Rows, error)
-  database/sql.(*DB).ExecContext(ctx context.Context, query string, args ...interface{}) (Result, error)
-  net/http.NewRequestWithContext(ctx context.Context, method, url string, body io.Reader) (*Request, error)
+  database/sql.(*DB).QueryContext(ctx context.Context, query string, args ...interface{})
+    \ (*Rows, error)
+  database/sql.(*DB).ExecContext(ctx context.Context, query string, args ...interface{})
+    \ (Result, error)
+  net/http.NewRequestWithContext(ctx context.Context, method, url string, body io.Reader)
+    \ (*Request, error)
   golang.org/x/sync/errgroup.WithContext(ctx context.Context) (*Group, context.Context)
   ...
 
