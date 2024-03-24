@@ -4,4 +4,4 @@
 
 Свои тесты пишите в новом файле.
 
-Используйте паттерн [table driven tests](https://github.com/golang/go/wiki/TableDrivenTests).
+Используйте паттерн [table driven tests](https://go.dev/wiki/TableDrivenTests).
