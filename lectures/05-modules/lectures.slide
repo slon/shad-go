@@ -3,368 +3,6 @@ Modules
 
 Арсений Балобанов
 
-* Before modules
-
-* Before modules
-
-Install go.
-
-  # export PATH=$PATH:$GOROOT/bin
-  # go version
-  go version go1.10.8 linux/amd64
-
-Create workspace.
-
-  mkdir -p go
-  export GOPATH=./go
-
-- *GOROOT* -- where go distribution is installed
-- *GOPATH* -- where all go code is stored
-
-* Before modules
-
-  # go help
-  Go is a tool for managing Go source code.
-  
-  Usage:
-  	go command [arguments]
-  
-  The commands are:
-  	build       compile packages and dependencies
-  	clean       remove object files and cached files
-  	doc         show documentation for package or symbol
-  	env         print Go environment information
-  	bug         start a bug report
-  	fix         update packages to use new APIs
-  	fmt         gofmt (reformat) package sources
-  	generate    generate Go files by processing source
-  	get         download and install packages and dependencies
-  	install     compile and install packages and dependencies
-  	list        list packages
-  	run         compile and run Go program
-  	test        test packages
-  	tool        run specified go tool
-  	version     print Go version
-  	vet         report likely mistakes in packages
-  ...
-
-* Before modules
-
-Use *go*help*[command]* for more information about a command.
-
-  # go help env
-  usage: go env [-json] [var ...]
-  
-  Env prints Go environment information.
-  
-  By default env prints information as a shell script
-  (on Windows, a batch file). If one or more variable
-  names is given as arguments, env prints the value of
-  each named variable on its own line.
-  
-  The -json flag prints the environment in JSON format
-  instead of as a shell script.
-  
-  For more about environment variables, see 'go help environment'.
-
-* Before modules
-
-  # go env
-  GOARCH="amd64"
-  GOBIN=""
-  GOCACHE="/root/.cache/go-build"
-  GOEXE=""
-  GOHOSTARCH="amd64"
-  GOHOSTOS="linux"
-  GOOS="linux"
-  GOPATH="/go"
-  GORACE=""
-  GOROOT="/usr/local/go"
-  GOTMPDIR=""
-  GOTOOLDIR="/usr/local/go/pkg/tool/linux_amd64"
-  GCCGO="gccgo"
-  CC="gcc"
-  CXX="g++"
-  CGO_ENABLED="1"
-  CGO_CFLAGS="-g -O2"
-  CGO_CPPFLAGS=""
-  CGO_CXXFLAGS="-g -O2"
-  CGO_FFLAGS="-g -O2"
-  CGO_LDFLAGS="-g -O2"
-  PKG_CONFIG="pkg-config"
-  GOGCCFLAGS="-fPIC -m64 -pthread -fmessage-length=0 -gno-record-gcc-switches"
-
-* Before modules
-
-- *GOARCH* -- target compilation architecture, e.g. amd64, arm
-- *GOOS* --  target operating system, e.g. linux, darwin, windows
-
-* Before modules
-
-- *go*install* -- compiles and installs the packages named by the import paths.
-
-.link https://github.com/golang/vgo https://github.com/golang/vgo
-
-  # go install golang.org/x/vgo
-  can't load package: package golang.org/x/vgo: cannot find package "golang.org/x/vgo" in any of:
-  	/usr/local/go/src/golang.org/x/vgo (from $GOROOT)
-  	/go/src/golang.org/x/vgo (from $GOPATH)
-
-* Before modules
-
-- *go*get* -- downloads the packages named by the import paths, along with their dependencies.
-  It then installs the named packages like *go*install*.
-
-  # go get golang.org/x/vgo
-  # tree -L 4 $GOPATH
-  /go
-  |-- bin
-  |   `-- vgo
-  `-- src
-      `-- golang.org
-          `-- x
-              |-- text
-              `-- vgo
-
-- *golang.org/x* -- namespace
-- *text*, *vgo* -- projects
-
-* Before modules
-
-- *$GOPATH/bin* -- executable files
-- *$GOPATH/src* -- source files e.g. .go
-
-* Before modules
-
-  # mkdir -p src/github.com/verytable/hello
-  # cat src/github.com/verytable/hello/main.go
-  package main
-
-  func   main()    {
-   fmt.Println("Hello, World!")
-  }
-
-- *go*run* compiles and runs the main package comprising the named Go source files.
-
-  # go run src/github.com/verytable/hello/main.go
-  # command-line-arguments
-  src/github.com/verytable/hello/main.go:4:2: undefined: fmt
-
-* Before modules
-
-Install goimports
-
-  # go get golang.org/x/tools/cmd/goimports
-  # tree -L 2 $GOPATH
-  /go
-  |-- bin
-  |   |-- goimports
-  |   `-- vgo
-  `-- src
-      |-- github.com
-      `-- golang.org
-  # export PATH=$GOPATH/bin:$PATH
-
-* Before modules
-
-Fix imports and format file.
-
-  # goimports -w src/github.com/verytable/hello/main.go
-  # cat src/github.com/verytable/hello/main.go
-  package main
-  
-  import "fmt"
-  
-  func main() {
-  	fmt.Println("Hello, World!")
-  }
-
-Compile and run.
-
-  # go run src/github.com/verytable/hello/main.go
-  Hello, World!
-
-* Before modules
-
-- *gofmt* -- gofmt formats Go programs
-- *go*fmt* -- runs the command 'gofmt -l -w'
-- *goimports* -- updates Go import lines, adding missing ones and removing unreferenced ones; also formats your code
-
-* Before modules
-
-  # go build github.com/verytable/hello
-  # ./hello
-  Hello, World!
-
-- *go*build* -- compiles the packages named by the import paths along with their dependencies, but it does not install the results.
-
-* Before modules
-
-  # go install github.com/verytable/hello
-  # tree -L 2 $GOPATH
-  /go
-  |-- bin
-  |   |-- goimports
-  |   |-- hello
-  |   `-- vgo
-  |-- hello
-  `-- src
-      |-- github.com
-      `-- golang.org
-
-Run installed binary.
-
-  # $GOPATH/bin/hello 
-  Hello, World!
-
-- *go*install* -- compiles and installs the packages named by the import paths.
-
-* Before modules
-
-  # mkdir -p src/github.com/verytable/string
-  # cat src/github.com/verytable/string/string.go
-  package string
-  
-  func Reverse(s string) string {
-  	b := []byte(s)
-  	for i := 0; i < len(b)/2; i++ {
-  		j := len(b) - i - 1
-  		b[i], b[j] = b[j], b[i]
-  	}
-  	return string(b)
-  }
-
-Compile.
-
-  # go build github.com/verytable/string
-  # echo $?
-  0
-
-* Before modules
-
-Install package
-
-  # go install github.com/verytable/string
-  # tree -L 2 $GOPATH
-  /go
-  |-- bin
-  |   |-- goimports
-  |   |-- hello
-  |   `-- vgo
-  |-- pkg
-  |   `-- linux_amd64
-  `-- src
-      |-- github.com
-      `-- golang.org
-
-- *$GOPATH/pkg* -- compiled libraries e.g. .a
-
-* Before modules
-
-  # tree -L 4 $GOPATH/pkg
-  /go/pkg
-  `-- linux_amd64
-      `-- github.com
-          `-- verytable
-              `-- string.a
-
-- *linux_amd64* -- ${GOOS}_${GOARCH}
-
-* Before modules
-
-Let's use string package.
-
-  # cat src/github.com/verytable/hello/main.go 
-  package main
-  
-  import (
-  	"fmt"
-  
-  	"github.com/verytable/string"
-  )
-  
-  func main() {
-  	fmt.Println(string.Reverse("Hello, World!"))
-  }
-
-Install and run.
-
-  # go install github.com/verytable/hello
-  # hello
-  !dlroW ,olleH
-
-* Before modules
-
-Add dependency.
-
-  # cat src/github.com/verytable/hello/main.go
-  package main
-  
-  import (
-  	"fmt"
-  
-  	"github.com/verytable/string"
-  	"rsc.io/sampler"
-  )
-  
-  func main() {
-  	fmt.Println(string.Reverse("Hello, World!"))
-  	fmt.Println(sampler.Glass())
-  }
-
-Compile and run.
-
-  # go run src/github.com/verytable/hello/main.go
-  src/github.com/verytable/hello/main.go:7:2: cannot find package "rsc.io/sampler" in any of:
-  	/usr/local/go/src/rsc.io/sampler (from $GOROOT)
-  	/go/src/rsc.io/sampler (from $GOPATH)
-
-* Before modules
-
-Download dependencies.
-
-  # go get -v github.com/verytable/hello
-  Fetching https://rsc.io/sampler?go-get=1
-  Parsing meta tags from https://rsc.io/sampler?go-get=1 (status code 200)
-  get "rsc.io/sampler": found meta tag get.metaImport{Prefix:"rsc.io/sampler", VCS:"git", RepoRoot:"https://github.com/rsc/sampler"} at https://rsc.io/sampler?go-get=1
-  rsc.io/sampler (download)
-
-Compile and run.
-
-  # go run src/github.com/verytable/hello/main.go 
-  !dlroW ,olleH
-  I can eat glass and it doesn't hurt me.
-
-* Before modules
-
-- *go*list* -- lists the packages named by the import paths, one per line.
-
-List packages.
-
-  # go list github.com/verytable/hello
-  github.com/verytable/hello
-
-List package files.
-
-  # go list -f {{.GoFiles}} github.com/verytable/hello
-  [main.go]
-
-List package imports.
-
-  # go list -f {{.Imports}} github.com/verytable/hello
-  [fmt github.com/verytable/string rsc.io/sampler]
-
-Run 'go help list' to see all format options.
-
-* Before modules
-
-- A workspace ($GOPATH) contains many version control repositories (managed by Git, for example).
-- Each repository contains one or more packages.
-- Each package consists of one or more Go source files in a single directory.
-- The path to a package's directory determines its import path.
-
-* Modules
-
 * Modules
 
   # go mod init github.com/verytable/hello
@@ -372,18 +10,19 @@ Run 'go help list' to see all format options.
   # cat go.mod
   module github.com/verytable/hello
 
-  go 1.16
+  go 1.22.0
 
-- *package* -- collection of source files in the same directory that are compiled together
-- *module* -- collection of related Go packages that are released together
-- github.com/verytable/hello -- *module*path*, the import path prefix for all packages within the module
+- *package* — набор исходных файлов из одной директории, которые компилируются вместе
+- *module* — набор пакетов, которые релизятся вместе
+- github.com/verytable/hello — *module*path*, префикс всех пакетов модуля
 
 * Modules
 
-- *import*path* -- string used to import a package
+- *import*path* — строчка для импорта пакета
 
-For example, the module `github.com/google/go-cmp` contains a package in the directory `cmp/`.
-That package's import path is `github.com/google/go-cmp/cmp`.
+Например, в модуле `github.com/google/go-cmp` есть директория `cmp/`.
+
+import path пакета `cmp` будет `github.com/google/go-cmp/cmp`.
 
 * Modules
 
@@ -406,17 +45,6 @@ Install binary.
 
 * Modules
 
-  # git init
-  Initialized empty Git repository in /tmp/hello/.git/
-  # git add hello.go go.mod
-  # git commit -m "initial commit"
-  [master (root-commit) f22a6c1] initial commit
-   2 files changed, 10 insertions(+)
-   create mode 100644 go.mod
-   create mode 100644 hello.go
-
-* Modules
-
   # mkdir -p morestrings
   # cat morestrings/reverse.go
   package morestrings
@@ -428,22 +56,20 @@ Install binary.
   	}
   	return string(r)
   }
-  # go build ./morestrings
-
 
 * Modules
 
-Check build.
+  # go build ./morestrings  // в репозитории ничего не изменится
 
-  # go build ./morestrings
+- *go*env*GOCACHE* — внутренний кэш `go`build`
 
-- *GOCACHE* -- 'go build' internal cache location.
+Команда go кэширует выходные данные сборки для повторного использования в будущих сборках.
 
-go command caches build outputs for reuse in future builds. Run 'go help cache' for more info.
+`go`help`cache` для деталей.
 
 * Modules
 
-Use subpackage.
+Используем subpackage
 
   # cat hello.go
   package main
@@ -457,13 +83,14 @@ Use subpackage.
   func main() {
   	fmt.Println(morestrings.ReverseRunes("!oG ,olleH"))
   }
+
   # go install github.com/verytable/hello
   # hello
   Hello, Go!
 
 * Modules
 
-Add external dependency.
+Добавляем внешнюю зависимость
 
   # cat hello.go
   package main
@@ -484,8 +111,7 @@ Add external dependency.
 
   # go mod tidy
   go: finding module for package github.com/google/go-cmp/cmp
-  go: downloading github.com/google/go-cmp v0.5.5
-  go: found github.com/google/go-cmp/cmp in github.com/google/go-cmp v0.5.5
+  go: found github.com/google/go-cmp/cmp in github.com/google/go-cmp v0.6.0
   # go install
   # hello
   Hello, Go!
@@ -494,48 +120,68 @@ Add external dependency.
   + 	"Hello Go",
     )
 
-Requirements are stored in go.mod.
+Внешние зависимости хранятся in go.mod.
 
   # cat go.mod
   module github.com/verytable/hello
 
-  go 1.16
+  go 1.22.0
 
-  require github.com/google/go-cmp v0.5.5
+  require github.com/google/go-cmp v0.6.0
 
 * Modules
 
 - *go*mod*tidy* makes sure go.mod matches the source code in the module
 
-Run 'go mod help tidy' for details.
+`go`mod`help`tidy` для подробностей.
 
 * Modules
 
-Modules are downloaded to *$GOPATH/pkg/mod*.
+Исходный код модулей хранится в *$GOPATH/pkg/mod*.
 
   # tree -L 2 $GOPATH/pkg/mod/github.com/google
   ...
-  ├── go-cmp@v0.4.0
+  ├── go-cmp@v0.5.9
   │   ├── cmp
   │   ├── CONTRIBUTING.md
   │   ├── go.mod
-  │   ├── go.sum
   │   ├── LICENSE
   │   └── README.md
-  ├── go-cmp@v0.5.5
+  ├── go-cmp@v0.6.0
   │   ├── cmp
   │   ├── CONTRIBUTING.md
   │   ├── go.mod
-  │   ├── go.sum
   │   ├── LICENSE
   │   └── README.md
   ...
 
 * Modules
 
-- *go*clean* -- removes object files from package source directories
+- *go*clean* — чистит системные директории
 
-Run 'go clean -modcache' to remove all downloaded modules.
+`go`clean`-modcache` удаляет *все* модули из *$GOPATH/pkg/mod*.
+
+`go`clean`-cache` удаляет объекты из *GOCACHE*.
+
+* Modules
+
+Установить другую версию пакета.
+
+  # go get github.com/google/go-cmp/cmp@v0.5.5
+  go: downloading github.com/google/go-cmp v0.5.5
+  go: downgraded github.com/google/go-cmp v0.6.0 => v0.5.5
+
+Обновить модули.
+
+  # go mod tidy
+  go: downloading golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543
+
+  # cat go.mod
+  module github.com/verytable/hello
+
+  go 1.22.0
+
+  require github.com/google/go-cmp v0.5.5
 
 * Modules
 
@@ -562,11 +208,9 @@ Format options.
       Error     *ModuleError // error loading module
   }
 
-
-
 * Modules
 
-- *go.sum* -- stores the expected cryptographic hashes of the content of specific module versions
+- *go.sum* — хранит хэши модулей
 
   # cat go.sum
   github.com/google/go-cmp v0.5.5 h1:Khx7svrCpmxxtHBq5j2mp/xVjsi8hQMfNLvJFAlrGgU=
@@ -576,17 +220,19 @@ Format options.
 
 * Modules
 
-- *go*mod*graph* prints the module requirement graph
+- *go*mod*graph* — печатает граф зависимостей модулей
 
   # go mod graph
   github.com/verytable/hello github.com/google/go-cmp@v0.5.5
+  github.com/verytable/hello go@1.22.0
   github.com/google/go-cmp@v0.5.5 golang.org/x/xerrors@v0.0.0-20191204190536-9bdfabe68543
+  go@1.22.0 toolchain@go1.22.0
 
 * Modules
 
-- *go*mod*why* shows a shortest path in the import graph from the main module to the package
+- *go*mod*why* — показывает кратчайший по импортам путь до пакета
 
-  # go mod why  golang.org/x/xerrors
+  # go mod why golang.org/x/xerrors
   # golang.org/x/xerrors
   github.com/verytable/hello
   github.com/google/go-cmp/cmp
@@ -596,7 +242,7 @@ Format options.
 
 * Modules
 
-- *go*mod*vendor* -- copies module requirements to ./vendor directory
+- *go*mod*vendor* — копирует зависимости модуля в директорию `./vendor`
 
 Vendor dependencies.
 
@@ -619,42 +265,217 @@ Vendor dependencies.
   github.com/google/go-cmp/cmp/internal/function
   github.com/google/go-cmp/cmp/internal/value
 
+* Modules
+
+Indirect зависимости
+
+  # go mod init github.com/verytable/world
+  go: creating new go.mod: module github.com/verytable/world
+	
+  # cat sum.go
+  package world
+  
+  import _ "github.com/jackc/pgx/v5"
+  
+  func Sum(a, b int) int {
+    return a + b
+  }
 
 * Modules
 
-- *GO111MODULE* controls how Go imports packages. on, off or auto.
+Indirect зависимости
 
-*Go*1.11*
-
-- *on* will force using Go modules even if the project is in your GOPATH. Requires go.mod to work.
-- *off* forces Go to behave the GOPATH way, even outside of GOPATH.
-- *auto* (default). In this mode, Go will behave
-    similarly to *on* when you are outside of GOPATH,
-    similarly to *off* when you are inside the GOPATH even if a go.mod is present.
-
+  # go mod tidy
+  ...
+  
+  # cat go.mod
+  module github.com/verytable/world
+  
+  go 1.22.0
+  
+  require github.com/jackc/pgx/v5 v5.5.5
+  
+  require (
+    github.com/jackc/pgpassfile v1.0.0 // indirect
+    github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
+    golang.org/x/crypto v0.17.0 // indirect
+    golang.org/x/text v0.14.0 // indirect
+  )
 
 * Modules
 
-*Go*1.13*
+Как импортировать пакет из локального модуля
 
-*GO111MODULE=auto*
+  # cat hello.go 
+  package main
+  
+  import (
+    "fmt"
 
-- *on* anywhere there is a go.mod OR anywhere outside the GOPATH even if there is no go.mod.
-- *off* in the GOPATH with no go.mod.
+    "github.com/google/go-cmp/cmp"
+    "github.com/verytable/hello/morestrings"
+    "github.com/verytable/world"
+  )
+
+  func main() {
+    fmt.Println(morestrings.ReverseRunes("!oG ,olleH"))
+    fmt.Println(cmp.Diff("Hello World", "Hello Go"))
+  
+    fmt.Println(world.Sum(1, 2))
+  }
 
 * Modules
 
-*Go*1.16*
+Как импортировать пакет из локального модуля
+	
+  # go install .
+  main.go:8:2: no required module provides package github.com/verytable/world; to add it:
+    go get github.com/verytable/world
+	
+  # go get github.com/verytable/world
+  go: module github.com/verytable/world: git ls-remote -q origin in /home/verytable/go/pkg/mod/cache/vcs/8d15fd58d5b540d58dc97582a5a11fe29782f4416e9628e0183c4ea4f8c7cdcd: exit status 128:
+    fatal: could not read Username for 'https://github.com': terminal prompts disabled
+  Confirm the import path was entered correctly.
 
-*on* is a default.
+* Modules
 
-- *auto* could be used for previous previous behaviour
+- *go*mod*edit* — вносит правки в go.mod
 
-*Go*1.17*
+  # go mod edit -replace github.com/verytable/world=/tmp/world
+  # cat go.mod
+  module github.com/verytable/hello
 
-*GO111MODULE* is will be ignored.
+  go 1.22.0
+  
+  require github.com/google/go-cmp v0.5.5
+  
+  replace github.com/verytable/world => /tmp/world
+
+* Modules
+
+  # go get ./...
+  go: added github.com/jackc/pgpassfile v1.0.0
+  go: added github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a
+  go: added github.com/jackc/pgx/v5 v5.5.5
+  go: added github.com/verytable/world v0.0.0-00010101000000-000000000000
+  go: added golang.org/x/crypto v0.17.0
+  go: added golang.org/x/text v0.14.0
+	
+  # go run .
+  Hello, Go!
+    string(
+  - 	"Hello World",
+  + 	"Hello Go",
+    )
+  
+  3
+
+* Modules
+
+Выложить свой пакет в открытый доступ.
+
+  # git init
+  # git add .
+  # git commit
+  # git push
+  # go get github.com/verytable/hello@v0.0.0-20240303255101-161cd47e91fd
+	
+  # git tag v0.0.1
+  # git push v0.0.1
+  # go get github.com/verytable/hello@v0.0.1
+
+* Modules
+
+Semantic versioning
+
+.image versions.png _ 700
+
+* Modules
+
+v2 and beyond
+
+.link https://github.com/googleapis/gax-go Отдельная директория
+
+  ├── go.mod
+  ├── package.go
+  └── v2
+      ├── go.mod
+      └── package.go
+
+.link https://github.com/go-yaml/yaml Git ветки
+
+  main == v0/v1
+  ├── go.mod
+  └── package.go
+
+  v2 == v2
+  ├── go.mod
+  └── package.go
+
+* Modules
+
+Module proxy
+
+  # curl https://proxy.golang.org/github.com/google/go-cmp/@v/list
+  v0.5.8
+  v0.5.5
+  v0.6.0
+	
+  # curl https://proxy.golang.org/github.com/google/go-cmp/@v/v0.5.5.info
+  {"Version":"v0.5.5","Time":"2021-03-03T20:48:37Z"}
+	
+  # curl https://proxy.golang.org/github.com/google/go-cmp/@latest
+  {"Version":"v0.6.0",
+   "Time":"2023-08-31T17:32:40Z",
+   "Origin":{"VCS":"git","URL":"https://github.com/google/go-cmp","Ref":"refs/tags/v0.6.0", ...}}
+	
+  # curl https://proxy.golang.org/github.com/google/go-cmp/@v/v0.6.0.mod
+  module github.com/google/go-cmp
+  
+  go 1.13
+	
+  # curl -O https://proxy.golang.org/github.com/google/go-cmp/@v/v0.6.0.zip
+
+* Modules
+
+Module proxy
+
+  # go get -x github.com/google/go-cmp/cmp
+  get https://proxy.golang.org/github.com/@v/list
+  get https://proxy.golang.org/github.com/google/go-cmp/@v/list
+  get https://proxy.golang.org/github.com/google/go-cmp/cmp/@v/list
+  get https://proxy.golang.org/github.com/google/@v/list
+  get https://proxy.golang.org/github.com/google/go-cmp/cmp/@v/list: 404 Not Found (0.622s)
+  get https://proxy.golang.org/github.com/google/@v/list: 404 Not Found (0.622s)
+  get https://proxy.golang.org/github.com/@v/list: 404 Not Found (0.622s)
+  get https://proxy.golang.org/github.com/google/go-cmp/@v/list: 200 OK (0.638s)
+  go: added github.com/google/go-cmp v0.6.0
+
+* Modules
+
+Vanity import
+
+Исходный код лежит на [[https://github.com/uber-go/atomic][https://github.com/uber-go/atomic]], однако импорт другой
+
+  import "go.uber.org/atomic"
+
+Команда *go*get* внутри делает http запрос к [[https://go.uber.org]]
+
+  # curl https://go.uber.org/atomic\?go-get\=1
+  <!DOCTYPE html>
+  <html>
+      <head>
+          <meta name="go-import" content="go.uber.org/atomic git https://github.com/uber-go/atomic">
+          <meta name="go-source" content="go.uber.org/atomic https://github.com/uber-go/atomic https://github.com/uber-go/atomic/tree/master{/dir} https://github.com/uber-go/atomic/tree/master{/dir}/{file}#L{line}">
+          <meta http-equiv="refresh" content="0; url=https://pkg.go.dev/go.uber.org/atomic">
+      </head>
+      <body>
+          Nothing to see here. Please <a href="https://pkg.go.dev/go.uber.org/atomic">move along</a>.
+      </body>
+  </html>
 
 * Ссылки:
 
-.link https://golang.org/cmd/go/ - go cmd
-.link https://play-with-go.dev/ - play-with-go
+.link https://golang.org/cmd/go/ — go cmd
+.link https://www.youtube.com/watch?v=F8nrpe0XWRg — ▶️ Go with Versions, Russ Cox
+.link https://play-with-go.dev/ — play-with-go
