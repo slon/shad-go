@@ -116,19 +116,6 @@ deadlines:
     #     - task: firewall
     #       score: 200
 
-    # - group:    Concurrency with shared memory
-    #   start:    18-03-2023 15:59
-    #   end: 29-03-2023 23:59
-    #   tasks:
-    #     - task: dupcall
-    #       score: 200
-    #     - task: keylock
-    #       score: 200
-    #     - task: batcher
-    #       score: 200
-    #     - task: pubsub
-    #       score: 300
-
     - group: Hello World
       start: 2024-01-01 18:00
       steps:
@@ -225,6 +212,21 @@ deadlines:
           score: 200
         - task: iprange
           score: 100
+
+    - group: Concurrency with shared memory
+      start: 2024-03-27 23:59
+      steps:
+        0.3: 2024-04-10 23:59
+      end: 2024-06-01 23:59
+      tasks:
+        - task: dupcall
+          score: 200
+        - task: keylock
+          score: 200
+        - task: batcher
+          score: 200
+        - task: pubsub
+          score: 300
 
     - group:    Bonus
       start: 2024-03-03 13:00
