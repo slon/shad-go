@@ -493,3 +493,8 @@ This definition provides the same semantics as C++'s sequentially consistent ato
   if err != nil {
     // возможно тут будет DeadlineExceeded
   }
+
+* context и передача значений
+
+.code context/value/value.go /type/,/OMIT/
+.code context/value/value.go /func main/,/}/
