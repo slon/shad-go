@@ -179,6 +179,86 @@ Concurrency with Shared Memory
   x:0 y:0
   y:0 x:0
 
+* Atomics
+
+  var x, y atomic.Int32
+  go func() {
+      x.Store(1)                     // A1
+      fmt.Print("y:", y.Load(), " ") // A2
+  }()
+  go func() {
+      y.Store(1)                     // B1
+      fmt.Print("x:", x.Load(), " ") // B2
+  }()
+
+In the terminology of the Go memory model, if the effect of an atomic operation A is observed by atomic operation B, then A “synchronizes before” B.
+
+Additionally, all the atomic operations executed in a program behave as though executed in some sequentially consistent order.
+
+This definition provides the same semantics as C++'s sequentially consistent atomics and Java's volatile variables.
+
+* Atomic Int
+
+  type Uint32 struct {}
+  
+  // Load atomically loads and returns the value stored in x.
+  func (x *Uint32) Load() uint32
+  
+  // Store atomically stores val into x.
+  func (x *Uint32) Store(val uint32)
+  
+  // Swap atomically stores new into x and returns the previous value.
+  func (x *Uint32) Swap(new uint32) (old uint32)
+  
+  // CompareAndSwap executes the compare-and-swap operation for x.
+  func (x *Uint32) CompareAndSwap(old, new uint32) (swapped bool)
+  
+  // Add atomically adds delta to x and returns the new value.
+  func (x *Uint32) Add(delta uint32) (new uint32)
+
+* Atomic Value
+
+  type Value struct {}
+  
+  // Load atomically loads and returns the value stored in x.
+  func (x *Value) Load() any
+  
+  // Store atomically stores val into x.
+  func (x *Value) Store(val any)
+  
+  // Swap atomically stores new into x and returns the previous value.
+  func (x *Value) Swap(new any) (old any)
+  
+  // CompareAndSwap executes the compare-and-swap operation for x.
+  func (x *Value) CompareAndSwap(old, new any) (swapped bool)
+
+* Config update
+
+  func main() {
+  	  var config atomic.Value // holds current server configuration
+  	  // Create initial config value and store into config.
+  	  config.Store(loadConfig())
+  	  go func() {
+  	  	  // Reload config every 10 seconds
+  	  	  // and update config value with the new version.
+  	  	  for {
+  	  	  	  time.Sleep(10 * time.Second)
+  	  	  	  config.Store(loadConfig())
+  	  	  }
+  	  }()
+  	  // Create worker goroutines that handle incoming requests
+  	  // using the latest config value.
+  	  for i := 0; i < 10; i++ {
+  	  	  go func() {
+  	  	  	  for r := range requests() {
+  	  	  	  	  c := config.Load()
+  	  	  	  	  // Handle request r using config c.
+  	  	  	  	  _, _ = r, c
+  	  	  	  }
+  	  	  }()
+  	  }
+  }
+
 * Ленивая инициализация sync.Once.
 
   var icons map[string]image.Image
