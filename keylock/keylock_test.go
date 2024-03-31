@@ -1,10 +1,14 @@
 package keylock_test
 
 import (
+	"fmt"
+	"math/rand"
+	"slices"
 	"sync"
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/goleak"
 
@@ -116,11 +120,66 @@ func TestKeyLock_SingleKeyStress(t *testing.T) {
 		go func() {
 			defer wg.Done()
 
-			for i := 0; i < N; i++ {
+			for j := 0; j < N; j++ {
 				cancelled, unlock := l.LockKeys([]string{"a"}, timeout(time.Millisecond))
 				if !cancelled {
 					unlock()
 				}
+			}
+		}()
+	}
+
+	wg.Wait()
+}
+
+func TestKeyLock_MutualExclusionStress(t *testing.T) {
+	const (
+		N = 1000
+		G = 100
+		M = 15
+		K = 3
+	)
+
+	defer goleak.VerifyNone(t)
+
+	locked := map[string]bool{}
+	var mu sync.Mutex
+
+	l := keylock.New()
+
+	var wg sync.WaitGroup
+	wg.Add(G)
+
+	for i := 0; i < G; i++ {
+		go func() {
+			defer wg.Done()
+
+			for j := 0; j < N; j++ {
+				keys := []string{}
+				for k := 0; k < K; k++ {
+					keys = append(keys, fmt.Sprint(rand.Intn(N)))
+				}
+
+				slices.Sort(keys)
+				keys = slices.Compact(keys)
+
+				_, unlock := l.LockKeys(keys, nil)
+				mu.Lock()
+				for _, key := range keys {
+					assert.False(t, locked[key])
+					locked[key] = true
+				}
+				mu.Unlock()
+
+				time.Sleep(time.Millisecond)
+
+				mu.Lock()
+				for _, key := range keys {
+					locked[key] = false
+				}
+				mu.Unlock()
+
+				unlock()
 			}
 		}()
 	}
