@@ -45,10 +45,12 @@ func TestCall_NoBusyWait(t *testing.T) {
 
 	var call Call
 	for i := 0; i < 10; i++ {
-		go call.Do(context.Background(), func(ctx context.Context) (interface{}, error) {
-			<-done
-			return nil, nil
-		})
+		go func() {
+			_, _ = call.Do(context.Background(), func(ctx context.Context) (interface{}, error) {
+				<-done
+				return nil, nil
+			})
+		}()
 	}
 
 	testtool.VerifyNoBusyGoroutines(t)
