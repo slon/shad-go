@@ -344,21 +344,21 @@ func TestPubSub_close(t *testing.T) {
 func TestPubSub_closeWaitsMessageDelivery(t *testing.T) {
 	p := NewPubSub()
 
-	wg := sync.WaitGroup{}
-
+	var msgs []any
 	_, err := p.Subscribe("q", func(msg interface{}) {
+		msgs = append(msgs, msg)
 		time.Sleep(100 * time.Millisecond)
-		wg.Done()
 	})
 	require.NoError(t, err)
 
-	for i := 0; i < 11; i++ {
-		wg.Add(1)
+	const N = 11
+	for i := 0; i < N; i++ {
 		err = p.Publish("q", "pew-pew")
 		require.NoError(t, err)
 	}
 	checkedClose(t, p)
-	wg.Wait()
+
+	require.Len(t, msgs, N)
 }
 
 func checkedClose(t *testing.T, c interface {
