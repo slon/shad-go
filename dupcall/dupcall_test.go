@@ -8,6 +8,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"gitlab.com/slon/shad-go/tools/testtool"
 	"go.uber.org/goleak"
 )
 
@@ -36,6 +37,21 @@ func TestCall_Simple(t *testing.T) {
 	require.Equal(t, errFailed, err)
 	require.Nil(t, result)
 	require.Equal(t, 2, called)
+}
+
+func TestCall_NoBusyWait(t *testing.T) {
+	done := make(chan struct{})
+	defer close(done)
+
+	var call Call
+	for i := 0; i < 10; i++ {
+		go call.Do(context.Background(), func(ctx context.Context) (interface{}, error) {
+			<-done
+			return nil, nil
+		})
+	}
+
+	testtool.VerifyNoBusyGoroutines(t)
 }
 
 func TestCall_Dedup(t *testing.T) {
