@@ -3,22 +3,8 @@ package keylock
 import (
 	"math/rand"
 	"strconv"
-	"sync"
 	"testing"
 )
-
-func BenchmarkMutex_Baseline(b *testing.B) {
-	var mu sync.Mutex
-
-	b.ReportAllocs()
-	b.RunParallel(func(pb *testing.PB) {
-		for pb.Next() {
-			mu.Lock()
-			_ = 0
-			mu.Unlock()
-		}
-	})
-}
 
 func BenchmarkKeyLock_SingleKey(b *testing.B) {
 	l := New()
