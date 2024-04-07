@@ -55,7 +55,7 @@ func TestRequestLog(t *testing.T) {
 		entries := obs.FilterField(zap.String("path", path)).All()
 
 		require.Len(t, entries, 2)
-		require.Equal(t, entries[0].Message, "request started")
+		require.Equal(t, "request started", entries[0].Message)
 		require.Contains(t, entries[0].ContextMap(), "request_id")
 
 		var requestID zap.Field
@@ -66,12 +66,12 @@ func TestRequestLog(t *testing.T) {
 		}
 
 		if !panic {
-			require.Equal(t, entries[1].Message, "request finished")
+			require.Equal(t, "request finished", entries[1].Message)
 			require.Contains(t, entries[1].Context, zap.Int("status_code", code))
 			require.Contains(t, entries[1].ContextMap(), "duration")
 			require.Contains(t, entries[1].Context, requestID)
 		} else {
-			require.Equal(t, entries[1].Message, "request panicked")
+			require.Equal(t, "request panicked", entries[1].Message)
 			require.Contains(t, entries[1].Context, requestID)
 		}
 	}
