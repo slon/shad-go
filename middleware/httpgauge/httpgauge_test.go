@@ -49,14 +49,14 @@ func TestMiddleware(t *testing.T) {
 
 	wg.Wait()
 
-	require.Equal(t, g.Snapshot(), map[string]int{
+	require.Equal(t, map[string]int{
 		"/simple":        2,
 		"/panic":         1,
 		"/user/{userID}": 10000,
-	})
+	}, g.Snapshot())
 
 	w := httptest.NewRecorder()
 	g.ServeHTTP(w, httptest.NewRequest("GET", "/", nil))
 
-	require.Equal(t, w.Body.String(), "/panic 1\n/simple 2\n/user/{userID} 10000\n")
+	require.Equal(t, "/panic 1\n/simple 2\n/user/{userID} 10000\n", w.Body.String())
 }
