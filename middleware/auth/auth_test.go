@@ -63,7 +63,7 @@ func TestAuth(t *testing.T) {
 
 		w := httptest.NewRecorder()
 		m.ServeHTTP(w, httptest.NewRequest("GET", "/path/ok", nil))
-		require.Equal(t, w.Code, http.StatusUnauthorized)
+		require.Equal(t, http.StatusUnauthorized, w.Code)
 		require.False(t, called)
 	})
 
@@ -82,10 +82,10 @@ func TestAuth(t *testing.T) {
 		r.Header.Add("authorization", "Bearer token0")
 
 		m.ServeHTTP(w, r)
-		require.Equal(t, w.Code, http.StatusOK)
+		require.Equal(t, http.StatusOK, w.Code)
 		require.True(t, called)
 		require.True(t, lastUserOK)
-		require.Equal(t, lastUser, &auth.User{Name: "Fedor", Email: "dartslon@gmail.com"})
+		require.Equal(t, &auth.User{Name: "Fedor", Email: "dartslon@gmail.com"}, lastUser)
 
 		called = false
 		w = httptest.NewRecorder()
@@ -93,7 +93,7 @@ func TestAuth(t *testing.T) {
 		r.Header.Add("authorization", "Bearer token0")
 
 		m.ServeHTTP(w, r)
-		require.Equal(t, w.Code, http.StatusConflict)
+		require.Equal(t, http.StatusConflict, w.Code)
 		require.True(t, called)
 	})
 }
