@@ -14,15 +14,36 @@ import (
 	"gitlab.com/slon/shad-go/middleware/requestlog"
 )
 
+type oneShotHandler struct {
+	inner http.HandlerFunc
+
+	t    *testing.T
+	used bool
+}
+
+func (h *oneShotHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if h.used {
+		h.t.Errorf("handler used twice")
+		return
+	}
+
+	h.used = true
+	h.inner(w, r)
+}
+
 func TestRequestLog(t *testing.T) {
 	core, obs := observer.New(zap.DebugLevel)
 
 	m := chi.NewRouter()
 	m.Use(requestlog.Log(zap.New(core)))
 
-	m.Get("/simple", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	})
+	m.Get("/simple", (&oneShotHandler{
+		inner: func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		},
+		t: t,
+	}).ServeHTTP)
+
 	m.Post("/post", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	})
