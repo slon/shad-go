@@ -48,13 +48,6 @@ deadlines:
     #     - task: gzep
     #       score: 100
 
-    # - group:    "[HW] Dist Build"
-    #   start:    26-04-2023 12:00
-    #   end: 29-05-2023 23:59
-    #   tasks:
-    #     - task: distbuild
-    #       score: 0
-
     # - group:    Low level
     #   start:    22-04-2023 16:00
     #   end: 03-05-2023 23:59
@@ -244,6 +237,13 @@ deadlines:
           score: 100
         - task: wscat
           score: 200
+
+    - group: "[HW] Dist Build"
+      start: 2024-04-13 13:00
+      end:   2024-05-13 23:59
+      tasks:
+        - task: distbuild
+          score: 1
 
     - group:    Bonus
       start: 2024-03-03 13:00
