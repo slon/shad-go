@@ -68,11 +68,27 @@ func TestAuth(t *testing.T) {
 	})
 
 	t.Run("InvalidToken", func(t *testing.T) {
+		called = false
 
+		w := httptest.NewRecorder()
+		r := httptest.NewRequest("GET", "/path/ok", nil)
+		r.Header.Add("authorization", "Bearer token2")
+
+		m.ServeHTTP(w, r)
+		require.Equal(t, http.StatusUnauthorized, w.Code)
+		require.False(t, called)
 	})
 
 	t.Run("DatabaseError", func(t *testing.T) {
+		called = false
 
+		w := httptest.NewRecorder()
+		r := httptest.NewRequest("GET", "/path/ok", nil)
+		r.Header.Add("authorization", "Bearer token1")
+
+		m.ServeHTTP(w, r)
+		require.Equal(t, http.StatusInternalServerError, w.Code)
+		require.False(t, called)
 	})
 
 	t.Run("GoodToken", func(t *testing.T) {
