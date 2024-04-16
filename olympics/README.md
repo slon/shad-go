@@ -1,5 +1,7 @@
 ## olympics
 
+![](champion.avif)
+
 В этой задаче нужно написать http сервер со следующим API
 
 * GET /athlete-info?name=S
