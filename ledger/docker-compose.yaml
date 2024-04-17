@@ -8,3 +8,8 @@ services:
       POSTGRES_PASSWORD: pass
     ports:
       - 5432:5432
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER}" ]
+      interval: 1s
+      timeout: 3s
+      retries: 5
