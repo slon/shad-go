@@ -55,6 +55,40 @@ func TestLedger(t *testing.T) {
 		require.ErrorIs(t, l0.Transfer(ctx, "a0", "a1", ledger.Money(50)), ledger.ErrNoMoney)
 	})
 
+	t.Run("ErroneousCases", func(t *testing.T) {
+		checkBalance := func(account ledger.ID, amount ledger.Money) {
+			b, err := l0.GetBalance(ctx, account)
+			require.NoError(t, err)
+			require.Equal(t, amount, b)
+		}
+		require.NoError(t, l0.CreateAccount(ctx, "b0"))
+		checkBalance("b0", 0)
+
+		require.NoError(t, l0.Deposit(ctx, "b0", ledger.Money(100)))
+		checkBalance("b0", 100)
+
+		require.Error(t, l0.Deposit(ctx, "b0", ledger.Money(-100)))
+		checkBalance("b0", 100)
+
+		require.Error(t, l0.Withdraw(ctx, "b0", ledger.Money(-50)))
+		checkBalance("b0", 100)
+
+		require.Error(t, l0.Transfer(ctx, "b0", "b999", ledger.Money(50)))
+		checkBalance("b0", 100)
+
+		require.NoError(t, l0.CreateAccount(ctx, "b999"))
+		require.NoError(t, l0.Deposit(ctx, "b999", ledger.Money(200)))
+		checkBalance("b999", 200)
+
+		require.Error(t, l0.Transfer(ctx, "b0", "b999", ledger.Money(-50)))
+		checkBalance("b0", 100)
+		checkBalance("b999", 200)
+
+		require.NoError(t, l0.Transfer(ctx, "b0", "b999", ledger.Money(50)))
+		checkBalance("b0", 50)
+		checkBalance("b999", 250)
+	})
+
 	t.Run("Transactions", func(t *testing.T) {
 		const nAccounts = 10
 		const initialBalance = 5
