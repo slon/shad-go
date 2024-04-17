@@ -31,10 +31,6 @@ sudo apt install postgresql
 Альтернативный способ — запустить бд в докере.
 
 Для этого нужно установить docker и docker-compose по инструкции из [dockertest](../dockertest/README.md).
-Добиться успешного запуска
-```
-go test -v ./dockertest/...
-```
 
 Запускать тесты можно будет так:
 ```
