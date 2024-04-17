@@ -76,6 +76,9 @@ func TestLedger(t *testing.T) {
 		require.Error(t, l0.Transfer(ctx, "b0", "b999", ledger.Money(50)))
 		checkBalance("b0", 100)
 
+		require.Error(t, l0.Transfer(ctx, "b999", "b0", ledger.Money(50)))
+		checkBalance("b0", 100)
+
 		require.NoError(t, l0.CreateAccount(ctx, "b999"))
 		require.NoError(t, l0.Deposit(ctx, "b999", ledger.Money(200)))
 		checkBalance("b999", 200)
@@ -87,6 +90,13 @@ func TestLedger(t *testing.T) {
 		require.NoError(t, l0.Transfer(ctx, "b0", "b999", ledger.Money(50)))
 		checkBalance("b0", 50)
 		checkBalance("b999", 250)
+
+		require.Error(t, l0.Deposit(ctx, "c0", ledger.Money(100)))
+		require.Error(t, l0.Withdraw(ctx, "c0", ledger.Money(100)))
+
+		_, err := l0.GetBalance(ctx, "c0")
+		require.Error(t, err)
+
 	})
 
 	t.Run("Transactions", func(t *testing.T) {
