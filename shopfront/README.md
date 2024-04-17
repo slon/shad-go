@@ -6,7 +6,7 @@
 - Метод `GetItems` загружает счётчики для пачки `item` ов. В поле `item[i].Viewed` должен
   быть записан флаг, означающий, что пользователь посетил `i`-ый `item`.
 
-В этой задаче есть benchmark-и. Чтобы пройти его, ваше решение должно использовать [pipelining](https://redis.io/docs/manual/pipelining/).
+В этой задаче есть benchmark-и. Чтобы пройти его, ваше решение должно использовать [pipelining](https://github.com/redis/redis-doc/blob/master/docs/manual/pipelining/index.md).
 
 ## Запуск тестов на linux
 
