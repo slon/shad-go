@@ -6,3 +6,8 @@ services:
     hostname: redis
     ports:
       - "6379:6379"
+    healthcheck:
+      test:  ["CMD", "redis-cli", "--raw", "incr", "ping" ]
+      interval: 1s
+      timeout: 3s
+      retries: 5

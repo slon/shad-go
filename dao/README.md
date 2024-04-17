@@ -38,11 +38,11 @@ go test -v ./dockertest/...
 
 Запускать тесты можно будет так:
 ```
-(cd dao && docker-compose up -d && sleep 1 && env PGCONN="host=127.0.0.1 port=5432 database=shad-go user=gopher password=pass" go test -v ./... -count=1 || true && docker-compose down)
+(cd dao && docker compose up -d --wait && env PGCONN="host=127.0.0.1 port=5432 database=shad-go user=gopher password=pass" go test -v ./... -count=1 || true && docker compose down)
 ```
 Эта команда стартует docker с postgresql, запускает тесты, передав им DSN через переменную окружения, удаляет контейнеры в конце.
 
 Как подчистить контейнеры, если что-то пошло не так:
 ```
-(cd dao && docker-compose down)
+(cd dao && docker compose down)
 ```
