@@ -11,6 +11,7 @@ type (
 )
 
 var ErrNoMoney = errors.New("no money")
+var ErrNegativeAmount = errors.New("negative amount")
 
 type Ledger interface {
 	CreateAccount(ctx context.Context, id ID) error
