@@ -27,6 +27,8 @@ func NewCoordinator(
 	panic("implement me")
 }
 
+func (c *Coordinator) Stop() {}
+
 func (c *Coordinator) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	panic("implement me")
 }

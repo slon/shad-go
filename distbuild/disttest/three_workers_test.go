@@ -15,8 +15,7 @@ import (
 var threeWorkerConfig = &Config{WorkerCount: 3}
 
 func TestArtifactTransferBetweenWorkers(t *testing.T) {
-	env, cancel := newEnv(t, threeWorkerConfig)
-	defer cancel()
+	env := newEnv(t, threeWorkerConfig)
 
 	baseJob := build.Job{
 		ID:   build.ID{'a'},

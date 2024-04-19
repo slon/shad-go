@@ -27,8 +27,7 @@ var echoGraph = build.Graph{
 }
 
 func TestSingleCommand(t *testing.T) {
-	env, cancel := newEnv(t, singleWorkerConfig)
-	defer cancel()
+	env := newEnv(t, singleWorkerConfig)
 
 	recorder := NewRecorder()
 	require.NoError(t, env.Client.Build(env.Ctx, echoGraph, recorder))
@@ -38,8 +37,7 @@ func TestSingleCommand(t *testing.T) {
 }
 
 func TestJobCaching(t *testing.T) {
-	env, cancel := newEnv(t, singleWorkerConfig)
-	defer cancel()
+	env := newEnv(t, singleWorkerConfig)
 
 	tmpFile, err := os.CreateTemp("", "")
 	require.NoError(t, err)
@@ -95,8 +93,7 @@ var sourceFilesGraph = build.Graph{
 }
 
 func TestSourceFiles(t *testing.T) {
-	env, cancel := newEnv(t, singleWorkerConfig)
-	defer cancel()
+	env := newEnv(t, singleWorkerConfig)
 
 	recorder := NewRecorder()
 	require.NoError(t, env.Client.Build(env.Ctx, sourceFilesGraph, recorder))
@@ -126,8 +123,7 @@ var artifactTransferGraph = build.Graph{
 }
 
 func TestArtifactTransferBetweenJobs(t *testing.T) {
-	env, cancel := newEnv(t, singleWorkerConfig)
-	defer cancel()
+	env := newEnv(t, singleWorkerConfig)
 
 	recorder := NewRecorder()
 	require.NoError(t, env.Client.Build(env.Ctx, artifactTransferGraph, recorder))
