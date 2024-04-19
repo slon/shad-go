@@ -47,3 +47,7 @@ func (c *Scheduler) ScheduleJob(job *api.JobSpec) *PendingJob {
 func (c *Scheduler) PickJob(ctx context.Context, workerID api.WorkerID) *PendingJob {
 	panic("implement me")
 }
+
+func (c *Scheduler) Stop() {
+	panic("implement me")
+}

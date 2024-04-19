@@ -52,12 +52,14 @@ func newTestScheduler(t *testing.T) *testScheduler {
 	}()
 
 	scheduler.TimeAfter = s.FakeClock.After
+
 	return s
 }
 
 func (s *testScheduler) stop(t *testing.T) {
 	close(s.reset)
 	scheduler.TimeAfter = time.After
+	s.Scheduler.Stop()
 	goleak.VerifyNone(t)
 }
 
