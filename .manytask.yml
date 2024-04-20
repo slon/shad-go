@@ -83,17 +83,6 @@ deadlines:
     #     - task: wscat
     #       score: 200
 
-    # - group:    Generics
-    #   start:    01-04-2023 16:00
-    #   end: 11-04-2023 23:59
-    #   tasks:
-    #     - task: genericsum
-    #       score: 100
-    #     - task: treeiter
-    #       score: 100
-    #     - task: coverme
-    #       score: 300
-
     - group: Hello World
       start: 2024-01-01 18:00
       steps:
@@ -244,6 +233,19 @@ deadlines:
       tasks:
         - task: distbuild
           score: 1
+
+    - group:    Generics
+      start: 2024-04-20 13:00
+      steps:
+        0.3: 2024-04-30 23:59
+      end: 2024-06-01 23:59
+      tasks:
+        - task: genericsum
+          score: 100
+        - task: treeiter
+          score: 100
+        - task: coverme
+          score: 300
 
     - group:    Bonus
       start: 2024-03-03 13:00
