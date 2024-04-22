@@ -47,6 +47,35 @@ func TestShopfront(t *testing.T) {
 	}, items)
 }
 
+func TestShopFrontConcurrent(t *testing.T) {
+	goleak.VerifyNone(t)
+
+	rdb := redis.NewClient(&redis.Options{
+		Addr: StartRedis(t),
+	})
+	defer func() { _ = rdb.Close() }()
+
+	ctx := context.Background()
+	c := shopfront.New(rdb)
+
+	N := 10000
+	wg := sync.WaitGroup{}
+	for i := 0; i < N; i++ {
+		wg.Add(1)
+		go func() {
+			require.NoError(t, c.RecordView(ctx, 1, 1))
+			wg.Done()
+		}()
+	}
+	wg.Wait()
+
+	items, err := c.GetItems(ctx, []shopfront.ItemID{1}, 1)
+	require.NoError(t, err)
+	require.Equal(t, []shopfront.Item{
+		{ViewCount: N, Viewed: true},
+	}, items)
+}
+
 func BenchmarkShopfront(b *testing.B) {
 	const nItems = 1024
 
