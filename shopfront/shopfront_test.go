@@ -2,9 +2,11 @@ package shopfront_test
 
 import (
 	"context"
+	"sync"
 	"testing"
 
 	"github.com/go-redis/redis/v8"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/goleak"
 
@@ -63,7 +65,7 @@ func TestShopFrontConcurrent(t *testing.T) {
 	for i := 0; i < N; i++ {
 		wg.Add(1)
 		go func() {
-			require.NoError(t, c.RecordView(ctx, 1, 1))
+			assert.NoError(t, c.RecordView(ctx, 1, 1))
 			wg.Done()
 		}()
 	}
