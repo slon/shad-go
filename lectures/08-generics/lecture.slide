@@ -433,7 +433,7 @@ but why not just
 
 P.S. are these functions equivalent?
 
-- Type parameter be replaced by simple interface
+- Type parameter can be replaced by simple interface
 
 * When not to use generics
 
