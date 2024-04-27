@@ -207,9 +207,9 @@ deadlines:
           score: 100
 
     - group: Low level
-      start: 2024-04-27 13:00
+      start: 2024-05-04 13:00
       steps:
-        0.3: 2024-05-07 23:59
+        0.3: 2024-05-14 23:59
       end: 2024-06-01 23:59
       tasks:
         - task: illegal
@@ -220,9 +220,9 @@ deadlines:
           score: 100
 
     - group: Analysis
-      start: 2024-04-27 13:00
+      start: 2024-05-11 13:00
       steps:
-        0.3: 2024-05-07 23:59
+        0.3: 2024-05-21 23:59
       end: 2024-06-01 23:59
       tasks:
         - task: testifycheck
