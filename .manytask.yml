@@ -28,67 +28,11 @@ deadlines:
   # submission_penalty: 0.1  # optional
 
   schedule:
-    #     - task: consistenthash
-    #       score: 200
-    #     - task: gossip
-    #       score: 300
-    #     - task: smartsched
-    #       score: 200
-    #       watch:
-    #         - distbuild/pkg/scheduler
-    #     - task: wasm
-    #       score: 300
-
-    # - group:    Analysis
-    #   start:    29-04-2023 18:00
-    #   end: 10-05-2023 23:59
-    #   tasks:
-    #     - task: testifycheck
-    #       score: 200
-    #     - task: gzep
-    #       score: 100
-
-    # - group:    Low level
-    #   start:    22-04-2023 16:00
-    #   end: 03-05-2023 23:59
-    #   tasks:
-    #     - task: illegal
-    #       score: 100
-    #     - task: blowfish
-    #       score: 100
-
-    # - group:    Reflect
-    #   start:    15-04-2023 16:00
-    #   end: 25-04-2023 23:59
-    #   tasks:
-    #     - task: reversemap
-    #       score: 100
-    #     - task: jsonlist
-    #       score: 100
-    #     - task: jsonrpc
-    #       score: 100
-    #     - task: structtags
-    #       score: 100
-
-    # - group:    SQL
-    #   start:    08-04-2023 16:00
-    #   end: 18-04-2023 23:59
-    #   tasks:
-    #     - task: dao
-    #       score: 100
-    #     - task: ledger
-    #       score: 200
-    #     - task: shopfront
-    #       score: 100
-    #     - task: wscat
-    #       score: 200
-
     - group: Hello World
       start: 2024-01-01 18:00
       steps:
         0.3: 2024-02-27 23:59
       end: 2024-06-01 23:59
-      enabled: true
       tasks:
       - task: sum
         score: 100
@@ -234,7 +178,7 @@ deadlines:
         - task: distbuild
           score: 1
 
-    - group:    Generics
+    - group: Generics
       start: 2024-04-20 13:00
       steps:
         0.3: 2024-04-30 23:59
@@ -247,10 +191,62 @@ deadlines:
         - task: coverme
           score: 300
 
-    - group:    Bonus
+    - group: Reflect
+      start: 2024-04-27 13:00
+      steps:
+        0.3: 2024-05-07 23:59
+      end: 2024-06-01 23:59
+      tasks:
+        - task: reversemap
+          score: 100
+        - task: jsonlist
+          score: 100
+        - task: jsonrpc
+          score: 100
+        - task: structtags
+          score: 100
+
+    - group: Low level
+      start: 2024-05-04 13:00
+      steps:
+        0.3: 2024-05-14 23:59
+      end: 2024-06-01 23:59
+      tasks:
+        - task: illegal
+          score: 100
+        - task: blowfish
+          score: 100
+        - task: gzep
+          score: 100
+
+    - group: Analysis
+      start: 2024-05-11 13:00
+      steps:
+        0.3: 2024-05-21 23:59
+      end: 2024-06-01 23:59
+      tasks:
+        - task: testifycheck
+          score: 200
+
+    - group: Bonus
       start: 2024-03-03 13:00
       end: 2024-06-01 23:59
       tasks:
         - task: yamlembed
           is_bonus: true
           score: 100
+        - task: consistenthash
+          is_bonus: true
+          score: 200
+        - task: gossip
+          is_bonus: true
+          score: 300
+        - task: smartsched
+          is_bonus: true
+          score: 200
+          watch:
+            - distbuild/pkg/scheduler
+        - task: wasm
+          is_bonus: true
+          score: 300
+
