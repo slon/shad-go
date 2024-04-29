@@ -209,7 +209,7 @@ func TestIsHermitianMatrix(t *testing.T) {
 		{3, 4, 7},
 		{8, 7, 11},
 	}))
-  assert.True(t, genericsum.IsHermitianMatrix([][]float32{
+	assert.True(t, genericsum.IsHermitianMatrix([][]float32{
 		{1.0, 7.0, 9.0},
 		{7.0, 2.0, 12.0},
 		{9.0, 12.0, 19.0},
@@ -218,6 +218,7 @@ func TestIsHermitianMatrix(t *testing.T) {
 		{1.0, 12.0, 8.0},
 		{3.0, 4.0, 7.0},
 		{8.0, 7.0, 11.0},
+	}))
 
 	assert.True(t, genericsum.IsHermitianMatrix([][]complex64{
 		{1, 3 + 2i},
