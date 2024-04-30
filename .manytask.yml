@@ -181,7 +181,7 @@ deadlines:
     - group: Generics
       start: 2024-04-20 13:00
       steps:
-        0.3: 2024-04-30 23:59
+        0.3: 2024-05-02 23:59
       end: 2024-06-01 23:59
       tasks:
         - task: genericsum
