@@ -19,17 +19,31 @@ Go Runtime Internals
 * GC
 
 - Finalizer
-- Knobs
+- Knobs `GOGC`
 - sync.Pool
 - STW
 - Mark Assist
-- Stack Growth
 - Write Barrier
+- Stack Growth
 
 * Scheduler
 
 - G, M, P model
 - Global Run Queue, Local Run Queue
-- Knobs
-- Runaway threads problem
+- Knobs `GOMAXPROCS`
+- cgo & system call
 - runtime.LockOsThread
+
+* runtime
+
+- stacktraces
+- mem stats
+- runtime/debug
+- gc stats
+
+* Tools
+
+- delve
+- gdb
+- runtime/pprof
+- net/http/pprof
