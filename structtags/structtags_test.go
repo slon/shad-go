@@ -9,20 +9,36 @@ import (
 )
 
 var (
-	expectedUser = User{
+	expectedUser1 = User{
 		ID:              1,
 		Name:            "John",
 		Surname:         "Doe",
 		Phone:           "88005551234",
 		HasSubscription: true,
 	}
-	userURL = fmt.Sprintf(
+	userURL1 = fmt.Sprintf(
 		"localhost/user?id=%d&name=%s&surname=%s&phone=%s&has_subscription=%t",
-		expectedUser.ID,
-		expectedUser.Name,
-		expectedUser.Surname,
-		expectedUser.Phone,
-		expectedUser.HasSubscription,
+		expectedUser1.ID,
+		expectedUser1.Name,
+		expectedUser1.Surname,
+		expectedUser1.Phone,
+		expectedUser1.HasSubscription,
+	)
+
+	expectedUser2 = User{
+		ID:              1,
+		Name:            "Mike",
+		Surname:         "Crag",
+		Phone:           "88005341234",
+		HasSubscription: false,
+	}
+	userURL2 = fmt.Sprintf(
+		"localhost/user?id=%d&name=%s&surname=%s&phone=%s&has_subscription=%t",
+		expectedUser2.ID,
+		expectedUser2.Name,
+		expectedUser2.Surname,
+		expectedUser2.Phone,
+		expectedUser2.HasSubscription,
 	)
 
 	expectedGood = Good{
@@ -73,15 +89,25 @@ type Order struct {
 }
 
 func TestUnpack_User(t *testing.T) {
-	r, _ := http.NewRequest("GET", userURL, nil)
-	user := &User{}
-	err := Unpack(r, user)
+	r1, _ := http.NewRequest("GET", userURL1, nil)
+	user1 := &User{}
+	err := Unpack(r1, user1)
 	require.NoError(t, err)
-	require.Equal(t, expectedUser.ID, user.ID)
-	require.Equal(t, expectedUser.Name, user.Name)
-	require.Equal(t, expectedUser.Surname, user.Surname)
-	require.Equal(t, expectedUser.Phone, user.Phone)
-	require.Equal(t, expectedUser.HasSubscription, user.HasSubscription)
+	require.Equal(t, expectedUser1.ID, user1.ID)
+	require.Equal(t, expectedUser1.Name, user1.Name)
+	require.Equal(t, expectedUser1.Surname, user1.Surname)
+	require.Equal(t, expectedUser1.Phone, user1.Phone)
+	require.Equal(t, expectedUser1.HasSubscription, user1.HasSubscription)
+
+	r2, _ := http.NewRequest("GET", userURL2, nil)
+	user2 := &User{}
+	err = Unpack(r2, user2)
+	require.NoError(t, err)
+	require.Equal(t, expectedUser2.ID, user2.ID)
+	require.Equal(t, expectedUser2.Name, user2.Name)
+	require.Equal(t, expectedUser2.Surname, user2.Surname)
+	require.Equal(t, expectedUser2.Phone, user2.Phone)
+	require.Equal(t, expectedUser2.HasSubscription, user2.HasSubscription)
 }
 
 func TestUnpack_Good(t *testing.T) {
@@ -128,7 +154,7 @@ func TestUnpack_IncorrectIntData(t *testing.T) {
 }
 
 func BenchmarkUnpacker(b *testing.B) {
-	userRequest, _ := http.NewRequest("GET", userURL, nil)
+	userRequest, _ := http.NewRequest("GET", userURL1, nil)
 	user := &User{}
 
 	goodRequest, _ := http.NewRequest("GET", goodURL, nil)
