@@ -30,11 +30,11 @@ func TestSemaphore_Simple(t *testing.T) {
 
 	release, err := sem.Acquire(ctx, "simple", 1)
 	require.NoError(t, err)
-	release()
+	require.NoError(t, release())
 
 	release, err = sem.Acquire(ctx, "simple", 1)
 	require.NoError(t, err)
-	release()
+	require.NoError(t, release())
 }
 
 func TestSemaphore_Limit1(t *testing.T) {
@@ -49,7 +49,7 @@ func TestSemaphore_Limit1(t *testing.T) {
 
 	release, err := sem.Acquire(ctx, "limit1", 1)
 	require.NoError(t, err)
-	defer release()
+	defer func() { require.NoError(t, release()) }()
 
 	acquired := make(chan struct{})
 	defer func() { <-acquired }()
@@ -59,15 +59,14 @@ func TestSemaphore_Limit1(t *testing.T) {
 
 		release, err := sem.Acquire(ctx, "limit1", 1)
 		assert.NoError(t, err)
-
-		release()
+		require.NoError(t, release())
 	}()
 
 	select {
 	case <-acquired:
 		t.Errorf("semaphore not working")
 	case <-time.After(time.Second * 5):
-		release()
+		require.NoError(t, release())
 	}
 }
 
@@ -86,7 +85,7 @@ func TestSemaphore_IndependentKeys(t *testing.T) {
 
 		release, err := sem.Acquire(ctx, fmt.Sprint(i), 1)
 		require.NoError(t, err)
-		defer release()
+		defer func() { require.NoError(t, release()) }()
 	}
 }
 
@@ -126,7 +125,7 @@ func TestSemaphore_LimitN(t *testing.T) {
 
 				if k := counter.Load(); k > N {
 					counter.Add(-1)
-					release()
+					require.NoError(t, release())
 
 					t.Errorf("%d goroutines in critical section", k)
 					return
@@ -135,7 +134,7 @@ func TestSemaphore_LimitN(t *testing.T) {
 				time.Sleep(lockDuration)
 
 				counter.Add(-1)
-				release()
+				require.NoError(t, release())
 			}
 		}()
 	}
@@ -162,7 +161,7 @@ func TestSemaphore_ContextCancel(t *testing.T) {
 	release, err := sem.Acquire(ctx, "cancel", 1)
 	require.NoError(t, err)
 
-	release()
+	require.NoError(t, release())
 }
 
 var binCache testtool.BinCache
@@ -204,7 +203,7 @@ func TestSemaphore_DeadCleanup(t *testing.T) {
 		release, err := sem.Acquire(ctx, "dead", 1)
 		assert.NoError(t, err)
 
-		release()
+		require.NoError(t, release())
 	}()
 
 	select {
