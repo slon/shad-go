@@ -57,9 +57,9 @@ func TestSemaphore_Limit1(t *testing.T) {
 	go func() {
 		defer close(acquired)
 
-		release, err := sem.Acquire(ctx, "limit1", 1)
+		releaseInner, err := sem.Acquire(ctx, "limit1", 1)
 		assert.NoError(t, err)
-		require.NoError(t, release())
+		require.NoError(t, releaseInner())
 	}()
 
 	select {
