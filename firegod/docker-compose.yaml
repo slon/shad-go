@@ -1,0 +1,62 @@
+services:
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - 9090:9090
+    restart: unless-stopped
+    volumes:
+      - ./prometheus:/etc/prometheus
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - 3000:3000
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=grafana
+    volumes:
+      - ./grafana:/etc/grafana/provisioning/datasources
+
+  my-service-0: &service
+    build:
+      context: ..
+      dockerfile: firegod/Dockerfile
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 100M
+
+    container_name: my-service-0
+    environment:
+      - REPLICA=0
+
+  my-service-1:
+    <<: *service
+    container_name: my-service-1
+    environment:
+      - REPLICA=1
+
+  my-service-2:
+    <<: *service
+    container_name: my-service-2
+    environment:
+      - REPLICA=2
+
+  my-service-3:
+    <<: *service
+    container_name: my-service-3
+    environment:
+      - REPLICA=3
+
+  my-service-4:
+    <<: *service
+    container_name: my-service-4
+    environment:
+      - REPLICA=4
