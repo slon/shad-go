@@ -1,4 +1,4 @@
-package shopfront_test
+package redisfixture
 
 import (
 	"context"

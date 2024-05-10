@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/goleak"
 
+	"gitlab.com/slon/shad-go/redisfixture"
 	"gitlab.com/slon/shad-go/shopfront"
 )
 
@@ -17,7 +18,7 @@ func TestShopfront(t *testing.T) {
 	goleak.VerifyNone(t)
 
 	rdb := redis.NewClient(&redis.Options{
-		Addr: StartRedis(t),
+		Addr: redisfixture.StartRedis(t),
 	})
 	defer func() { _ = rdb.Close() }()
 
@@ -53,7 +54,7 @@ func TestShopFrontConcurrent(t *testing.T) {
 	goleak.VerifyNone(t)
 
 	rdb := redis.NewClient(&redis.Options{
-		Addr: StartRedis(t),
+		Addr: redisfixture.StartRedis(t),
 	})
 	defer func() { _ = rdb.Close() }()
 
@@ -82,7 +83,7 @@ func BenchmarkShopfront(b *testing.B) {
 	const nItems = 1024
 
 	rdb := redis.NewClient(&redis.Options{
-		Addr: StartRedis(b),
+		Addr: redisfixture.StartRedis(b),
 	})
 	defer func() { _ = rdb.Close() }()
 
