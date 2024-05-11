@@ -249,4 +249,12 @@ deadlines:
         - task: wasm
           is_bonus: true
           score: 300
-
+        - task: firegod
+          is_bonus: true
+          score: 200
+        - task: excelwriter
+          is_bonus: true
+          score: 200
+        - task: rsem
+          is_bonus: true
+          score: 200
