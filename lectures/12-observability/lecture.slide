@@ -1,0 +1,159 @@
+# Observability
+
+Короткий Фёдор
+
+## Prometheus Data Model
+
+* Data Model
+
+```
+http_requests_total
+<metric name>{<label name>=<label value>, ...}
+api_http_requests_total{method="POST", handler="/messages"}
+```
+
+* Metric Types
+  * Counter
+    - `network_received_bytes`
+    - `requests_total`
+  * Gauge
+    - `go_heap_bytes`
+  * Histogram
+    - `request_duration`
+
+## Prometheus architecture
+
+.image prometheus.png _ 800
+
+## Prometheus query language
+
+* Selectors
+  ```
+  http_requests_total
+  http_requests_total{job="prometheus",group="canary"}
+  http_requests_total{environment=~"staging|testing|development",method!="GET"}
+  ```
+* Ranges
+  ```
+  http_requests_total{job="prometheus"}[5m]
+  ```
+* Functions
+  ```
+  rate(http_requests_total[5m])
+  ```
+* Agregation
+  ```
+  sum by (job) (rate(http_requests_total[5m]))
+
+  sum by (app, proc) (
+    instance_memory_limit_bytes - instance_memory_usage_bytes
+  ) / 1024 / 1024
+
+  topk(3, sum by (app, proc) (rate(instance_cpu_time_ns[5m])))
+  ```
+
+## Prometheus API examples
+
+```go
+package main
+
+import (
+        "net/http"
+
+        "github.com/prometheus/client_golang/prometheus/promhttp"
+)
+
+func main() {
+        http.Handle("/metrics", promhttp.Handler())
+        http.ListenAndServe(":2112", nil)
+}
+```
+
+## Prometheus API examples
+
+```go
+func recordMetrics() {
+    go func() {
+        for {
+            opsProcessed.Inc()
+            time.Sleep(2 * time.Second)
+        }
+    }()
+}
+
+var (
+    opsProcessed = promauto.NewCounter(prometheus.CounterOpts{
+        Name: "myapp_processed_ops_total",
+        Help: "The total number of processed events",
+    })
+)
+```
+
+## Prometheus API examples
+
+```go
+var (
+    requestCount = promauto.With(reg).NewCounterVec(
+        prometheus.CounterOpts{
+            Name: "http_requests_total",
+            Help: "Total number of HTTP requests by status code and method.",
+        },
+        []string{"code", "method"},
+    )
+)
+
+func countRequest(code, method string) {
+    requestCount.WithLavelValues(code, method).Inc()
+}
+```
+
+## Example: Request Handlers
+
+Что измерять?
+
+## Example: Job Queue
+
+Что измерять?
+
+## Example: Database Pool
+
+Что измерять?
+
+## OpenTelemetry data model
+
+.image trace.png _ 700
+
+## Jaeger architecture
+
+.image jaeger.png _ 800
+
+## trace API examples
+
+```
+var (
+    tracer  = otel.Tracer("rolldice")
+)
+
+func rolldice(w http.ResponseWriter, r *http.Request) {
+    ctx, span := tracer.Start(r.Context(), "roll")
+    defer span.End()
+
+    roll := 1 + rand.Intn(6)
+
+    span.SetAttributes(attribute.Int("roll.value", roll))
+
+    resp := strconv.Itoa(roll) + "\n"
+    if _, err := io.WriteString(w, resp); err != nil {
+        span.RecordError(err)
+    }
+}
+```
+
+## HTTP Propagation
+
+```
+> GET / HTTP/1.1
+> Host: localhost:3001
+> Accept: */*
+> traceparent: 00-d4cda95b652f4a1592b449d5929fda1b-6e0c63257de34c92-01
+```
