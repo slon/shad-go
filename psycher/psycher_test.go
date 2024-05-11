@@ -22,8 +22,6 @@ func (c slowCipher) BlockSize() int {
 }
 
 func (c slowCipher) Encrypt(dst, src []byte) {
-	copy(dst, src)
-
 	var idx int
 	for srcI, b := range src {
 		for ; b != 0; b /= 2 {
