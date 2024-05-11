@@ -249,4 +249,7 @@ deadlines:
         - task: wasm
           is_bonus: true
           score: 300
+        - task: psycher
+          is_bonus: true
+          score: 200
 
