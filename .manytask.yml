@@ -258,3 +258,6 @@ deadlines:
         - task: rsem
           is_bonus: true
           score: 200
+        - task: psycher
+          is_bonus: true
+          score: 200
