@@ -12,6 +12,7 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/perf/benchstat"
@@ -193,7 +194,12 @@ func (e *TestFailedError) Unwrap() error {
 	return e.E
 }
 
+var golangCILock sync.Mutex
+
 func runLinter(testDir, problem string) error {
+	golangCILock.Lock()
+	defer golangCILock.Unlock()
+
 	cmd := exec.Command("golangci-lint", "run", "--modules-download-mode", "readonly", "--build-tags", "private", fmt.Sprintf("./%s/...", problem))
 	cmd.Dir = testDir
 	cmd.Stdout = os.Stdout
