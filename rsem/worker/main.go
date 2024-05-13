@@ -17,7 +17,7 @@ func do() error {
 	sem := rsem.NewSemaphore(rdb)
 	ctx := context.Background()
 
-	_, err := sem.Acquire(ctx, "dead", 1)
+	_, err := sem.Acquire(ctx, "dead", 2)
 	if err != nil {
 		return err
 	}

@@ -184,41 +184,45 @@ func TestSemaphore_DeadCleanup(t *testing.T) {
 	sem := NewSemaphore(rdb)
 	ctx := context.Background()
 
-	binary, err := binCache.GetBinary("gitlab.com/slon/shad-go/rsem/worker")
-	require.NoError(t, err)
+	spawnWorker := func() *exec.Cmd {
+		binary, err := binCache.GetBinary("gitlab.com/slon/shad-go/rsem/worker")
+		require.NoError(t, err)
 
-	p := exec.Command(binary, addr)
-	p.Stderr = os.Stderr
+		p := exec.Command(binary, addr)
+		p.Stderr = os.Stderr
 
-	require.NoError(t, p.Start())
+		require.NoError(t, p.Start())
 
+		return p
+	}
+
+	checkLocked := func() {
+		ctx, cancel := context.WithTimeout(ctx, time.Second*2)
+		defer cancel()
+
+		_, err := sem.Acquire(ctx, "dead", 2)
+		assert.ErrorIs(t, err, context.DeadlineExceeded)
+	}
+
+	p1 := spawnWorker()
+	p2 := spawnWorker()
 	time.Sleep(time.Second / 2)
 
-	acquired := make(chan struct{})
-	defer func() { <-acquired }()
+	checkLocked()
 
-	go func() {
-		defer close(acquired)
+	require.NoError(t, p2.Process.Kill())
 
-		release, err := sem.Acquire(ctx, "dead", 1)
-		assert.NoError(t, err)
+	release, err := sem.Acquire(ctx, "dead", 2)
+	require.NoError(t, err)
+	defer release()
 
-		require.NoError(t, release())
-	}()
+	checkLocked()
 
-	select {
-	case <-acquired:
-		t.Errorf("semaphore not working")
-	case <-time.After(time.Second * 5):
-	}
+	require.NoError(t, p1.Process.Kill())
 
-	require.NoError(t, p.Process.Kill())
+	release1, err := sem.Acquire(ctx, "dead", 2)
+	require.NoError(t, err)
+	defer release1()
 
-	select {
-	case <-acquired:
-		return
-
-	case <-time.After(time.Second * 5):
-		t.Errorf("semaphore not releasing")
-	}
+	checkLocked()
 }
