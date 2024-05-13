@@ -197,10 +197,10 @@ func TestSemaphore_DeadCleanup(t *testing.T) {
 	}
 
 	checkLocked := func() {
-		ctx, cancel := context.WithTimeout(ctx, time.Second*2)
+		ctx1, cancel := context.WithTimeout(ctx, time.Second*2)
 		defer cancel()
 
-		_, err := sem.Acquire(ctx, "dead", 2)
+		_, err := sem.Acquire(ctx1, "dead", 2)
 		assert.ErrorIs(t, err, context.DeadlineExceeded)
 	}
 
@@ -214,7 +214,7 @@ func TestSemaphore_DeadCleanup(t *testing.T) {
 
 	release, err := sem.Acquire(ctx, "dead", 2)
 	require.NoError(t, err)
-	defer release()
+	defer func() { _ = release() }()
 
 	checkLocked()
 
@@ -222,7 +222,7 @@ func TestSemaphore_DeadCleanup(t *testing.T) {
 
 	release1, err := sem.Acquire(ctx, "dead", 2)
 	require.NoError(t, err)
-	defer release1()
+	defer func() { _ = release1() }()
 
 	checkLocked()
 }
