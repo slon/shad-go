@@ -3,8 +3,8 @@ package tests
 import (
 	"testing"
 
-	assert "github.com/stretchr/buggify/assert"
-	require "github.com/stretchr/buggify/require"
+	"github.com/stretchr/buggify/assert"
+	"github.com/stretchr/buggify/require"
 )
 
 func TestNegativeFunctions(t *testing.T) {
