@@ -57,7 +57,7 @@ func TestHash_EvenDistribution(t *testing.T) {
 		h.AddNode(&n)
 	}
 
-	counts := map[*node]int{}
+	counts := map[*node]float64{}
 	const N = 1 << 16
 	for i := 0; i < N; i++ {
 		counts[h.GetNode(fmt.Sprintf("key%d", i))] += 1
@@ -65,14 +65,23 @@ func TestHash_EvenDistribution(t *testing.T) {
 
 	const P = 1 / float64(K)
 	const variance = N * (P) * (1 - P)
-	stddev := math.Sqrt(variance)
-	t.Logf("P = %v, var = %v, stddev = %v", P, variance, stddev)
+	idealStddev := math.Sqrt(variance)
+
+	t.Logf("P = %v, var = %v, stddev = %v", P, variance, idealStddev)
 	t.Logf("counts = %v", maps.Values(counts))
 
+	total := float64(N)
+	mean := total / K
+
+	var dispersion float64
 	for _, count := range counts {
-		require.Greater(t, count, int(N/K-stddev*10))
-		require.Less(t, count, int(N/K+stddev*10))
+		dispersion += (count - mean) * (count - mean)
 	}
+
+	realStddev := math.Sqrt(dispersion / K)
+	t.Logf("read stddev = %v", realStddev)
+
+	require.Less(t, math.Abs(realStddev-idealStddev)/idealStddev, float64(4))
 }
 
 func TestHash_ConsistentDistribution(t *testing.T) {
