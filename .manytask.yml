@@ -32,7 +32,7 @@ deadlines:
       start: 2024-01-01 18:00
       steps:
         0.3: 2024-02-27 23:59
-      end: 2024-06-01 23:59
+      end: 2024-07-10 23:59
       tasks:
       - task: sum
         score: 100
@@ -49,7 +49,7 @@ deadlines:
       start: 2024-02-24 13:00
       steps:
         0.3: 2024-03-06 06:00
-      end: 2024-06-01 23:59
+      end: 2024-07-10 23:59
       tasks:
         - task: hotelbusiness
           score: 100
@@ -68,7 +68,7 @@ deadlines:
       start: 2024-03-02 13:00
       steps:
         0.3: 2024-03-12 23:59
-      end: 2024-06-01 23:59
+      end: 2024-07-10 23:59
       tasks:
         - task: otp
           score: 100
@@ -85,7 +85,7 @@ deadlines:
       start: 2024-03-03 13:00
       steps:
         0.3: 2024-03-19 23:59
-      end: 2024-06-01 23:59
+      end: 2024-07-10 23:59
       tasks:
         - task: tour1
           score: 100
@@ -111,7 +111,7 @@ deadlines:
       start: 2024-03-16 13:00
       steps:
         0.3: 2024-03-27 23:59
-      end: 2024-06-01 23:59
+      end: 2024-07-10 23:59
       tasks:
         - task: testequal
           score: 100
@@ -128,7 +128,7 @@ deadlines:
       start: 2024-03-30 13:00
       steps:
         0.3: 2024-04-10 23:59
-      end: 2024-06-01 23:59
+      end: 2024-07-10 23:59
       tasks:
         - task: dupcall
           score: 200
@@ -143,7 +143,7 @@ deadlines:
       start: 2024-04-06 13:00
       steps:
         0.3: 2024-04-16 23:59
-      end: 2024-06-01 23:59
+      end: 2024-07-10 23:59
       tasks:
         - task: urlshortener
           score: 100
@@ -160,7 +160,7 @@ deadlines:
       start: 2024-04-13 13:00
       steps:
         0.3: 2024-04-23 23:59
-      end: 2024-06-01 23:59
+      end: 2024-07-10 23:59
       tasks:
         - task: dao
           score: 100
@@ -182,7 +182,7 @@ deadlines:
       start: 2024-04-20 13:00
       steps:
         0.3: 2024-05-02 23:59
-      end: 2024-06-01 23:59
+      end: 2024-07-10 23:59
       tasks:
         - task: genericsum
           score: 100
@@ -195,7 +195,7 @@ deadlines:
       start: 2024-04-27 13:00
       steps:
         0.3: 2024-05-07 23:59
-      end: 2024-06-01 23:59
+      end: 2024-07-10 23:59
       tasks:
         - task: reversemap
           score: 100
@@ -210,7 +210,7 @@ deadlines:
       start: 2024-05-04 13:00
       steps:
         0.3: 2024-05-14 23:59
-      end: 2024-06-01 23:59
+      end: 2024-07-10 23:59
       tasks:
         - task: illegal
           score: 100
@@ -223,14 +223,14 @@ deadlines:
       start: 2024-05-11 13:00
       steps:
         0.3: 2024-05-21 23:59
-      end: 2024-06-01 23:59
+      end: 2024-07-10 23:59
       tasks:
         - task: testifycheck
           score: 200
 
     - group: Bonus
       start: 2024-03-03 13:00
-      end: 2024-06-01 23:59
+      end: 2024-07-10 23:59
       tasks:
         - task: yamlembed
           is_bonus: true
