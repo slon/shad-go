@@ -30,7 +30,7 @@ type Basic struct {
 	Bool   bool    `xlsx:"bool"`
 	String string  `xlsx:"string"`
 
-	MyInt int `xlsx:"my_int"`
+	MyInt MyInt `xlsx:"my_int"`
 }
 
 type Inner struct {
