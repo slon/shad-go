@@ -12,8 +12,6 @@ import (
 	"gitlab.com/slon/shad-go/distbuild/pkg/build"
 )
 
-var TimeAfter = time.After
-
 type PendingJob struct {
 	Job      *api.JobSpec
 	Finished chan struct{}
@@ -28,7 +26,7 @@ type Config struct {
 type Scheduler struct {
 }
 
-func NewScheduler(l *zap.Logger, config Config) *Scheduler {
+func NewScheduler(l *zap.Logger, config Config, timeAfter func(d time.Duration) <-chan time.Time) *Scheduler {
 	panic("implement me")
 }
 
