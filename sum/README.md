@@ -16,7 +16,7 @@
    ```shell
    # Нажмите на синюю кнопку clone и скопируйте адрес и "Clone with SSH"
    # Выполните в консоли команду, заменив последний аргумент на ваш адрес
-   git clone git@gitlab.manytask.org:go/students-2024-spring/USERNAME.git .
+   git clone git@gitlab.manytask.org:go/students-2025-spring/USERNAME.git .
    ```
 
 3. Откройте файл `sum.go` и реализуйте функцию сложения двух чисел.
