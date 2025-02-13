@@ -57,7 +57,7 @@ push-to-public:
     matrix:
       - REMOTE:
         - git@github.com:slon/shad-go.git
-        - git@gitlab.manytask.org:go/public-2024-spring.git
+        - git@gitlab.manytask.org:go/public-2025-spring.git
   only:
     - master
   script:
