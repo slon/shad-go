@@ -14,9 +14,6 @@ run:
 
 # output configuration options
 output:
-  # colored-line-number|line-number|json|tab|checkstyle, default is "colored-line-number"
-  format: colored-line-number
-
   # print lines of code with issue, default is true
   print-issued-lines: true
 
@@ -25,9 +22,7 @@ output:
 
 # all available settings of specific linters
 linters-settings:
-  govet:
-    # report about shadowed variables
-    check-shadowing: true
+  shadow: true
   golint:
     # minimal confidence for issues, default is 0.8
     min-confidence: 0.8
