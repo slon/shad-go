@@ -24,7 +24,7 @@ func NewReader(r io.Reader) LineReader
 func NewWriter(w io.Writer) LineWriter
 ```
 
-`NewLineReader` оборачивает переданный `io.Reader` в `LineReader`.
+`NewReader` оборачивает переданный `io.Reader` в `LineReader`.
 
 Вызов `ReadLine` должен читать одну строку.
 Строка имеет произвольную длину.
