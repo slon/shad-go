@@ -73,6 +73,29 @@ b`,
 			},
 			expected: counts{"a": 3, "b": 2},
 		},
+		{
+			name:     "double words in one file",
+			files:    files{`a
+a
+b
+с`,
+`
+a
+b`,   
+			},
+			expected: counts{"a": 3, "b": 2},
+		},
+		{
+			name:     "double words in one line",
+			files:    files{`a a
+b
+с`,
+`
+a a
+b`,
+			},
+			expected: counts{"a a": 2, "b": 2},
+		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			// Create temp directory.
