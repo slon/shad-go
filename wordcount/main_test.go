@@ -91,10 +91,10 @@ b`,
 b
 с`,
 `
-a
+a a
 b`,
 			},
-			expected: counts{"a": 3, "b": 2},
+			expected: counts{"a a": 2, "b": 2},
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
