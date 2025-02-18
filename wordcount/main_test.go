@@ -74,23 +74,23 @@ b`,
 			expected: counts{"a": 3, "b": 2},
 		},
 		{
-			name:     "double words in one file",
-			files:    files{`a
+			name: "double words in one file",
+			files: files{`a
 a
 b
 с`,
-`
+				`
 a
-b`,   
+b`,
 			},
 			expected: counts{"a": 3, "b": 2},
 		},
 		{
-			name:     "double words in one line",
-			files:    files{`a a
+			name: "double words in one line",
+			files: files{`a a
 b
 с`,
-`
+				`
 a a
 b`,
 			},
