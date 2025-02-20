@@ -13,7 +13,7 @@
   const        fallthrough  if           range        type
   continue     for          import       return       var
 
-* Predeclated identifiers
+* Predeclared identifiers
 
 Константы
 
@@ -131,7 +131,7 @@
 
 * variable lifetime
 
-Память освобождается, после того как переменая становится недостижимой.
+Память освобождается, после того как переменная становится недостижимой.
 
 Компилятор может переместить переменную со стека на кучу.
 
