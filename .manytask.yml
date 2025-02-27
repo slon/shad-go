@@ -1,13 +1,11 @@
 version: 1
 
-
-settings:  # required
+settings: # required
   course_name: go
 
   gitlab_base_url: https://gitlab.manytask.org
   public_repo: go/public-2025-spring
   students_group: go/students-2025-spring
-
 
 ui:
   task_url_template: https://github.com/slon/shad-go/tree/main/$TASK_NAME
@@ -18,7 +16,6 @@ ui:
     "TG Chat": https://t.me/+Tk8VTMAk5Tlp7Txm
     "LMS": https://lk.yandexdataschool.ru/
     "Contribute Manytask": https://github.com/manytask
-
 
 deadlines:
   timezone: Europe/Moscow
@@ -34,16 +31,16 @@ deadlines:
         0.3: 2025-02-23 23:59
       end: 2025-07-10 23:59
       tasks:
-      - task: sum
-        score: 100
-      - task: tour0
-        score: 100
-      - task: wordcount
-        score: 100
-      - task: urlfetch
-        score: 100
-      - task: fetchall
-        score: 100
+        - task: sum
+          score: 100
+        - task: tour0
+          score: 100
+        - task: wordcount
+          score: 100
+        - task: urlfetch
+          score: 100
+        - task: fetchall
+          score: 100
 
     - group: Basics
       start: 2025-02-20 18:00
@@ -64,22 +61,24 @@ deadlines:
         - task: forth
           score: 100
 
-    # - group: Interfaces
-    #   start: 2024-03-02 13:00
-    #   steps:
-    #     0.3: 2024-03-12 23:59
-    #   end: 2024-07-10 23:59
-    #   tasks:
-    #     - task: otp
-    #       score: 100
-    #     - task: retryupdate
-    #       score: 100
-    #     - task: lrucache
-    #       score: 100
-    #     - task: externalsort
-    #       score: 100
-    #     - task: ciletters
-    #       score: 100
+    - group: Interfaces
+      start: 2025-02-27 18:00
+      steps:
+        0.3: 2025-03-09 23:59
+      end: 2025-07-10 23:59
+      tasks:
+        - task: otp
+          score: 100
+        - task: retryupdate
+          score: 100
+        - task: lrucache
+          score: 100
+        - task: externalsort
+          score: 100
+        - task: ciletters
+          score: 100
+        - task: yamlembed
+          score: 100
 
     # - group: Goroutines
     #   start: 2024-03-03 13:00
