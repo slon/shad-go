@@ -3,6 +3,7 @@ package ratelimit
 import (
 	"context"
 	"math/rand"
+	"runtime"
 	"sort"
 	"sync"
 	"testing"
@@ -221,4 +222,22 @@ func TestStressNoBlocking(t *testing.T) {
 	}
 
 	require.NoError(t, eg.Wait())
+}
+
+func TestLimitNumGoroutine(t *testing.T) {
+	defer goleak.VerifyNone(t)
+
+	const (
+		N = 10000000
+	)
+
+	limit := NewLimiter(N, time.Hour)
+	defer limit.Stop()
+
+	for range N {
+		err := limit.Acquire(context.Background())
+		require.NoError(t, err)
+
+		require.True(t, runtime.NumGoroutine() < 1000)
+	}
 }
