@@ -89,7 +89,7 @@ func TestReader(t *testing.T) {
 		},
 	} {
 		t.Run(testCase.name, func(t *testing.T) {
-			r := NewReader(testCase.r, testCase.prng)
+			r := makeReader(testCase.r, testCase.prng)
 
 			buf, err := io.ReadAll(r)
 			require.ErrorIs(t, err, testCase.err)
@@ -106,7 +106,7 @@ func TestWriterSimple(t *testing.T) {
 	out := &bytes.Buffer{}
 	prng := bytes.NewBuffer(randomBytes)
 
-	w := NewWriter(out, prng)
+	w := makeWriter(out, prng)
 	n, err := w.Write(plaintext)
 
 	require.Equalf(t, plaintextBackup, plaintext, "Write must not modify the slice data, even temporarily.")
@@ -140,7 +140,7 @@ func TestWriterError(t *testing.T) {
 	out := &errWriter{n: 512}
 	prng := bytes.NewBuffer(randomBytes)
 
-	w := NewWriter(out, prng)
+	w := makeWriter(out, prng)
 	n, err := w.Write(plaintext)
 
 	require.Equalf(t, plaintextBackup, plaintext, "Write must not modify the slice data, even temporarily.")
@@ -156,5 +156,5 @@ func (panicReader) Read([]byte) (int, error) {
 }
 
 func TestNewReaderNotReading(t *testing.T) {
-	_ = NewReader(panicReader{}, panicReader{})
+	_ = makeReader(panicReader{}, panicReader{})
 }
