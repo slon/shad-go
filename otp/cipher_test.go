@@ -92,7 +92,7 @@ func TestReader(t *testing.T) {
 			r := NewReader(testCase.r, testCase.prng)
 
 			buf, err := io.ReadAll(r)
-			require.ErrorIs(t, err, testCase.err)
+			require.ErrorIs(t, testCase.err, err)
 			if testCase.limit {
 				require.Equal(t, testCase.result[:len(buf)], buf)
 			} else {
@@ -112,7 +112,7 @@ func TestWriterSimple(t *testing.T) {
 	require.Equalf(t, plaintextBackup, plaintext, "Write must not modify the slice data, even temporarily.")
 	require.NoError(t, err)
 	require.Equal(t, len(plaintext), n)
-	require.Equal(t, out.Bytes(), ciphertext)
+	require.Equal(t, ciphertext, out.Bytes())
 }
 
 type errWriter struct {
@@ -144,9 +144,9 @@ func TestWriterError(t *testing.T) {
 	n, err := w.Write(plaintext)
 
 	require.Equalf(t, plaintextBackup, plaintext, "Write must not modify the slice data, even temporarily.")
-	require.ErrorIs(t, err, iotest.ErrTimeout)
+	require.ErrorIs(t, iotest.ErrTimeout, err)
 	require.Equal(t, 512, n)
-	require.Equal(t, out.buf.Bytes(), ciphertext[:512])
+	require.Equal(t, ciphertext[:512], out.buf.Bytes())
 }
 
 type panicReader struct{}
