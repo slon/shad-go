@@ -9,8 +9,8 @@ import (
 
 func TestReverseMap(t *testing.T) {
 	data := []struct {
-		forward  interface{}
-		backward interface{}
+		forward  any
+		backward any
 	}{
 		{
 			forward: map[string]string{

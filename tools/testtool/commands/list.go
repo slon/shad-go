@@ -114,7 +114,7 @@ func listPrivateFiles(rootPackage string) []string {
 		log.Fatalf("failed: %v", err)
 	}
 
-	for _, line := range strings.Split(string(config), "\n") {
+	for line := range strings.SplitSeq(string(config), "\n") {
 		line = strings.Trim(line, " ")
 		if line != "" {
 			fname, _ := filepath.Abs(line)

@@ -63,7 +63,7 @@ func TestShopFrontConcurrent(t *testing.T) {
 
 	N := 10000
 	wg := sync.WaitGroup{}
-	for i := 0; i < N; i++ {
+	for range N {
 		wg.Add(1)
 		go func() {
 			assert.NoError(t, c.RecordView(ctx, 1, 1))
@@ -91,13 +91,13 @@ func BenchmarkShopfront(b *testing.B) {
 	c := shopfront.New(rdb)
 
 	var ids []shopfront.ItemID
-	for i := 0; i < nItems; i++ {
+	for i := range nItems {
 		ids = append(ids, shopfront.ItemID(i))
 		require.NoError(b, c.RecordView(ctx, shopfront.ItemID(i), 42))
 	}
 
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	
+	for b.Loop() {
 		_, err := c.GetItems(ctx, ids, 42)
 		require.NoError(b, err)
 	}

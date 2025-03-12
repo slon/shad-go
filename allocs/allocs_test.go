@@ -34,7 +34,7 @@ func Benchmark(b *testing.B) {
 	b.Run("count", func(b *testing.B) {
 		r := strings.NewReader(data)
 		b.ReportAllocs()
-		for i := 0; i < b.N; i++ {
+		for b.Loop() {
 			c := NewEnhancedCounter()
 			_ = c.Count(r)
 		}
@@ -43,7 +43,7 @@ func Benchmark(b *testing.B) {
 	b.Run("main", func(b *testing.B) {
 		r := strings.NewReader(data)
 		b.ReportAllocs()
-		for i := 0; i < b.N; i++ {
+		for b.Loop() {
 			c := NewEnhancedCounter()
 			_ = c.Count(r)
 			_ = c.String()

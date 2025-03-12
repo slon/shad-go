@@ -147,7 +147,7 @@ func TestParallelGroup(t *testing.T) {
 			t.Run(func(t *T) {
 				check.Sequential(2)
 
-				for i := 0; i < 10; i++ {
+				for i := range 10 {
 					t.Run(func(t *T) {
 						check.Sequential(3 + i)
 

@@ -20,7 +20,7 @@ type fakeT struct {
 	cleanup []func()
 }
 
-func (f *fakeT) Errorf(msg string, args ...interface{}) {
+func (f *fakeT) Errorf(msg string, args ...any) {
 	f.failed = true
 	fmt.Fprintf(&f.buffer, msg, args...)
 }

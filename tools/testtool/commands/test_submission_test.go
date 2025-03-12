@@ -29,7 +29,7 @@ func listDirs(dir string) ([]string, error) {
 	return dirs, nil
 }
 
-func doTestSubmission(t *testing.T, studentRepo, privateRepo, problem string) error {
+func doTestSubmission(_ *testing.T, studentRepo, privateRepo, problem string) error {
 	// annotate := func(prefix string, f **os.File) func() {
 	// 	pr, pw, err := os.Pipe()
 	// 	require.NoError(t, err)

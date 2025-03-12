@@ -13,7 +13,7 @@ func ExamplePubSub() {
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 
-	_, err := p.Subscribe("single", func(msg interface{}) {
+	_, err := p.Subscribe("single", func(msg any) {
 		fmt.Println("new message:", msg)
 		// Output: new message: blah-blah
 		wg.Done()

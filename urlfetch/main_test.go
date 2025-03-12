@@ -152,7 +152,7 @@ func TestURLFetch_order(t *testing.T) {
 	var callOrder []int
 
 	n := 1000
-	for i := 0; i < n; i++ {
+	for i := range n {
 		i := i
 		expectedCallOrder = append(expectedCallOrder, i)
 		s := strconv.Itoa(i)
@@ -168,7 +168,7 @@ func TestURLFetch_order(t *testing.T) {
 	defer s.Close()
 
 	urls := make([]string, n)
-	for i := 0; i < n; i++ {
+	for i := range n {
 		urls[i] = s.URL + "/" + strconv.Itoa(i)
 	}
 

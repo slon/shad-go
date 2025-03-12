@@ -3,7 +3,7 @@
 package fileleak
 
 type testingT interface {
-	Errorf(msg string, args ...interface{})
+	Errorf(msg string, args ...any)
 	Cleanup(func())
 }
 

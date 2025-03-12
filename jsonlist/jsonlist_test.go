@@ -12,13 +12,13 @@ import (
 type S struct {
 	A string
 	B int
-	C interface{}
+	C any
 }
 
 func TestJsonList(t *testing.T) {
 	for _, test := range []struct {
 		js    string
-		value interface{}
+		value any
 	}{
 		{
 			js:    `1 2 3`,
@@ -34,7 +34,7 @@ func TestJsonList(t *testing.T) {
 		},
 		{
 			js:    `"A" 2`,
-			value: []interface{}{"A", 2.0},
+			value: []any{"A", 2.0},
 		},
 	} {
 		t.Run(test.js, func(t *testing.T) {

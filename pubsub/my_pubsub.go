@@ -24,7 +24,7 @@ func (p *MyPubSub) Subscribe(subj string, cb MsgHandler) (Subscription, error) {
 	panic("implement me")
 }
 
-func (p *MyPubSub) Publish(subj string, msg interface{}) error {
+func (p *MyPubSub) Publish(subj string, msg any) error {
 	panic("implement me")
 }
 

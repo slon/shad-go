@@ -35,7 +35,7 @@ func BenchmarkCollapse(b *testing.B) {
 
 	b.ReportAllocs()
 
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		_ = CollapseSpaces(input)
 	}
 }

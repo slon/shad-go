@@ -2,6 +2,6 @@
 
 package reversemap
 
-func ReverseMap(forward interface{}) interface{} {
+func ReverseMap(forward any) any {
 	panic("implement me")
 }

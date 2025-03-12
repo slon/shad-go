@@ -12,7 +12,7 @@ import (
 func TestEqual(t *testing.T) {
 	for _, tc := range []struct {
 		name             string
-		expected, actual interface{}
+		expected, actual any
 	}{
 		{name: "int", expected: 1, actual: 1},
 		{name: "int8", expected: int8(1), actual: int8(1)},
@@ -41,7 +41,7 @@ func TestEqual(t *testing.T) {
 
 func TestNotEqual(t *testing.T) {
 	for _, tc := range []struct {
-		expected, actual interface{}
+		expected, actual any
 	}{
 		{expected: 1, actual: uint(1)},
 		{expected: uint(1), actual: int8(1)},
@@ -65,14 +65,14 @@ func TestNotEqual(t *testing.T) {
 		{expected: []int{1, 2, 3}, actual: []int{1, 3, 3}},
 		{expected: []int{1, 2, 3}, actual: []int{1, 2, 3, 4}},
 		{expected: []int{1, 2, 3, 4}, actual: []int{1, 2, 3}},
-		{expected: []int{}, actual: []interface{}{}},
+		{expected: []int{}, actual: []any{}},
 		{expected: []int{}, actual: []int(nil)},
 		{expected: []int{}, actual: map[int]int{}},
 		{expected: map[string]string{"a": "b"}, actual: map[string]string{}},
 		{expected: map[string]string{"a": "b"}, actual: map[string]string{"a": "d"}},
 		{expected: map[string]string{"a": "b"}, actual: map[string]string{"a": "b", "c": "b"}},
 		{expected: map[string]string{"a": "b", "c": "b"}, actual: map[string]string{"a": "b"}},
-		{expected: map[string]string{"a": "b"}, actual: map[string]interface{}{"a": "b"}},
+		{expected: map[string]string{"a": "b"}, actual: map[string]any{"a": "b"}},
 		{expected: map[string]string{}, actual: map[string]string(nil)},
 		{expected: map[int]int{}, actual: []int{}},
 		{expected: []byte{}, actual: []byte(nil)},
@@ -94,7 +94,7 @@ type mockT struct {
 	errMsg string
 }
 
-func (m *mockT) Errorf(format string, args ...interface{}) {
+func (m *mockT) Errorf(format string, args ...any) {
 	m.errMsg = fmt.Sprintf(format, args...)
 }
 
@@ -113,16 +113,16 @@ func TestErrorMessage(t *testing.T) {
 
 func BenchmarkRequireEqualInt64(b *testing.B) {
 	t := &mockT{}
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	
+	for b.Loop() {
 		RequireEqual(t, int64(1), int64(1))
 	}
 }
 
 func BenchmarkTestifyRequireEqualInt64(b *testing.B) {
 	t := &mockT{}
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	
+	for b.Loop() {
 		require.Equal(t, int64(1), int64(1))
 	}
 }
@@ -132,8 +132,8 @@ func BenchmarkRequireEqualString(b *testing.B) {
 	s2 := strings.Repeat("abacaba", 1024)
 
 	mockT := &mockT{}
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	
+	for b.Loop() {
 		RequireEqual(mockT, s1, s2)
 	}
 }
@@ -143,8 +143,8 @@ func BenchmarkTestifyRequireEqualString(b *testing.B) {
 	s2 := strings.Repeat("abacaba", 1024)
 
 	mockT := &mockT{}
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	
+	for b.Loop() {
 		require.Equal(mockT, s1, s2)
 	}
 }
@@ -154,8 +154,8 @@ func BenchmarkRequireEqualMap(b *testing.B) {
 	m2 := map[string]string{"a": "b", "c": "d", "e": "f"}
 
 	mockT := &mockT{}
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	
+	for b.Loop() {
 		RequireEqual(mockT, m1, m2)
 	}
 }
@@ -165,8 +165,8 @@ func BenchmarkTestifyRequireEqualMap(b *testing.B) {
 	m2 := map[string]string{"a": "b", "c": "d", "e": "f"}
 
 	mockT := &mockT{}
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	
+	for b.Loop() {
 		require.Equal(mockT, m1, m2)
 	}
 }

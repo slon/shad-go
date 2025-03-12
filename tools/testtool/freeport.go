@@ -26,7 +26,7 @@ func GetFreePort() (string, error) {
 }
 
 type logger interface {
-	Logf(format string, args ...interface{})
+	Logf(format string, args ...any)
 }
 
 // WaitForPort tries to connect to given local port with constant backoff.

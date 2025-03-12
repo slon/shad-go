@@ -69,7 +69,7 @@ func add(t *testing.T, c *resty.Client, shortenerURL, request string) string {
 	}
 
 	resp, err := c.R().
-		SetBody(map[string]interface{}{"url": request}).
+		SetBody(map[string]any{"url": request}).
 		SetResult(&Response{}).
 		Post(shortenerURL)
 
@@ -100,7 +100,7 @@ func TestURLShortener_redirect(t *testing.T) {
 	addURL := fmt.Sprintf("http://localhost:%s/shorten", port)
 
 	requests := make(map[string]struct{})
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		path := "/" + testtool.RandomName()
 		req := redirectTarget.URL + path
 		requests[path] = struct{}{}
@@ -169,7 +169,7 @@ func TestURLShortener_consistency(t *testing.T) {
 	}
 
 	var urls []string
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		urls = append(urls, testtool.RandomName())
 	}
 

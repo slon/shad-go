@@ -20,9 +20,9 @@ func BenchmarkEncode(b *testing.B) {
 		"value without an allocation.",
 	)
 
-	b.ResetTimer()
+	
 	b.ReportAllocs()
-	for n := 0; n < b.N; n++ {
+	for b.Loop() {
 		require.NoError(b, gzep.Encode(data, io.Discard))
 	}
 }
@@ -55,7 +55,7 @@ func TestEncode_Stress(t *testing.T) {
 	wg := &sync.WaitGroup{}
 
 	n := 100
-	for i := 0; i < n; i++ {
+	for range n {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()

@@ -91,8 +91,8 @@ func calcImgDiff(i1, i2 image.Image) float64 {
 	w, h := i1.Bounds().Dx(), i1.Bounds().Dy()
 
 	var sum int64
-	for x := 0; x < w; x++ {
-		for y := 0; y < h; y++ {
+	for x := range w {
+		for y := range h {
 			r1, g1, b1, _ := i1.At(x, y).RGBA()
 			r2, g2, b2, _ := i2.At(x, y).RGBA()
 			sum += abs(r1, r2)

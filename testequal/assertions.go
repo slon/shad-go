@@ -7,7 +7,7 @@ package testequal
 // Marks caller function as having failed but continues execution.
 //
 // Returns true iff arguments are equal.
-func AssertEqual(t T, expected, actual interface{}, msgAndArgs ...interface{}) bool {
+func AssertEqual(t T, expected, actual any, msgAndArgs ...any) bool {
 	panic("implement me")
 }
 
@@ -16,16 +16,16 @@ func AssertEqual(t T, expected, actual interface{}, msgAndArgs ...interface{}) b
 // Marks caller function as having failed but continues execution.
 //
 // Returns true iff arguments are not equal.
-func AssertNotEqual(t T, expected, actual interface{}, msgAndArgs ...interface{}) bool {
+func AssertNotEqual(t T, expected, actual any, msgAndArgs ...any) bool {
 	panic("implement me")
 }
 
 // RequireEqual does the same as AssertEqual but fails caller test immediately.
-func RequireEqual(t T, expected, actual interface{}, msgAndArgs ...interface{}) {
+func RequireEqual(t T, expected, actual any, msgAndArgs ...any) {
 	panic("implement me")
 }
 
 // RequireNotEqual does the same as AssertNotEqual but fails caller test immediately.
-func RequireNotEqual(t T, expected, actual interface{}, msgAndArgs ...interface{}) {
+func RequireNotEqual(t T, expected, actual any, msgAndArgs ...any) {
 	panic("implement me")
 }

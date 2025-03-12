@@ -33,7 +33,7 @@ func TestCIDRAddress(t *testing.T) {
 
 		out := ipRange.Expand()
 		assert.Equal(t, int(0xffffffff-0xffffff00), len(out)-1)
-		for i := 0; i < 256; i++ {
+		for i := range 256 {
 			assert.Equal(t, net.IP([]byte{192, 168, 2, byte(i)}), out[i])
 		}
 	}
@@ -47,7 +47,7 @@ func TestCIDRAddress(t *testing.T) {
 
 		out := ipRange.Expand()
 		assert.Equal(t, int(0xffffffff-0xffff0000), len(out)-1)
-		for i := 0; i < 65536; i++ {
+		for i := range 65536 {
 			assert.Equal(t, net.IP([]byte{10, 1, byte(i / 256), byte(i % 256)}), out[i])
 		}
 	}
