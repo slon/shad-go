@@ -82,7 +82,7 @@ func TestWaitGroupAddMisuse(t *testing.T) {
 
 func TestWaitGroupRace(t *testing.T) {
 	// Run this test for about 1ms.
-	for i := 0; i < 1000; i++ {
+	for range 1000 {
 		wg := New()
 		n := new(int32)
 		// spawn goroutine 1
@@ -110,7 +110,7 @@ func TestWaitGroupNoBusyWait(t *testing.T) {
 	wg.Add(1)
 	defer wg.Done()
 
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		go func() {
 			wg.Wait()
 		}()

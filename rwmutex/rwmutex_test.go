@@ -24,18 +24,18 @@ func doTestParallelReaders(numReaders, gomaxprocs int) {
 	clocked := make(chan bool)
 	cunlock := make(chan bool)
 	cdone := make(chan bool)
-	for i := 0; i < numReaders; i++ {
+	for range numReaders {
 		go parallelReader(m, clocked, cunlock, cdone)
 	}
 	// Wait for all parallel RLock()s to succeed.
-	for i := 0; i < numReaders; i++ {
+	for range numReaders {
 		<-clocked
 	}
-	for i := 0; i < numReaders; i++ {
+	for range numReaders {
 		cunlock <- true
 	}
 	// Wait for the goroutines to finish.
-	for i := 0; i < numReaders; i++ {
+	for range numReaders {
 		<-cdone
 	}
 }
@@ -48,14 +48,14 @@ func TestParallelReaders(t *testing.T) {
 }
 
 func reader(rwm *RWMutex, numIterations int, activity *int32, cdone chan bool) {
-	for i := 0; i < numIterations; i++ {
+	for range numIterations {
 		rwm.RLock()
 		n := atomic.AddInt32(activity, 1)
 		if n < 1 || n >= 10000 {
 			rwm.RUnlock()
 			panic(fmt.Sprintf("wlock(%d)\n", n))
 		}
-		for i := 0; i < 100; i++ {
+		for range 100 {
 		}
 		atomic.AddInt32(activity, -1)
 		rwm.RUnlock()
@@ -64,14 +64,14 @@ func reader(rwm *RWMutex, numIterations int, activity *int32, cdone chan bool) {
 }
 
 func writer(rwm *RWMutex, numIterations int, activity *int32, cdone chan bool) {
-	for i := 0; i < numIterations; i++ {
+	for range numIterations {
 		rwm.Lock()
 		n := atomic.AddInt32(activity, 10000)
 		if n != 10000 {
 			rwm.Unlock()
 			panic(fmt.Sprintf("wlock(%d)\n", n))
 		}
-		for i := 0; i < 100; i++ {
+		for range 100 {
 		}
 		atomic.AddInt32(activity, -10000)
 		rwm.Unlock()
@@ -87,7 +87,7 @@ func HammerRWMutex(gomaxprocs, numReaders, numIterations int) {
 	cdone := make(chan bool)
 	go writer(rwm, numIterations, &activity, cdone)
 	var i int
-	for i = 0; i < numReaders/2; i++ {
+	for i = range numReaders/2 {
 		go reader(rwm, numIterations, &activity, cdone)
 	}
 	go writer(rwm, numIterations, &activity, cdone)
@@ -95,7 +95,7 @@ func HammerRWMutex(gomaxprocs, numReaders, numIterations int) {
 		go reader(rwm, numIterations, &activity, cdone)
 	}
 	// Wait for the 2 writers and all readers to finish.
-	for i := 0; i < 2+numReaders; i++ {
+	for range 2+numReaders {
 		<-cdone
 	}
 }
@@ -142,7 +142,7 @@ func TestWriteWriteReadDeadlock(t *testing.T) {
 	rwm := New()
 	cdone := make(chan bool, 3)
 
-	for i := 0; i < 2e6; i++ {
+	for range 2e6 {
 		go writer(rwm, 1, &activity, cdone)
 		go writer(rwm, 1, &activity, cdone)
 		go reader(rwm, 1, &activity, cdone)

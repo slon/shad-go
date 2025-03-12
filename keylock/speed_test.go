@@ -56,16 +56,16 @@ func BenchmarkKeyLock_NoBusyWait(b *testing.B) {
 
 	cancel := make(chan struct{})
 	defer close(cancel)
-	for i := 0; i < 1000; i++ {
+	for range 1000 {
 		go func() {
 			l.LockKeys(lockedKey, cancel)
 		}()
 	}
 
-	b.ResetTimer()
+	
 
 	openKey := []string{"a"}
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		canceled, unlock := l.LockKeys(openKey, nil)
 		if canceled {
 			b.Fatal("spurious lock fail")

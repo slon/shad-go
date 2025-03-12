@@ -104,7 +104,7 @@ func TestLedger(t *testing.T) {
 		const initialBalance = 5
 
 		var accounts []ledger.ID
-		for i := 0; i < nAccounts; i++ {
+		for i := range nAccounts {
 			id := ledger.ID(fmt.Sprint(i))
 			accounts = append(accounts, id)
 
@@ -138,7 +138,7 @@ func TestLedger(t *testing.T) {
 			}()
 		}
 
-		for i := 0; i < nAccounts; i++ {
+		for i := range nAccounts {
 			i := i
 
 			account := accounts[i]
@@ -172,7 +172,7 @@ func TestLedger(t *testing.T) {
 		wg.Wait()
 
 		var total ledger.Money
-		for i := 0; i < nAccounts; i++ {
+		for i := range nAccounts {
 			amount, err := l0.GetBalance(ctx, accounts[i])
 			require.NoError(t, err)
 

@@ -2,6 +2,6 @@
 
 package varfmt
 
-func Sprintf(format string, args ...interface{}) string {
+func Sprintf(format string, args ...any) string {
 	return ""
 }

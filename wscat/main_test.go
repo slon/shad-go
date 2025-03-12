@@ -123,7 +123,7 @@ func TestWScat(t *testing.T) {
 	defer stop()
 
 	var in [][]byte
-	for i := 0; i < 100; i++ {
+	for range 100 {
 		msg := []byte(testtool.RandomName())
 		in = append(in, msg)
 

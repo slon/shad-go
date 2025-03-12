@@ -13,7 +13,7 @@ func TestCondSignal(t *testing.T) {
 	n := 2
 	running := make(chan bool, n)
 	awake := make(chan bool, n)
-	for i := 0; i < n; i++ {
+	for range n {
 		go func() {
 			m.Lock()
 			running <- true
@@ -22,7 +22,7 @@ func TestCondSignal(t *testing.T) {
 			m.Unlock()
 		}()
 	}
-	for i := 0; i < n; i++ {
+	for range n {
 		<-running // Wait for everyone to run.
 	}
 	for n > 0 {
@@ -51,7 +51,7 @@ func TestCondSignalOveruse(t *testing.T) {
 	running := make(chan bool, 1)
 	awake := make(chan bool, 1)
 
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		c.Signal() // Checks if empty signals are not deadlocking
 	}
 
@@ -83,7 +83,7 @@ func TestCondSignalGenerations(t *testing.T) {
 	n := 100
 	running := make(chan bool, n)
 	awake := make(chan int, n)
-	for i := 0; i < n; i++ {
+	for i := range n {
 		go func(i int) {
 			m.Lock()
 			running <- true
@@ -112,7 +112,7 @@ func TestCondBroadcast(t *testing.T) {
 	running := make(chan int, n)
 	awake := make(chan int, n)
 	exit := false
-	for i := 0; i < n; i++ {
+	for i := range n {
 		go func(g int) {
 			m.Lock()
 			for !exit {
@@ -123,8 +123,8 @@ func TestCondBroadcast(t *testing.T) {
 			m.Unlock()
 		}(i)
 	}
-	for i := 0; i < n; i++ {
-		for i := 0; i < n; i++ {
+	for i := range n {
+		for range n {
 			<-running // Will deadlock unless n are running.
 		}
 		if i == n-1 {
@@ -141,7 +141,7 @@ func TestCondBroadcast(t *testing.T) {
 		c.Broadcast()
 		m.Unlock()
 		seen := make([]bool, n)
-		for i := 0; i < n; i++ {
+		for range n {
 			g := <-awake
 			if seen[g] {
 				t.Fatal("goroutine woke up twice")
@@ -159,7 +159,7 @@ func TestCondBroadcast(t *testing.T) {
 
 // nolint
 func TestCondSignalStealing(t *testing.T) {
-	for iters := 0; iters < 20000; iters++ {
+	for range 20000 {
 		var m sync.Mutex
 		cond := New(&m)
 

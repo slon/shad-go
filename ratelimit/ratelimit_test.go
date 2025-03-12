@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/goleak"
 	"golang.org/x/sync/errgroup"
+	"slices"
 )
 
 func TestNoRateLimit(t *testing.T) {
@@ -88,9 +89,9 @@ func TestAcquireAfterDelay(t *testing.T) {
 	limit := NewLimiter(N, time.Second)
 	defer limit.Stop()
 
-	for epoch := 0; epoch < e; epoch++ {
+	for range e {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-		for i := 0; i < N; i++ {
+		for range N {
 			require.NoError(t, limit.Acquire(ctx))
 		}
 		cancel()
@@ -109,7 +110,7 @@ func TestAcquireAfterStopped(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
 
-	for i := 0; i < nTries; i++ {
+	for range nTries {
 		require.Contains(t, []error{ErrStopped, context.Canceled}, limit.Acquire(ctx))
 	}
 }
@@ -125,7 +126,7 @@ func TestTimeDistribution(t *testing.T) {
 	start := time.Now()
 
 	var wg sync.WaitGroup
-	for i := 0; i < 500; i++ {
+	for range 500 {
 		time.Sleep(time.Millisecond * 5)
 
 		wg.Add(1)
@@ -151,9 +152,7 @@ func TestTimeDistribution(t *testing.T) {
 
 	require.Greater(t, len(okTimes), 200, "At least 200 goroutines should succeed")
 
-	sort.Slice(okTimes, func(i, j int) bool {
-		return okTimes[i] < okTimes[j]
-	})
+	slices.Sort(okTimes)
 
 	for i, dt := range okTimes {
 		j := sort.Search(len(okTimes)-i, func(j int) bool {
@@ -179,9 +178,9 @@ func TestStressBlocking(t *testing.T) {
 	defer limit.Stop()
 
 	var eg errgroup.Group
-	for i := 0; i < G; i++ {
+	for range G {
 		eg.Go(func() error {
-			for j := 0; j < N; j++ {
+			for range N {
 				if err := limit.Acquire(context.Background()); err != nil {
 					return err
 				}
@@ -206,9 +205,9 @@ func TestStressNoBlocking(t *testing.T) {
 	defer limit.Stop()
 
 	var eg errgroup.Group
-	for i := 0; i < G; i++ {
+	for range G {
 		eg.Go(func() error {
-			for j := 0; j < N; j++ {
+			for range N {
 				if err := limit.Acquire(context.Background()); err != nil {
 					return err
 				}

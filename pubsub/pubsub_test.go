@@ -23,7 +23,7 @@ func TestPubSub_single(t *testing.T) {
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 
-	_, err := p.Subscribe("single", func(msg interface{}) {
+	_, err := p.Subscribe("single", func(msg any) {
 		require.Equal(t, "blah-blah", msg)
 		wg.Done()
 	})
@@ -42,7 +42,7 @@ func TestPubSub_nonBlockPublish(t *testing.T) {
 	wg := sync.WaitGroup{}
 	wg.Add(11)
 
-	_, err := p.Subscribe("non-bock-topic", func(msg interface{}) {
+	_, err := p.Subscribe("non-bock-topic", func(msg any) {
 		time.Sleep(10 * time.Millisecond)
 		wg.Done()
 	})
@@ -50,7 +50,7 @@ func TestPubSub_nonBlockPublish(t *testing.T) {
 
 	done := make(chan struct{})
 	go func() {
-		for i := 0; i < 11; i++ {
+		for range 11 {
 			err = p.Publish("non-bock-topic", "pew-pew")
 			assert.NoError(t, err)
 		}
@@ -72,13 +72,13 @@ func TestPubSub_multipleSubjects(t *testing.T) {
 	wg := sync.WaitGroup{}
 	wg.Add(2)
 
-	_, err := p.Subscribe("sub1", func(msg interface{}) {
+	_, err := p.Subscribe("sub1", func(msg any) {
 		require.Equal(t, "blah-blah-1", msg)
 		wg.Done()
 	})
 	require.NoError(t, err)
 
-	_, err = p.Subscribe("sub2", func(msg interface{}) {
+	_, err = p.Subscribe("sub2", func(msg any) {
 		require.Equal(t, "blah-blah-2", msg)
 		wg.Done()
 	})
@@ -100,7 +100,7 @@ func TestPubSub_multipleSubscribers(t *testing.T) {
 	wgFirst := sync.WaitGroup{}
 	wgFirst.Add(1)
 
-	_, err := p.Subscribe("multiple", func(msg interface{}) {
+	_, err := p.Subscribe("multiple", func(msg any) {
 		require.Equal(t, "pew-pew", msg)
 		wgFirst.Done()
 	})
@@ -109,7 +109,7 @@ func TestPubSub_multipleSubscribers(t *testing.T) {
 	wgSecond := sync.WaitGroup{}
 	wgSecond.Add(1)
 
-	_, err = p.Subscribe("multiple", func(msg interface{}) {
+	_, err = p.Subscribe("multiple", func(msg any) {
 		require.Equal(t, "pew-pew", msg)
 		wgSecond.Done()
 	})
@@ -136,7 +136,7 @@ func TestPubSub_slowpoke(t *testing.T) {
 		wgSlow.Wait()
 	}()
 
-	_, err := p.Subscribe("slowpoke", func(msg interface{}) {
+	_, err := p.Subscribe("slowpoke", func(msg any) {
 		defer wgSlow.Done()
 
 		select {
@@ -151,13 +151,13 @@ func TestPubSub_slowpoke(t *testing.T) {
 	fastWg := sync.WaitGroup{}
 	fastWg.Add(samples)
 
-	_, err = p.Subscribe("slowpoke", func(msg interface{}) {
+	_, err = p.Subscribe("slowpoke", func(msg any) {
 		require.Equal(t, "pew-pew", msg)
 		fastWg.Done()
 	})
 	require.NoError(t, err)
 
-	for i := 0; i < samples; i++ {
+	for range samples {
 		err = p.Publish("slowpoke", "pew-pew")
 		require.NoError(t, err)
 	}
@@ -180,7 +180,7 @@ func TestPubSub_unsubscribe(t *testing.T) {
 	p := NewPubSub()
 	defer checkedClose(t, p)
 
-	s, err := p.Subscribe("unsubscribe", func(msg interface{}) {
+	s, err := p.Subscribe("unsubscribe", func(msg any) {
 		t.Error("first subscriber must not be called")
 	})
 	require.NoError(t, err)
@@ -190,7 +190,7 @@ func TestPubSub_unsubscribe(t *testing.T) {
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 
-	_, err = p.Subscribe("unsubscribe", func(msg interface{}) {
+	_, err = p.Subscribe("unsubscribe", func(msg any) {
 		require.Equal(t, "pew-pew", msg)
 		wg.Done()
 	})
@@ -209,13 +209,13 @@ func TestPubSub_sequencePublishers(t *testing.T) {
 	wg := sync.WaitGroup{}
 	wg.Add(10)
 
-	_, err := p.Subscribe("topic", func(msg interface{}) {
+	_, err := p.Subscribe("topic", func(msg any) {
 		require.Equal(t, "pew-pew", msg)
 		wg.Done()
 	})
 	require.NoError(t, err)
 
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		err := p.Publish("topic", "pew-pew")
 		require.NoError(t, err)
 	}
@@ -230,13 +230,13 @@ func TestPubSub_concurrentPublishers(t *testing.T) {
 	wg := sync.WaitGroup{}
 	wg.Add(10)
 
-	_, err := p.Subscribe("topic", func(msg interface{}) {
+	_, err := p.Subscribe("topic", func(msg any) {
 		require.Equal(t, "pew-pew", msg)
 		wg.Done()
 	})
 	require.NoError(t, err)
 
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		go func() {
 			err := p.Publish("topic", "pew-pew")
 			require.NoError(t, err)
@@ -254,7 +254,7 @@ func TestPubSub_msgOrder(t *testing.T) {
 	wg.Add(15)
 
 	c := uint64(0)
-	_, err := p.Subscribe("topic", func(msg interface{}) {
+	_, err := p.Subscribe("topic", func(msg any) {
 		expected := atomic.AddUint64(&c, 1)
 		require.Equal(t, expected, msg)
 		wg.Done()
@@ -264,7 +264,7 @@ func TestPubSub_msgOrder(t *testing.T) {
 	for i := uint64(1); i < 11; i++ {
 		if i == 6 {
 			c := uint64(5)
-			_, subErr := p.Subscribe("topic", func(msg interface{}) {
+			_, subErr := p.Subscribe("topic", func(msg any) {
 				expected := atomic.AddUint64(&c, 1)
 				require.Equal(t, expected, msg)
 				wg.Done()
@@ -284,7 +284,7 @@ func TestPubSub_failAfterClose(t *testing.T) {
 	err := p.Close(context.Background())
 	require.NoError(t, err)
 
-	_, err = p.Subscribe("topic", func(msg interface{}) {})
+	_, err = p.Subscribe("topic", func(msg any) {})
 	require.Error(t, err)
 
 	err = p.Publish("topic", "pew-pew")
@@ -300,7 +300,7 @@ func TestPubSub_close(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	_, err := p.Subscribe("unsubscribe", func(msg interface{}) {
+	_, err := p.Subscribe("unsubscribe", func(msg any) {
 		select {
 		case <-ctx.Done():
 			// fast exit
@@ -312,7 +312,7 @@ func TestPubSub_close(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		err = p.Publish("unsubscribe", "pew-pew")
 		require.NoError(t, err)
 	}
@@ -345,14 +345,14 @@ func TestPubSub_closeWaitsMessageDelivery(t *testing.T) {
 	p := NewPubSub()
 
 	var msgs []any
-	_, err := p.Subscribe("q", func(msg interface{}) {
+	_, err := p.Subscribe("q", func(msg any) {
 		msgs = append(msgs, msg)
 		time.Sleep(100 * time.Millisecond)
 	})
 	require.NoError(t, err)
 
 	const N = 11
-	for i := 0; i < N; i++ {
+	for range N {
 		err = p.Publish("q", "pew-pew")
 		require.NoError(t, err)
 	}

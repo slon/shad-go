@@ -34,12 +34,12 @@ func TestHash_TwoNodes(t *testing.T) {
 
 	n := h.GetNode("key0")
 	require.True(t, n == &n1 || n == &n2)
-	for i := 0; i < 32; i++ {
+	for range 32 {
 		require.Equal(t, n, h.GetNode("key0"))
 	}
 
 	differs := false
-	for i := 0; i < 32; i++ {
+	for i := range 32 {
 		other := h.GetNode(fmt.Sprintf("key%d", i))
 		if other != n {
 			differs = true
@@ -52,14 +52,14 @@ func TestHash_EvenDistribution(t *testing.T) {
 	h := New[node]()
 
 	const K = 32
-	for i := 0; i < K; i++ {
+	for i := range K {
 		n := node(fmt.Sprint(i))
 		h.AddNode(&n)
 	}
 
 	counts := map[*node]float64{}
 	const N = 1 << 16
-	for i := 0; i < N; i++ {
+	for i := range N {
 		counts[h.GetNode(fmt.Sprintf("key%d", i))] += 1
 	}
 
@@ -88,7 +88,7 @@ func TestHash_ConsistentDistribution(t *testing.T) {
 	h := New[node]()
 
 	const K = 32
-	for i := 0; i < K; i++ {
+	for i := range K {
 		n := node(fmt.Sprint(i))
 		h.AddNode(&n)
 	}
@@ -96,7 +96,7 @@ func TestHash_ConsistentDistribution(t *testing.T) {
 	nodes := map[string]*node{}
 
 	const N = 1 << 16
-	for i := 0; i < N; i++ {
+	for i := range N {
 		key := fmt.Sprintf("key%d", i)
 		nodes[key] = h.GetNode(key)
 	}
@@ -127,13 +127,13 @@ func BenchmarkHashSpeed(b *testing.B) {
 	for _, K := range []int{32, 1024, 4096} {
 		h := New[node]()
 
-		for i := 0; i < K; i++ {
+		for i := range K {
 			n := node(fmt.Sprint(i))
 			h.AddNode(&n)
 		}
 
 		b.Run(fmt.Sprintf("K=%d", K), func(b *testing.B) {
-			for i := 0; i < b.N; i++ {
+			for i := 0; b.Loop(); i++ {
 				_ = h.GetNode(fmt.Sprintf("key%d", i))
 			}
 		})

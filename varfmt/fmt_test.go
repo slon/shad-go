@@ -9,49 +9,49 @@ import (
 )
 
 func TestFormat(t *testing.T) {
-	s := make([]interface{}, 1002)
+	s := make([]any, 1002)
 	s[10] = 1
 	s[100] = 2
 	s[1000] = 3
 
 	for _, tc := range []struct {
 		format string
-		args   []interface{}
+		args   []any
 		result string
 	}{
 		{
 			format: "{}",
-			args:   []interface{}{0},
+			args:   []any{0},
 			result: "0",
 		},
 		{
 			format: "{0} {0}",
-			args:   []interface{}{1},
+			args:   []any{1},
 			result: "1 1",
 		},
 		{
 			format: "{1} {5}",
-			args:   []interface{}{0, 1, 2, 3, 4, 5, 6},
+			args:   []any{0, 1, 2, 3, 4, 5, 6},
 			result: "1 5",
 		},
 		{
 			format: "{} {} {} {} {}",
-			args:   []interface{}{0, 1, 2, 3, 4},
+			args:   []any{0, 1, 2, 3, 4},
 			result: "0 1 2 3 4",
 		},
 		{
 			format: "{} {0} {0} {0} {}",
-			args:   []interface{}{0, 1, 2, 3, 4},
+			args:   []any{0, 1, 2, 3, 4},
 			result: "0 0 0 0 4",
 		},
 		{
 			format: "Hello, {2}",
-			args:   []interface{}{0, 1, "World"},
+			args:   []any{0, 1, "World"},
 			result: "Hello, World",
 		},
 		{
 			format: "He{2}o",
-			args:   []interface{}{0, 1, "ll"},
+			args:   []any{0, 1, "ll"},
 			result: "Hello",
 		},
 		{
@@ -80,27 +80,27 @@ func BenchmarkFormat(b *testing.B) {
 	for _, tc := range []struct {
 		name   string
 		format string
-		args   []interface{}
+		args   []any
 	}{
 		{
 			name:   "small int",
 			format: "{}",
-			args:   []interface{}{42},
+			args:   []any{42},
 		},
 		{
 			name:   "small string",
 			format: "{} {}",
-			args:   []interface{}{"Hello", "World"},
+			args:   []any{"Hello", "World"},
 		},
 		{
 			name:   "big",
 			format: strings.Repeat("{0}{1}", 1000),
-			args:   []interface{}{42, 43},
+			args:   []any{42, 43},
 		},
 	} {
 		b.Run(tc.name, func(b *testing.B) {
 			b.ReportAllocs()
-			for i := 0; i < b.N; i++ {
+			for b.Loop() {
 				_ = Sprintf(tc.format, tc.args...)
 			}
 		})
@@ -111,27 +111,27 @@ func BenchmarkSprintf(b *testing.B) {
 	for _, tc := range []struct {
 		name   string
 		format string
-		args   []interface{}
+		args   []any
 	}{
 		{
 			name:   "small",
 			format: "%d",
-			args:   []interface{}{42},
+			args:   []any{42},
 		},
 		{
 			name:   "small string",
 			format: "%v %v",
-			args:   []interface{}{"Hello", "World"},
+			args:   []any{"Hello", "World"},
 		}, {
 			name:   "big",
 			format: strings.Repeat("%[0]v%[1]v", 1000),
-			args:   []interface{}{42, 43},
+			args:   []any{42, 43},
 		},
 	} {
 		b.Run(tc.name, func(b *testing.B) {
 			b.ReportAllocs()
 
-			for i := 0; i < b.N; i++ {
+			for b.Loop() {
 				_ = fmt.Sprintf(tc.format, tc.args...)
 			}
 		})

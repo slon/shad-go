@@ -18,7 +18,7 @@ func TestCall_Simple(t *testing.T) {
 	called := 0
 
 	var call Call
-	result, err := call.Do(context.Background(), func(ctx context.Context) (interface{}, error) {
+	result, err := call.Do(context.Background(), func(ctx context.Context) (any, error) {
 		called++
 		return "ok", nil
 	})
@@ -29,7 +29,7 @@ func TestCall_Simple(t *testing.T) {
 
 	errFailed := errors.New("failed")
 
-	result, err = call.Do(context.Background(), func(ctx context.Context) (interface{}, error) {
+	result, err = call.Do(context.Background(), func(ctx context.Context) (any, error) {
 		called++
 		return nil, errFailed
 	})
@@ -44,9 +44,9 @@ func TestCall_NoBusyWait(t *testing.T) {
 	defer close(done)
 
 	var call Call
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		go func() {
-			_, _ = call.Do(context.Background(), func(ctx context.Context) (interface{}, error) {
+			_, _ = call.Do(context.Background(), func(ctx context.Context) (any, error) {
 				<-done
 				return nil, nil
 			})
@@ -60,7 +60,7 @@ func TestCall_Dedup(t *testing.T) {
 	defer goleak.VerifyNone(t)
 
 	called := 0
-	cb := func(ctx context.Context) (interface{}, error) {
+	cb := func(ctx context.Context) (any, error) {
 		time.Sleep(time.Millisecond * 100)
 
 		called++
@@ -68,7 +68,7 @@ func TestCall_Dedup(t *testing.T) {
 	}
 
 	var call Call
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		go func() {
 			_, _ = call.Do(context.Background(), cb)
 		}()
@@ -85,7 +85,7 @@ func TestCall_HalfCancel(t *testing.T) {
 	defer goleak.VerifyNone(t)
 
 	called := 0
-	cb := func(ctx context.Context) (interface{}, error) {
+	cb := func(ctx context.Context) (any, error) {
 		time.Sleep(time.Millisecond * 100)
 
 		called++
@@ -93,13 +93,13 @@ func TestCall_HalfCancel(t *testing.T) {
 	}
 
 	var call Call
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		go func() {
 			_, _ = call.Do(context.Background(), cb)
 		}()
 	}
 
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		ctx, cancel := context.WithCancel(context.Background())
 
 		go func() {
@@ -121,7 +121,7 @@ func TestCall_FullCancel(t *testing.T) {
 	defer goleak.VerifyNone(t)
 
 	cancelled := make(chan struct{}, 1)
-	cb := func(ctx context.Context) (interface{}, error) {
+	cb := func(ctx context.Context) (any, error) {
 		<-ctx.Done()
 		select {
 		case cancelled <- struct{}{}:
@@ -133,7 +133,7 @@ func TestCall_FullCancel(t *testing.T) {
 
 	var call Call
 
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		ctx, cancel := context.WithCancel(context.Background())
 
 		go func() {
@@ -157,7 +157,7 @@ func TestCall_NonBlockingCancel(t *testing.T) {
 	defer goleak.VerifyNone(t)
 
 	var call Call
-	cb := func(ctx context.Context) (interface{}, error) {
+	cb := func(ctx context.Context) (any, error) {
 		time.Sleep(time.Millisecond * 100)
 		return nil, nil
 	}

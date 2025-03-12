@@ -89,7 +89,7 @@ func TestKeyLock_DeadlockFree(t *testing.T) {
 	checkLock := func(keys []string) {
 		defer wg.Done()
 
-		for i := 0; i < N; i++ {
+		for range N {
 			cancelled, unlock := l.LockKeys(keys, nil)
 			if cancelled {
 				t.Error("spurious lock failure")
@@ -132,11 +132,11 @@ func TestKeyLock_SingleKeyStress(t *testing.T) {
 	var wg sync.WaitGroup
 	wg.Add(G)
 
-	for i := 0; i < G; i++ {
+	for range G {
 		go func() {
 			defer wg.Done()
 
-			for j := 0; j < N; j++ {
+			for range N {
 				cancelled, unlock := l.LockKeys([]string{"a"}, timeout(time.Millisecond))
 				if !cancelled {
 					unlock()
@@ -166,13 +166,13 @@ func TestKeyLock_MutualExclusionStress(t *testing.T) {
 	var wg sync.WaitGroup
 	wg.Add(G)
 
-	for i := 0; i < G; i++ {
+	for range G {
 		go func() {
 			defer wg.Done()
 
-			for j := 0; j < N; j++ {
+			for range N {
 				keys := []string{}
-				for k := 0; k < K; k++ {
+				for range K {
 					keys = append(keys, fmt.Sprint(rand.Intn(N)))
 				}
 

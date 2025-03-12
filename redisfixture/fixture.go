@@ -13,9 +13,9 @@ import (
 )
 
 type testingTB interface {
-	Logf(format string, args ...interface{})
-	Fatalf(format string, args ...interface{})
-	Errorf(format string, args ...interface{})
+	Logf(format string, args ...any)
+	Fatalf(format string, args ...any)
+	Errorf(format string, args ...any)
 	FailNow()
 	Cleanup(func())
 }

@@ -137,8 +137,7 @@ func TestBuildResultsStreaming(t *testing.T) {
 	env, stop := newEnv(t)
 	defer stop()
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	buildID := build.ID{02}
 	req := &api.BuildRequest{}

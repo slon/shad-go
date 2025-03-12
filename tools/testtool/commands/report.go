@@ -25,7 +25,7 @@ func reportTestResults(token string, task string, userID string, failed bool) er
 	var rsp *http.Response
 	var err error
 
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		rsp, err = http.PostForm(reportEndpoint, form)
 		if err != nil {
 			log.Printf("retrying report: %v", err)

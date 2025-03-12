@@ -2,5 +2,5 @@
 
 package illegal
 
-func SetPrivateField(obj interface{}, name string, value interface{}) {
+func SetPrivateField(obj any, name string, value any) {
 }

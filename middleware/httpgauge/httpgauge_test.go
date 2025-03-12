@@ -36,12 +36,12 @@ func TestMiddleware(t *testing.T) {
 	})
 
 	var wg sync.WaitGroup
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
 
-			for j := 0; j < 1000; j++ {
+			for j := range 1000 {
 				m.ServeHTTP(httptest.NewRecorder(), httptest.NewRequest("GET", fmt.Sprintf("/user/%d", j), nil))
 			}
 		}()

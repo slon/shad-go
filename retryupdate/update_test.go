@@ -44,7 +44,7 @@ type setMatcher struct {
 	save *uuid.UUID
 }
 
-func (m setMatcher) Matches(x interface{}) bool {
+func (m setMatcher) Matches(x any) bool {
 	if arg, ok := x.(*kvapi.SetRequest); ok {
 		if m.save != nil {
 			*m.save = arg.NewVersion

@@ -90,7 +90,7 @@ func TestServer_valid(t *testing.T) {
 					out, err := os.ReadFile(path.Join(testDir, f.Name(), "out.json"))
 					require.NoError(t, err)
 
-					var values map[string]interface{}
+					var values map[string]any
 					require.NoError(t, json.Unmarshal(in, &values))
 
 					resp, err := c.R().
@@ -101,13 +101,13 @@ func TestServer_valid(t *testing.T) {
 					require.Equal(t, http.StatusOK, resp.StatusCode())
 					require.Contains(t, resp.Header().Get("Content-Type"), "application/json")
 
-					var got interface{}
+					var got any
 					err = json.Unmarshal(resp.Body(), &got)
 					if err != nil {
 						t.Fatalf("Could not parse response body: %v", err)
 					}
 
-					var want interface{}
+					var want any
 					_ = json.Unmarshal(out, &want)
 
 					if diff := cmp.Diff(want, got); diff != "" {
@@ -185,7 +185,7 @@ func TestServer_invalid(t *testing.T) {
 	}
 }
 
-func toURLValues(in map[string]interface{}) map[string]string {
+func toURLValues(in map[string]any) map[string]string {
 	out := make(map[string]string)
 	for k, v := range in {
 		out[k] = fmt.Sprintf("%v", v)

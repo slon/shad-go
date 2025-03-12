@@ -7,6 +7,7 @@ import (
 	"io"
 	"sort"
 	"strings"
+	"slices"
 )
 
 type Counter interface {
@@ -28,8 +29,8 @@ func (c BaselineCounter) Count(r io.Reader) error {
 		return err
 	}
 	dataStr := string(data)
-	for _, line := range strings.Split(dataStr, "\n") {
-		for _, word := range strings.Split(line, " ") {
+	for line := range strings.SplitSeq(dataStr, "\n") {
+		for word := range strings.SplitSeq(line, " ") {
 			c.counts[word]++
 		}
 	}
@@ -41,9 +42,7 @@ func (c BaselineCounter) String() string {
 	for word := range c.counts {
 		keys = append(keys, word)
 	}
-	sort.Slice(keys, func(i, j int) bool {
-		return keys[i] < keys[j]
-	})
+	slices.Sort(keys)
 
 	result := ""
 	for _, key := range keys {

@@ -133,7 +133,7 @@ b`,
 func parseStdout(data []byte) (map[string]int64, error) {
 	counts := make(map[string]int64)
 
-	for _, line := range strings.Split(string(data), "\n") {
+	for line := range strings.SplitSeq(string(data), "\n") {
 		if line == "" {
 			continue
 		}

@@ -126,7 +126,7 @@ func newEnv(t *testing.T, config *Config) (e *env) {
 	router := http.NewServeMux()
 	router.Handle("/coordinator/", http.StripPrefix("/coordinator", env.Coordinator))
 
-	for i := 0; i < config.WorkerCount; i++ {
+	for i := range config.WorkerCount {
 		workerName := fmt.Sprintf("worker%d", i)
 		workerDir := filepath.Join(env.RootDir, workerName)
 

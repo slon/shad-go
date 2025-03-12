@@ -166,7 +166,7 @@ func BenchmarkUnpacker(b *testing.B) {
 	b.Run("user", func(b *testing.B) {
 		b.ReportAllocs()
 
-		for i := 0; i < b.N; i++ {
+		for b.Loop() {
 			_ = Unpack(userRequest, user)
 		}
 	})
@@ -174,7 +174,7 @@ func BenchmarkUnpacker(b *testing.B) {
 	b.Run("good", func(b *testing.B) {
 		b.ReportAllocs()
 
-		for i := 0; i < b.N; i++ {
+		for b.Loop() {
 			_ = Unpack(goodRequest, good)
 			_ = Unpack(orderRequest, order)
 		}
@@ -183,7 +183,7 @@ func BenchmarkUnpacker(b *testing.B) {
 	b.Run("order", func(b *testing.B) {
 		b.ReportAllocs()
 
-		for i := 0; i < b.N; i++ {
+		for b.Loop() {
 			_ = Unpack(orderRequest, order)
 		}
 	})

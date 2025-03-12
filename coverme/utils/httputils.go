@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func RespondJSON(w http.ResponseWriter, status int, data interface{}) error {
+func RespondJSON(w http.ResponseWriter, status int, data any) error {
 	response, err := json.Marshal(data)
 	if err != nil {
 		return err
