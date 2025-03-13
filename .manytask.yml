@@ -106,22 +106,22 @@ deadlines:
       - task: gitfame
         score: 0
 
-    # - group: Testing
-    #   start: 2024-03-16 13:00
-    #   steps:
-    #     0.3: 2024-03-27 23:59
-    #   end: 2024-07-10 23:59
-    #   tasks:
-    #     - task: testequal
-    #       score: 100
-    #     - task: fileleak
-    #       score: 100
-    #     - task: tabletest
-    #       score: 100
-    #     - task: tparallel
-    #       score: 200
-    #     - task: iprange
-    #       score: 100
+    - group: Testing
+      start: 2025-03-13 18:00
+      steps:
+        0.3: 2025-03-23 23:59
+      end: 2025-07-10 23:59
+      tasks:
+        - task: testequal
+          score: 100
+        - task: fileleak
+          score: 100
+        - task: tabletest
+          score: 100
+        - task: tparallel
+          score: 200
+        - task: iprange
+          score: 100
 
     # - group: Concurrency with shared memory
     #   start: 2024-03-30 13:00
