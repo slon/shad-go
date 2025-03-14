@@ -137,7 +137,8 @@ func (w *errWriter) Write(p []byte) (n int, err error) {
 }
 
 func TestWriterError(t *testing.T) {
-	out := &errWriter{n: 512}
+	expectedN := 512 // any number <= testSize should work
+	out := &errWriter{n: expectedN}
 	prng := bytes.NewBuffer(randomBytes)
 
 	w := NewWriter(out, prng)
@@ -145,8 +146,8 @@ func TestWriterError(t *testing.T) {
 
 	require.Equalf(t, plaintextBackup, plaintext, "Write must not modify the slice data, even temporarily.")
 	require.ErrorIs(t, err, iotest.ErrTimeout)
-	require.Equal(t, 512, n)
-	require.Equal(t, out.buf.Bytes(), ciphertext[:512])
+	require.Equal(t, expectedN, n)
+	require.Equal(t, ciphertext[:expectedN], out.buf.Bytes())
 }
 
 type panicReader struct{}
