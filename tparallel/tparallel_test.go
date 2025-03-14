@@ -199,3 +199,27 @@ func TestTwoParallelSequences(t *testing.T) {
 		},
 	})
 }
+
+func TestNestedParallel(t *testing.T) {
+	check := ConcurrencyChecker{t: t}
+	defer check.Finish(3)
+	
+	Run([]func(*T){
+		func(t *T) {
+			t.Parallel()
+
+			t.Run(func(t *T) {
+				t.Parallel()
+
+				t.Run(func(t *T) {
+					t.Parallel()
+					check.Sequential(2)
+				})
+				
+				check.Sequential(1)
+			})
+
+			check.Sequential(0)
+		},
+	})
+}
