@@ -123,20 +123,20 @@ deadlines:
         - task: iprange
           score: 100
 
-    # - group: Concurrency with shared memory
-    #   start: 2024-03-30 13:00
-    #   steps:
-    #     0.3: 2024-04-10 23:59
-    #   end: 2024-07-10 23:59
-    #   tasks:
-    #     - task: dupcall
-    #       score: 200
-    #     - task: keylock
-    #       score: 200
-    #     - task: batcher
-    #       score: 200
-    #     - task: pubsub
-    #       score: 300
+    - group: Concurrency with shared memory
+      start: 2025-03-20 18:00
+      steps:
+        0.3: 2025-03-30 23:59
+      end: 2025-07-10 23:59
+      tasks:
+        - task: dupcall
+          score: 200
+        - task: keylock
+          score: 200
+        - task: batcher
+          score: 200
+        - task: pubsub
+          score: 300
 
     # - group: HTTP
     #   start: 2024-04-06 13:00
