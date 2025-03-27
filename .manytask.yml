@@ -138,22 +138,22 @@ deadlines:
         - task: pubsub
           score: 300
 
-    # - group: HTTP
-    #   start: 2024-04-06 13:00
-    #   steps:
-    #     0.3: 2024-04-16 23:59
-    #   end: 2024-07-10 23:59
-    #   tasks:
-    #     - task: urlshortener
-    #       score: 100
-    #     - task: digitalclock
-    #       score: 100
-    #     - task: middleware
-    #       score: 200
-    #     - task: firewall
-    #       score: 200
-    #     - task: olympics
-    #       score: 200
+    - group: HTTP
+      start: 2025-03-27 18:00
+      steps:
+        0.3: 2025-04-05 23:59
+      end: 2025-07-10 23:59
+      tasks:
+        - task: urlshortener
+          score: 100
+        - task: digitalclock
+          score: 100
+        - task: middleware
+          score: 200
+        - task: firewall
+          score: 200
+        - task: olympics
+          score: 200
 
     # - group: SQL
     #   start: 2024-04-13 13:00
