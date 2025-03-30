@@ -103,8 +103,8 @@ deadlines:
       start: 2025-03-06 18:00
       end: 2025-03-21 23:59
       tasks:
-      - task: gitfame
-        score: 0
+        - task: gitfame
+          score: 0
 
     - group: Testing
       start: 2025-03-13 18:00
@@ -126,7 +126,7 @@ deadlines:
     - group: Concurrency with shared memory
       start: 2025-03-20 18:00
       steps:
-        0.3: 2025-03-30 23:59
+        0.3: 2025-03-31 23:59
       end: 2025-07-10 23:59
       tasks:
         - task: dupcall
