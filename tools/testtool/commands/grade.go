@@ -25,6 +25,10 @@ func grade() error {
 		return err
 	}
 
+	for _, file := range changedFiles {
+		log.Printf("detected change in file: %q", file)
+	}
+
 	deadlines, err := loadDeadlines(filepath.Join(privateRepoRoot, manytaskYML))
 	if err != nil {
 		return err
