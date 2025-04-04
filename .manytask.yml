@@ -141,7 +141,7 @@ deadlines:
     - group: HTTP
       start: 2025-03-27 18:00
       steps:
-        0.3: 2025-04-05 23:59
+        0.3: 2025-04-06 23:59
       end: 2025-07-10 23:59
       tasks:
         - task: urlshortener
@@ -155,27 +155,27 @@ deadlines:
         - task: olympics
           score: 200
 
-    # - group: SQL
-    #   start: 2024-04-13 13:00
-    #   steps:
-    #     0.3: 2024-04-23 23:59
-    #   end: 2024-07-10 23:59
-    #   tasks:
-    #     - task: dao
-    #       score: 100
-    #     - task: ledger
-    #       score: 200
-    #     - task: shopfront
-    #       score: 100
-    #     - task: wscat
-    #       score: 200
+    - group: Database
+      start: 2024-04-03 13:00
+      steps:
+        0.3: 2024-04-13 23:59
+      end: 2025-07-10 23:59
+      tasks:
+        - task: dao
+          score: 100
+        - task: ledger
+          score: 200
+        - task: shopfront
+          score: 100
+        - task: rsem
+          score: 200
 
-    # - group: "[HW] Dist Build"
-    #   start: 2024-04-13 13:00
-    #   end:   2024-05-13 23:59
-    #   tasks:
-    #     - task: distbuild
-    #       score: 1
+    - group: "[HW] Dist Build"
+      start: 2024-04-03 13:00
+      end: 2024-04-27 23:59
+      tasks:
+        - task: distbuild
+          score: 1
 
     # - group: Generics
     #   start: 2024-04-20 13:00
@@ -227,10 +227,18 @@ deadlines:
     #     - task: testifycheck
     #       score: 200
 
-    # - group: Bonus
-    #   start: 2024-03-03 13:00
-    #   end: 2024-07-10 23:59
-    #   tasks:
+    - group: Bonus
+      start: 2025-04-04 13:00
+      end: 2025-07-10 23:59
+      tasks:
+        - task: smartsched
+          is_bonus: true
+          score: 200
+          watch:
+            - distbuild/pkg/scheduler
+        # - task: wscat
+        #   score: 200
+
     #     - task: yamlembed
     #       is_bonus: true
     #       score: 100
@@ -240,11 +248,6 @@ deadlines:
     #     - task: gossip
     #       is_bonus: true
     #       score: 300
-    #     - task: smartsched
-    #       is_bonus: true
-    #       score: 200
-    #       watch:
-    #         - distbuild/pkg/scheduler
     #     - task: wasm
     #       is_bonus: true
     #       score: 300
@@ -252,9 +255,6 @@ deadlines:
     #       is_bonus: true
     #       score: 200
     #     - task: excelwriter
-    #       is_bonus: true
-    #       score: 200
-    #     - task: rsem
     #       is_bonus: true
     #       score: 200
     #     - task: psycher
