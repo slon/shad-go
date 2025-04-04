@@ -25,8 +25,11 @@ func grade() error {
 		return err
 	}
 
-	for _, file := range changedFiles {
-		log.Printf("detected change in file: %q", file)
+	if len(changedFiles) != 0 {
+		log.Printf("changed files:")
+		for _, file := range changedFiles {
+			log.Printf("~ %s", file)
+		}
 	}
 
 	deadlines, err := loadDeadlines(filepath.Join(privateRepoRoot, manytaskYML))
