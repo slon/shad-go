@@ -168,7 +168,7 @@ deadlines:
         - task: shopfront
           score: 100
         - task: rsem
-          score: 200
+          score: 300
 
     - group: "[HW] Dist Build"
       start: 2025-04-03 13:00
