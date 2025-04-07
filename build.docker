@@ -4,7 +4,14 @@ FROM golang:1.24
 RUN echo "deb http://deb.debian.org/debian bullseye-backports main" >> /etc/apt/sources.list.d/backports.list
 
 RUN apt-get update && apt-get install -y \
-    rsync libssl-dev postgresql sudo redis-server git-filter-repo/bullseye-backports \
+    lsb-release curl gpg rsync libssl-dev postgresql sudo git-filter-repo/bullseye-backports \
  && rm -rf /var/lib/apt/lists/*
+
+RUN curl -fsSL https://packages.redis.io/gpg | gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg && \
+    chmod 644 /usr/share/keyrings/redis-archive-keyring.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" > /etc/apt/sources.list.d/redis.list && \
+    apt-get update && \
+    apt-get install -y redis && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.64.4
