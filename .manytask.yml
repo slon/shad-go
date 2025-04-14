@@ -177,18 +177,20 @@ deadlines:
         - task: distbuild
           score: 1
 
-    # - group: Generics
-    #   start: 2024-04-20 13:00
-    #   steps:
-    #     0.3: 2024-05-02 23:59
-    #   end: 2024-07-10 23:59
-    #   tasks:
-    #     - task: genericsum
-    #       score: 100
-    #     - task: treeiter
-    #       score: 100
-    #     - task: coverme
-    #       score: 300
+    - group: Generics
+      start: 2025-04-14 18:00
+      steps:
+        0.3: 2025-04-27 23:59
+      end: 2025-07-10 23:59
+      tasks:
+        - task: genericsum
+          score: 100
+        - task: treeiter
+          score: 100
+        - task: consistenthash
+          score: 200
+        - task: coverme
+          score: 300
 
     # - group: Reflect
     #   start: 2024-04-27 13:00
