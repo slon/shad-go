@@ -19,9 +19,7 @@ func listChangedFiles(gitPath string) ([]string, error) {
 	}
 
 	var files []string
-	for _, name := range strings.Split(gitOutput.String(), "\n") {
-		files = append(files, name)
-	}
+	files = append(files, strings.Split(gitOutput.String(), "\n")...)
 
 	return files, nil
 }
