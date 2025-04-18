@@ -241,15 +241,13 @@ deadlines:
           score: 200
           watch:
             - distbuild/pkg/scheduler
-        # - task: wscat
-        #   score: 200
+        - task: wscat
+          is_bonus: true
+          score: 200
+        - task: excelwriter
+          is_bonus: true
+          score: 200
 
-    #     - task: yamlembed
-    #       is_bonus: true
-    #       score: 100
-    #     - task: consistenthash
-    #       is_bonus: true
-    #       score: 200
     #     - task: gossip
     #       is_bonus: true
     #       score: 300
@@ -257,9 +255,6 @@ deadlines:
     #       is_bonus: true
     #       score: 300
     #     - task: firegod
-    #       is_bonus: true
-    #       score: 200
-    #     - task: excelwriter
     #       is_bonus: true
     #       score: 200
     #     - task: psycher
