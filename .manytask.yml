@@ -205,7 +205,6 @@ deadlines:
         - task: jsonrpc
           score: 100
         - task: excelwriter
-          is_bonus: true
           score: 200
         - task: structtags
           score: 100
@@ -242,9 +241,6 @@ deadlines:
           watch:
             - distbuild/pkg/scheduler
         - task: wscat
-          is_bonus: true
-          score: 200
-        - task: excelwriter
           is_bonus: true
           score: 200
 
