@@ -16,6 +16,33 @@ Go Runtime Internals
 - Call ABI
 - ASM
 
+* Compiler Inlining
+
+.code inline/main.go
+
+    > go build -o /dev/null -gcflags=-m=1 .
+    # gitlab.com/slon/shad-go/lectures/11-runtime/inline
+    ./main.go:7:6: can inline F
+    ./main.go:11:6: can inline main
+    ./main.go:12:11: inlining call to F
+
+* Compiler Escape Analysis
+
+.code escape/main.go
+
+    > go build -o /dev/null -gcflags=-m=2 ./escape/
+    # gitlab.com/slon/shad-go/lectures/11-runtime/escape
+    escape/main.go:13:6: p1 escapes to heap:
+    escape/main.go:13:6:   flow: {heap} = &{storage for p1}:
+    escape/main.go:13:6:     from p1 (spill) at escape/main.go:13:6
+    escape/main.go:13:6:     from g = p1 (assign) at escape/main.go:13:4
+    escape/main.go:6:12: make([]byte, 10) does not escape
+    escape/main.go:13:6: p1 escapes to heap
+
+* Compiler Bound Check Elimination
+
+.code bce/main.go
+
 * GC
 
 - Finalizer
@@ -26,6 +53,32 @@ Go Runtime Internals
 - Write Barrier
 - Stack Growth
 
+* GC Finalizer
+
+.code gc/main.go
+
+* GC Sync Pool
+
+.code pool/main.go /START OMIT/,/END OMIT/
+
+* GC Trigger
+
+.image gogc.png
+
+* GC Knobs
+
+- GOGC=100, GOGC=off
+- GOMEMLIMIT=1GiB
+
+* GC Mark & Sweep
+
+.image mark.png _ 900
+.image sweep.png _ 900
+
+* Concurrent GC
+
+.image concurrentgc.png _ 900
+
 * Scheduler
 
 - G, M, P model
@@ -33,6 +86,10 @@ Go Runtime Internals
 - Knobs `GOMAXPROCS`
 - cgo & system call
 - runtime.LockOsThread
+
+* Go Scheduler
+
+.image gmp.png _ 600
 
 * runtime
 
@@ -47,3 +104,13 @@ Go Runtime Internals
 - gdb
 - runtime/pprof
 - net/http/pprof
+
+* net/http/pprof
+
+.code pprof/main.go /START OMIT/,/END OMIT/
+
+* pprof model
+
+- profile.pb.gz - list of samples
+- sample = stack + tags + counters
+- pprof = filter + visualize samples

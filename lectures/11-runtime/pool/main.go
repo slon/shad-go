@@ -5,6 +5,7 @@ import (
 	"sync"
 )
 
+// START OMIT
 var pool = sync.Pool{
 	New: func() any {
 		return &Decoder{}
@@ -23,10 +24,12 @@ func (c *Decoder) Close() {
 	pool.Put(c)
 }
 
-func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		d := New()
+func handler(w http.ResponseWriter, r *http.Request) {
+	d := New()
+	d.Close()
 
-		d.Close()
-	})
 }
+
+// END OMIT
+
+func main() {}
