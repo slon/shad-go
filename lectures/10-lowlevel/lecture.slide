@@ -65,6 +65,12 @@ low-level
 
 * cgo
 
+- cgo - расширение go для работы с C
+- Выглядит как go
+- Код должен подчиняться строгим правилам https://pkg.go.dev/cmd/cgo
+
+* cgo
+
 .code bzip/bzip2.c /include/,/^}/
 
 * cgo
