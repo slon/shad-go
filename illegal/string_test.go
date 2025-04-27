@@ -10,9 +10,19 @@ import (
 )
 
 func TestStringFromBytes(t *testing.T) {
-	b := []byte{'a', 'b', 'c'}
-	s := illegal.StringFromBytes(b)
+	t.Run("NotEmpty", func(t *testing.T) {
+		b := []byte{'a', 'b', 'c'}
+		s := illegal.StringFromBytes(b)
 
-	assert.Equal(t, "abc", s)
-	assert.Equal(t, *(*uintptr)(unsafe.Pointer(&b)), *(*uintptr)(unsafe.Pointer(&s)))
+		assert.Equal(t, "abc", s)
+		assert.Equal(t, *(*uintptr)(unsafe.Pointer(&b)), *(*uintptr)(unsafe.Pointer(&s)))
+	})
+
+	t.Run("Empty", func(t *testing.T) {
+		b := []byte{}
+		s := illegal.StringFromBytes(b)
+
+		assert.Equal(t, "", s)
+		assert.Equal(t, *(*uintptr)(unsafe.Pointer(&b)), *(*uintptr)(unsafe.Pointer(&s)))
+	})
 }
