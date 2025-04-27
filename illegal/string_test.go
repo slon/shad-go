@@ -1,7 +1,6 @@
 package illegal_test
 
 import (
-	"fmt"
 	"testing"
 	"unsafe"
 
@@ -29,7 +28,7 @@ func TestStringFromBytes(t *testing.T) {
 			sptr := *(*uintptr)(unsafe.Pointer(&s))
 
 			assert.Equal(t, string(b), s)
-			assert.Equal(t, bptr, sptr, fmt.Sprintf("string ptr [%v] != []byte ptr [%v]\n", sptr, bptr))
+			assert.Equal(t, bptr, sptr, "string ptr [%v] != []byte ptr [%v]\n", sptr, bptr)
 		})
 	}
 }
