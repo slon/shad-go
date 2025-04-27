@@ -172,7 +172,7 @@ deadlines:
 
     - group: "[HW] Dist Build"
       start: 2025-04-03 13:00
-      end: 2025-04-27 23:59
+      end: 2025-05-11 23:59
       tasks:
         - task: distbuild
           score: 1
