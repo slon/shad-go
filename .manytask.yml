@@ -231,6 +231,12 @@ deadlines:
     #     - task: testifycheck
     #       score: 200
 
+    # - group: Observability
+    #   tasks:
+    #     - task: firegod
+    #       is_bonus: true
+    #       score: 200
+
     - group: Bonus
       start: 2025-04-04 13:00
       end: 2025-07-10 23:59
@@ -244,15 +250,12 @@ deadlines:
           is_bonus: true
           score: 200
 
-    #     - task: gossip
-    #       is_bonus: true
-    #       score: 300
-    #     - task: wasm
-    #       is_bonus: true
-    #       score: 300
-    #     - task: firegod
-    #       is_bonus: true
-    #       score: 200
-    #     - task: psycher
-    #       is_bonus: true
-    #       score: 200
+        - task: gossip
+          is_bonus: true
+          score: 300
+        - task: wasm
+          is_bonus: true
+          score: 300
+        - task: psycher
+          is_bonus: true
+          score: 200
