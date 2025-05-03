@@ -10,9 +10,25 @@ import (
 )
 
 func TestStringFromBytes(t *testing.T) {
-	b := []byte{'a', 'b', 'c'}
-	s := illegal.StringFromBytes(b)
+	var tests = []struct {
+		name  string
+		input []byte
+	}{
+		{"NotEmpty", []byte{'a', 'b', 'c'}},
+		{"Empty", []byte{}},
+		{"Nil", nil},
+	}
 
-	assert.Equal(t, "abc", s)
-	assert.Equal(t, *(*uintptr)(unsafe.Pointer(&b)), *(*uintptr)(unsafe.Pointer(&s)))
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			b := test.input
+			s := illegal.StringFromBytes(b)
+
+			bptr := *(*uintptr)(unsafe.Pointer(&b))
+			sptr := *(*uintptr)(unsafe.Pointer(&s))
+
+			assert.Equal(t, string(b), s)
+			assert.Equal(t, bptr, sptr, "string ptr [%v] != []byte ptr [%v]\n", sptr, bptr)
+		})
+	}
 }
