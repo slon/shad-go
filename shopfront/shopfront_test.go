@@ -37,14 +37,24 @@ func TestShopfront(t *testing.T) {
 
 	require.NoError(t, c.RecordView(ctx, 3, 42))
 	require.NoError(t, c.RecordView(ctx, 2, 42))
-
+	require.NoError(t, c.RecordView(ctx, 2, 42))
 	require.NoError(t, c.RecordView(ctx, 2, 4242))
+	require.NoError(t, c.RecordView(ctx, 3, 4242))
 
 	items, err = c.GetItems(ctx, []shopfront.ItemID{1, 2, 3, 4}, 42)
 	require.NoError(t, err)
 	require.Equal(t, []shopfront.Item{
 		{},
 		{ViewCount: 2, Viewed: true},
+		{ViewCount: 1, Viewed: true},
+		{},
+	}, items)
+
+	items, err = c.GetItems(ctx, []shopfront.ItemID{1, 2, 3, 4}, 4242)
+	require.NoError(t, err)
+	require.Equal(t, []shopfront.Item{
+		{},
+		{ViewCount: 1, Viewed: true},
 		{ViewCount: 1, Viewed: true},
 		{},
 	}, items)
