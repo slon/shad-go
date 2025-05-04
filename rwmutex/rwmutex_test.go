@@ -183,6 +183,33 @@ func TestNoBusyWaitInlock(t *testing.T) {
 	testtool.VerifyNoBusyGoroutines(t)
 }
 
+func TestWriteDoesNotBlockRead(t *testing.T) {
+	rwm := New()
+	rwm.RLock()
+	defer rwm.RUnlock()
+
+	go func() {
+		rwm.Lock()
+		defer rwm.Unlock()
+	}()
+	// Ensure writer waits for lock
+	<-time.After(time.Second)
+
+	done := make(chan bool)
+	go func() {
+		rwm.RLock()
+		done <- true
+		defer rwm.RUnlock()
+	}()
+
+	select {
+	case <-time.After(time.Second):
+		t.Fatal("Second read lock is blocked")
+	case <-done:
+	}
+
+}
+
 func TestNoSyncPackageImported(t *testing.T) {
 	testtool.CheckForbiddenImport(t, "sync")
 }
