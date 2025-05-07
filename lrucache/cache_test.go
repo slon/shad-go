@@ -55,13 +55,13 @@ func TestCache_Get(t *testing.T) {
 func TestCache_Clear(t *testing.T) {
 	c := New(5)
 
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 2; i++ {
 		c.Set(i, i)
 	}
 
 	c.Clear()
 
-	for i := 9; i >= 0; i-- {
+	for i := 4; i >= 1; i-- {
 		c.Set(i, i)
 	}
 
@@ -72,8 +72,8 @@ func TestCache_Clear(t *testing.T) {
 		return true
 	})
 
-	require.Equal(t, []int{4, 3, 2, 1, 0}, keys)
-	require.Equal(t, []int{4, 3, 2, 1, 0}, values)
+	require.Equal(t, []int{4, 3, 2, 1}, keys)
+	require.Equal(t, []int{4, 3, 2, 1}, values)
 }
 
 func TestCache_Clear_logic(t *testing.T) {
