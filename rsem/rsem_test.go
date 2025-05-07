@@ -49,7 +49,6 @@ func TestSemaphore_Limit1(t *testing.T) {
 
 	release, err := sem.Acquire(ctx, "limit1", 1)
 	require.NoError(t, err)
-	defer func() { require.NoError(t, release()) }()
 
 	acquired := make(chan struct{})
 	defer func() { <-acquired }()
@@ -64,6 +63,7 @@ func TestSemaphore_Limit1(t *testing.T) {
 
 	select {
 	case <-acquired:
+		require.NoError(t, release())
 		t.Errorf("semaphore not working")
 	case <-time.After(time.Second * 5):
 		require.NoError(t, release())
