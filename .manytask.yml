@@ -262,4 +262,5 @@ deadlines:
           score: 200
 
         - task: testifycheck
+          is_bonus: true
           score: 200
