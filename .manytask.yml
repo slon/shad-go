@@ -231,6 +231,13 @@ deadlines:
     #     - task: testifycheck
     #       score: 200
 
+    - group: Observability
+      start: 2025-05-15 13:00
+      end: 2025-07-10 23:59
+      tasks:
+        - task: firegod
+          score: 200
+
     - group: Bonus
       start: 2025-04-04 13:00
       end: 2025-07-10 23:59
@@ -254,10 +261,5 @@ deadlines:
           is_bonus: true
           score: 200
 
-        - task: firegod
-          is_bonus: true
-          score: 200
-
         - task: testifycheck
-          is_bonus: true
           score: 200
