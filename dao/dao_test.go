@@ -39,6 +39,7 @@ func TestDao(t *testing.T) {
 	require.Equal(t, User{ID: aliceID, Name: "Alice"}, alice)
 
 	require.NoError(t, dao.Delete(ctx, bobID))
+	require.Error(t, dao.Delete(ctx, 999))
 
 	_, err = dao.Lookup(ctx, bobID)
 	require.ErrorIs(t, err, sql.ErrNoRows)
