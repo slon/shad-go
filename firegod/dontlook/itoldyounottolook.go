@@ -34,7 +34,7 @@ func NewService(r chi.Router) {
 				buf = append(buf, strings.Repeat("f", 1<<20))
 				_ = buf
 
-				time.Sleep(time.Millisecond * 100 * time.Duration(i))
+				time.Sleep(time.Millisecond * 10 * time.Duration(i))
 			}
 		}()
 

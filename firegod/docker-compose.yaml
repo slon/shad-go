@@ -31,7 +31,7 @@ services:
       resources:
         limits:
           cpus: '0.5'
-          memory: 100M
+          memory: 1000M
 
     container_name: my-service-0
     environment:
